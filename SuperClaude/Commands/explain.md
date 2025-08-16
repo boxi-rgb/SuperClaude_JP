@@ -1,12 +1,12 @@
 ---
 allowed-tools: [Read, Grep, Glob, Bash]
-description: "Provide clear explanations of code, concepts, or system behavior"
+description: "コード、概念、またはシステムの動作について明確な説明を提供します"
 ---
 
-# /sc:explain - Code and Concept Explanation
+# /sc:explain - コードと概念の説明
 
 ## Purpose
-Deliver clear, comprehensive explanations of code functionality, concepts, or system behavior.
+コードの機能、概念、またはシステムの動作について、明確で包括的な説明を提供します。
 
 ## Usage
 ```
@@ -14,10 +14,10 @@ Deliver clear, comprehensive explanations of code functionality, concepts, or sy
 ```
 
 ## Arguments
-- `target` - Code file, function, concept, or system to explain
-- `--level` - Explanation complexity (basic, intermediate, advanced)
-- `--format` - Output format (text, diagram, examples)
-- `--context` - Additional context for explanation
+- `target` - 説明対象のコードファイル、関数、概念、またはシステム
+- `--level` - 説明の複雑さ (basic, intermediate, advanced)
+- `--format` - 出力形式 (text, diagram, examples)
+- `--context` - 説明のための追加コンテキスト
 
 ## Execution
 1. Analyze target code or concept thoroughly

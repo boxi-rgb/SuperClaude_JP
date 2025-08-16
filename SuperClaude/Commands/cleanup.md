@@ -1,12 +1,12 @@
 ---
 allowed-tools: [Read, Grep, Glob, Bash, Edit, MultiEdit]
-description: "Clean up code, remove dead code, and optimize project structure"
+description: "コードのクリーンアップ、不要なコードの削除、プロジェクト構造の最適化を行います"
 ---
 
-# /sc:cleanup - Code and Project Cleanup
+# /sc:cleanup - コードとプロジェクトのクリーンアップ
 
 ## Purpose
-Systematically clean up code, remove dead code, optimize imports, and improve project structure.
+体系的にコードをクリーンアップし、不要なコードを削除し、インポートを最適化し、プロジェクト構造を改善します。
 
 ## Usage
 ```
@@ -14,11 +14,11 @@ Systematically clean up code, remove dead code, optimize imports, and improve pr
 ```
 
 ## Arguments
-- `target` - Files, directories, or entire project to clean
-- `--type` - Cleanup type (code, imports, files, all)
-- `--safe` - Conservative cleanup (default)
-- `--aggressive` - More thorough cleanup with higher risk
-- `--dry-run` - Preview changes without applying them
+- `target` - クリーンアップ対象のファイル、ディレクトリ、またはプロジェクト全体
+- `--type` - クリーンアップの種類 (code, imports, files, all)
+- `--safe` - 保守的なクリーンアップ（デフォルト）
+- `--aggressive` - より徹底的なクリーンアップ（リスクが高い）
+- `--dry-run` - 変更を適用せずにプレビューします
 
 ## Execution
 1. Analyze target for cleanup opportunities

@@ -1,12 +1,12 @@
 ---
 allowed-tools: [Read, Bash, Glob, TodoWrite, Edit]
-description: "Build, compile, and package projects with error handling and optimization"
+description: "エラー処理と最適化を行いつつ、プロジェクトのビルド、コンパイル、パッケージ化を行います"
 ---
 
-# /sc:build - Project Building
+# /sc:build - プロジェクトのビルド
 
 ## Purpose
-Build, compile, and package projects with comprehensive error handling and optimization.
+包括的なエラーハンドリングと最適化を行いながら、プロジェクトのビルド、コンパイル、パッケージ化を行います。
 
 ## Usage
 ```
@@ -14,11 +14,11 @@ Build, compile, and package projects with comprehensive error handling and optim
 ```
 
 ## Arguments
-- `target` - Project or specific component to build
-- `--type` - Build type (dev, prod, test)
-- `--clean` - Clean build artifacts before building
-- `--optimize` - Enable build optimizations
-- `--verbose` - Enable detailed build output
+- `target` - ビルド対象のプロジェクトまたは特定のコンポーネント
+- `--type` - ビルドタイプ (dev, prod, test)
+- `--clean` - ビルド前にビルド成果物をクリーンアップします
+- `--optimize` - ビルドの最適化を有効にします
+- `--verbose` - 詳細なビルド出力を有効にします
 
 ## Execution
 1. Analyze project structure and build configuration

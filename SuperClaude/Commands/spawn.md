@@ -1,12 +1,12 @@
 ---
 allowed-tools: [Read, Grep, Glob, Bash, TodoWrite, Edit, MultiEdit, Write]
-description: "Break complex tasks into coordinated subtasks with efficient execution"
+description: "複雑なタスクを連携したサブタスクに分割し、効率的に実行します"
 ---
 
-# /sc:spawn - Task Orchestration
+# /sc:spawn - タスクオーケストレーション
 
 ## Purpose
-Decompose complex requests into manageable subtasks and coordinate their execution.
+複雑なリクエストを管理可能なサブタスクに分解し、その実行を調整します。
 
 ## Usage
 ```
@@ -14,10 +14,10 @@ Decompose complex requests into manageable subtasks and coordinate their executi
 ```
 
 ## Arguments
-- `task` - Complex task or project to orchestrate
-- `--sequential` - Execute tasks in dependency order (default)
-- `--parallel` - Execute independent tasks concurrently
-- `--validate` - Enable quality checkpoints between tasks
+- `task` - オーケストレーションする複雑なタスクまたはプロジェクト
+- `--sequential` - 依存関係の順序でタスクを実行します（デフォルト）
+- `--parallel` - 独立したタスクを同時に実行します
+- `--validate` - タスク間の品質チェックポイントを有効にします
 
 ## Execution
 1. Parse request and create hierarchical task breakdown

@@ -1,6 +1,6 @@
 ---
 allowed-tools: [Read, Write, Edit, Glob, Grep, TodoWrite, Task, mcp__sequential-thinking__sequentialthinking, mcp__context7__context7]
-description: "Generate structured implementation workflows from PRDs and feature requirements with expert guidance"
+description: "専門家のガイダンスを元に、PRDや機能要件から構造化された実装ワークフローを生成します"
 wave-enabled: true
 complexity-threshold: 0.6
 performance-profile: complex
@@ -8,10 +8,10 @@ personas: [architect, analyzer, frontend, backend, security, devops, project-man
 mcp-servers: [sequential, context7, magic]
 ---
 
-# /sc:workflow - Implementation Workflow Generator
+# /sc:workflow - 実装ワークフロー生成
 
 ## Purpose
-Analyze Product Requirements Documents (PRDs) and feature specifications to generate comprehensive, step-by-step implementation workflows with expert guidance, dependency mapping, and automated task orchestration.
+専門家のガイダンス、依存関係マッピング、自動化されたタスクオーケストレーションを用いて、製品要求ドキュメント（PRD）と機能仕様を分析し、包括的でステップバイステップの実装ワークフローを生成します。
 
 ## Usage
 ```
@@ -19,15 +19,15 @@ Analyze Product Requirements Documents (PRDs) and feature specifications to gene
 ```
 
 ## Arguments
-- `prd-file|feature-description` - Path to PRD file or direct feature description
-- `--persona` - Force specific expert persona (architect, frontend, backend, security, devops, etc.)
-- `--strategy` - Workflow strategy (systematic, agile, mvp)
-- `--output` - Output format (roadmap, tasks, detailed)
-- `--estimate` - Include time and complexity estimates
-- `--dependencies` - Map external dependencies and integrations
-- `--risks` - Include risk assessment and mitigation strategies
-- `--parallel` - Identify parallelizable work streams
-- `--milestones` - Create milestone-based project phases
+- `prd-file|feature-description` - PRDファイルへのパスまたは直接の機能説明
+- `--persona` - 特定の専門家ペルソナを強制します (architect, frontend, backend, security, devops, etc.)
+- `--strategy` - ワークフロー戦略 (systematic, agile, mvp)
+- `--output` - 出力形式 (roadmap, tasks, detailed)
+- `--estimate` - 時間と複雑さの見積もりを含めます
+- `--dependencies` - 外部の依存関係と統合をマッピングします
+- `--risks` - リスク評価と緩和戦略を含めます
+- `--parallel` - 並列化可能な作業ストリームを特定します
+- `--milestones` - マイルストーンベースのプロジェクトフェーズを作成します
 
 ## MCP Integration Flags
 - `--c7` / `--context7` - Enable Context7 for framework patterns and best practices

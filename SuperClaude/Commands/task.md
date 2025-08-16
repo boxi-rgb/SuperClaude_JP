@@ -1,6 +1,6 @@
 ---
 allowed-tools: [Read, Glob, Grep, TodoWrite, Task, mcp__sequential-thinking__sequentialthinking]
-description: "Execute complex tasks with intelligent workflow management and cross-session persistence"
+description: "インテリジェントなワークフロー管理とセッションをまたいだ永続性により、複雑なタスクを実行します"
 wave-enabled: true
 complexity-threshold: 0.7
 performance-profile: complex
@@ -8,10 +8,10 @@ personas: [architect, analyzer, project-manager]
 mcp-servers: [sequential, context7]
 ---
 
-# /sc:task - Enhanced Task Management
+# /sc:task - 拡張タスク管理
 
 ## Purpose
-Execute complex tasks with intelligent workflow management, cross-session persistence, hierarchical task organization, and advanced orchestration capabilities.
+インテリジェントなワークフロー管理、セッションをまたいだ永続性、階層的なタスク編成、および高度なオーケストレーション機能により、複雑なタスクを実行します。
 
 ## Usage
 ```
@@ -19,23 +19,23 @@ Execute complex tasks with intelligent workflow management, cross-session persis
 ```
 
 ## Actions
-- `create` - Create new project-level task hierarchy
-- `execute` - Execute task with intelligent orchestration
-- `status` - View task status across sessions
-- `analytics` - Task performance and analytics dashboard
-- `optimize` - Optimize task execution strategies
-- `delegate` - Delegate tasks across multiple agents
-- `validate` - Validate task completion with evidence
+- `create` - 新しいプロジェクトレベルのタスク階層を作成します
+- `execute` - インテリジェントなオーケストレーションでタスクを実行します
+- `status` - セッションをまたいでタスクのステータスを表示します
+- `analytics` - タスクのパフォーマンスと分析ダッシュボード
+- `optimize` - タスク実行戦略を最適化します
+- `delegate` - 複数のエージェントにタスクを委任します
+- `validate` - 証拠を用いてタスクの完了を検証します
 
 ## Arguments
-- `target` - Task description, project scope, or existing task ID
-- `--strategy` - Execution strategy (systematic, agile, enterprise)
-- `--persist` - Enable cross-session task persistence
-- `--hierarchy` - Create hierarchical task breakdown
-- `--delegate` - Enable multi-agent task delegation
-- `--wave-mode` - Enable wave-based execution
-- `--validate` - Enforce quality gates and validation
-- `--mcp-routing` - Enable intelligent MCP server routing
+- `target` - タスクの説明、プロジェクトの範囲、または既存のタスクID
+- `--strategy` - 実行戦略 (systematic, agile, enterprise)
+- `--persist` - セッションをまたいだタスクの永続性を有効にします
+- `--hierarchy` - 階層的なタスクの内訳を作成します
+- `--delegate` - マルチエージェントのタスク委任を有効にします
+- `--wave-mode` - ウェーブベースの実行を有効にします
+- `--validate` - 品質ゲートと検証を強制します
+- `--mcp-routing` - インテリジェントなMCPサーバーのルーティングを有効にします
 
 ## Execution Modes
 

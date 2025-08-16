@@ -1,12 +1,12 @@
 ---
 allowed-tools: [Read, Grep, Glob, Bash, TodoWrite]
-description: "Diagnose and resolve issues in code, builds, or system behavior"
+description: "コード、ビルド、またはシステムの動作における問題を診断および解決します"
 ---
 
-# /sc:troubleshoot - Issue Diagnosis and Resolution
+# /sc:troubleshoot - 問題の診断と解決
 
 ## Purpose
-Systematically diagnose and resolve issues in code, builds, deployments, or system behavior.
+コード、ビルド、デプロイメント、またはシステムの動作における問題を体系的に診断し、解決します。
 
 ## Usage
 ```
@@ -14,10 +14,10 @@ Systematically diagnose and resolve issues in code, builds, deployments, or syst
 ```
 
 ## Arguments
-- `issue` - Description of the problem or error message
-- `--type` - Issue category (bug, build, performance, deployment)
-- `--trace` - Enable detailed tracing and logging
-- `--fix` - Automatically apply fixes when safe
+- `issue` - 問題またはエラーメッセージの説明
+- `--type` - 問題のカテゴリ (bug, build, performance, deployment)
+- `--trace` - 詳細なトレースとロギングを有効にします
+- `--fix` - 安全な場合に自動的に修正を適用します
 
 ## Execution
 1. Analyze issue description and gather initial context

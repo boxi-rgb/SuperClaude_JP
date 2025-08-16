@@ -1,12 +1,12 @@
 ---
 allowed-tools: [Read, Grep, Glob, Bash, Write]
-description: "Load and analyze project context, configurations, and dependencies"
+description: "プロジェクトのコンテキスト、設定、および依存関係を読み込んで分析します"
 ---
 
-# /sc:load - Project Context Loading
+# /sc:load - プロジェクトコンテキストの読み込み
 
 ## Purpose
-Load and analyze project context, configurations, dependencies, and environment setup.
+プロジェクトのコンテキスト、設定、依存関係、および環境設定を読み込んで分析します。
 
 ## Usage
 ```
@@ -14,10 +14,10 @@ Load and analyze project context, configurations, dependencies, and environment 
 ```
 
 ## Arguments
-- `target` - Project directory or specific configuration to load
-- `--type` - Loading type (project, config, deps, env)
-- `--cache` - Cache loaded context for faster subsequent access
-- `--refresh` - Force refresh of cached context
+- `target` - 読み込むプロジェクトディレクトリまたは特定の設定
+- `--type` - 読み込みの種類 (project, config, deps, env)
+- `--cache` - 読み込んだコンテキストをキャッシュして、次回以降のアクセスを高速化します
+- `--refresh` - キャッシュされたコンテキストを強制的に更新します
 
 ## Execution
 1. Discover and analyze project structure and configuration files

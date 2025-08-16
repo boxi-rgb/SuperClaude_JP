@@ -1,12 +1,12 @@
 ---
 allowed-tools: [Read, Grep, Glob, Bash]
-description: "Provide development estimates for tasks, features, or projects"
+description: "タスク、機能、またはプロジェクトの開発見積もりを提供します"
 ---
 
-# /sc:estimate - Development Estimation
+# /sc:estimate - 開発見積もり
 
 ## Purpose
-Generate accurate development estimates for tasks, features, or projects based on complexity analysis.
+複雑性分析に基づいて、タスク、機能、またはプロジェクトの正確な開発見積もりを生成します。
 
 ## Usage
 ```
@@ -14,10 +14,10 @@ Generate accurate development estimates for tasks, features, or projects based o
 ```
 
 ## Arguments
-- `target` - Task, feature, or project to estimate
-- `--type` - Estimation type (time, effort, complexity, cost)
-- `--unit` - Time unit for estimates (hours, days, weeks)
-- `--breakdown` - Provide detailed breakdown of estimates
+- `target` - 見積もり対象のタスク、機能、またはプロジェクト
+- `--type` - 見積もりの種類 (time, effort, complexity, cost)
+- `--unit` - 見積もりの時間単位 (hours, days, weeks)
+- `--breakdown` - 見積もりの詳細な内訳を提供します
 
 ## Execution
 1. Analyze scope and requirements of target
