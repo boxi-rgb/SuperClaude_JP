@@ -8,6 +8,7 @@ import shutil
 import tempfile
 from datetime import datetime
 from .component import Component
+from ..utils.localization import get_string
 
 
 class Installer:
@@ -75,11 +76,10 @@ class Installer:
                 return
 
             if name in resolving:
-                raise ValueError(
-                    f"Circular dependency detected involving {name}")
+                raise ValueError(get_string("installer.dep.circular_dependency", name))
 
             if name not in self.components:
-                raise ValueError(f"Unknown component: {name}")
+                raise ValueError(get_string("installer.dep.unknown_component", name))
 
             resolving.add(name)
 
@@ -110,11 +110,9 @@ class Installer:
             stat = shutil.disk_usage(self.install_dir.parent)
             free_mb = stat.free / (1024 * 1024)
             if free_mb < 500:
-                errors.append(
-                    f"Insufficient disk space: {free_mb:.1f}MB free (500MB required)"
-                )
+                errors.append(get_string("installer.req.no_disk_space", free_mb))
         except Exception as e:
-            errors.append(f"Could not check disk space: {e}")
+            errors.append(get_string("installer.req.disk_space_error", e))
 
         # Check write permissions
         test_file = self.install_dir / ".write_test"
@@ -123,7 +121,7 @@ class Installer:
             test_file.touch()
             test_file.unlink()
         except Exception as e:
-            errors.append(f"No write permission to {self.install_dir}: {e}")
+            errors.append(get_string("installer.req.no_write_permission", self.install_dir, e))
 
         return len(errors) == 0, errors
 
@@ -166,7 +164,7 @@ class Installer:
                             shutil.copytree(item, temp_backup / item.name)
                     except Exception as e:
                         # Log warning but continue backup process
-                        print(f"Warning: Could not backup {item.name}: {e}")
+                        print(get_string("installer.backup.warning", item.name, e))
 
             # Create archive only if there are files to backup
             if any(temp_backup.iterdir()):
@@ -175,9 +173,7 @@ class Installer:
             else:
                 # Create empty backup file to indicate backup was attempted
                 backup_path.touch()
-                print(
-                    f"Warning: No files to backup, created empty backup marker: {backup_path.name}"
-                )
+                print(get_string("installer.backup.empty", backup_path.name))
 
         self.backup_path = backup_path
         return backup_path
@@ -195,7 +191,7 @@ class Installer:
             True if successful, False otherwise
         """
         if component_name not in self.components:
-            raise ValueError(f"Unknown component: {component_name}")
+            raise ValueError(get_string("installer.dep.unknown_component", component_name))
 
         component = self.components[component_name]
 
@@ -206,7 +202,7 @@ class Installer:
         # Check prerequisites
         success, errors = component.validate_prerequisites()
         if not success:
-            print(f"Prerequisites failed for {component_name}:")
+            print(get_string("installer.component.prereq_failed", component_name))
             for error in errors:
                 print(f"  - {error}")
             self.failed_components.add(component_name)
@@ -215,7 +211,7 @@ class Installer:
         # Perform installation
         try:
             if self.dry_run:
-                print(f"[DRY RUN] Would install {component_name}")
+                print(get_string("installer.component.dry_run", component_name))
                 success = True
             else:
                 success = component.install(config)
@@ -229,7 +225,7 @@ class Installer:
             return success
 
         except Exception as e:
-            print(f"Error installing {component_name}: {e}")
+            print(get_string("installer.component.install_error", component_name, e))
             self.failed_components.add(component_name)
             return False
 
@@ -252,26 +248,26 @@ class Installer:
         try:
             ordered_names = self.resolve_dependencies(component_names)
         except ValueError as e:
-            print(f"Dependency resolution error: {e}")
+            print(get_string("installer.dep.resolve_error", e))
             return False
 
         # Validate system requirements
         success, errors = self.validate_system_requirements()
         if not success:
-            print("System requirements not met:")
+            print(get_string("installer.req.system_reqs_not_met"))
             for error in errors:
                 print(f"  - {error}")
             return False
 
         # Create backup if updating
         if self.install_dir.exists() and not self.dry_run:
-            print("Creating backup of existing installation...")
+            print(get_string("installer.backup.creating"))
             self.create_backup()
 
         # Install each component
         all_success = True
         for name in ordered_names:
-            print(f"\nInstalling {name}...")
+            print(f"\n{get_string('installer.component.installing', name)}")
             if not self.install_component(name, config):
                 all_success = False
                 # Continue installing other components even if one fails
@@ -283,7 +279,7 @@ class Installer:
 
     def _run_post_install_validation(self) -> None:
         """Run post-installation validation for all installed components"""
-        print("\nRunning post-installation validation...")
+        print(f"\n{get_string('installer.validate.running')}")
 
         all_valid = True
         for name in self.installed_components:
@@ -291,17 +287,17 @@ class Installer:
             success, errors = component.validate_installation()
 
             if success:
-                print(f"  ✓ {name}: Valid")
+                print(get_string("installer.validate.valid", name))
             else:
-                print(f"  ✗ {name}: Invalid")
+                print(get_string("installer.validate.invalid", name))
                 for error in errors:
                     print(f"    - {error}")
                 all_valid = False
 
         if all_valid:
-            print("\nAll components validated successfully!")
+            print(f"\n{get_string('installer.validate.all_valid')}")
         else:
-            print("\nSome components failed validation. Check errors above.")
+            print(f"\n{get_string('installer.validate.some_invalid')}")
     def update_components(self, component_names: List[str], config: Dict[str, Any]) -> bool:
         """Alias for update operation (uses install logic)"""
         return self.install_components(component_names, config)

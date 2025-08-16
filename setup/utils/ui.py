@@ -10,9 +10,6 @@ from typing import List, Optional, Any, Dict, Union
 from enum import Enum
 from setup.utils.localization import get_string, set_language
 
-# Set the language to Japanese
-set_language('ja')
-
 # Try to import colorama for cross-platform color support
 try:
     import colorama
