@@ -1,12 +1,12 @@
 ---
 allowed-tools: [Read, Write, Edit, MultiEdit, Bash, Glob, TodoWrite, Task]
-description: "Feature and code implementation with intelligent persona activation and MCP integration"
+description: "インテリジェントなペルソナアクティベーションとMCP統合による機能とコードの実装"
 ---
 
-# /sc:implement - Feature Implementation
+# /sc:implement - 機能実装
 
 ## Purpose
-Implement features, components, and code functionality with intelligent expert activation and comprehensive development support.
+インテリジェントなエキスパートのアクティベーションと包括的な開発サポートにより、機能、コンポーネント、およびコードの機能を実装します。
 
 ## Usage
 ```
@@ -14,13 +14,13 @@ Implement features, components, and code functionality with intelligent expert a
 ```
 
 ## Arguments
-- `feature-description` - Description of what to implement
-- `--type` - Implementation type (component, api, service, feature, module)
-- `--framework` - Target framework or technology stack
-- `--safe` - Use conservative implementation approach
-- `--iterative` - Enable iterative development with validation steps
-- `--with-tests` - Include test implementation
-- `--documentation` - Generate documentation alongside implementation
+- `feature-description` - 実装する内容の説明
+- `--type` - 実装タイプ (component, api, service, feature, module)
+- `--framework` - ターゲットフレームワークまたはテクノロジースタック
+- `--safe` - 保守的な実装アプローチを使用します
+- `--iterative` - 検証ステップを含む反復開発を有効にします
+- `--with-tests` - テスト実装を含めます
+- `--documentation` - 実装と同時にドキュメントを生成します
 
 ## Execution
 1. Analyze implementation requirements and detect technology context

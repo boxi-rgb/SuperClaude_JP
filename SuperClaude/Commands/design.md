@@ -1,12 +1,12 @@
 ---
 allowed-tools: [Read, Grep, Glob, Write, Edit, TodoWrite]
-description: "Design system architecture, APIs, and component interfaces"
+description: "システムアーキテクチャ、API、およびコンポーネントインターフェイスを設計します"
 ---
 
-# /sc:design - System and Component Design
+# /sc:design - システムとコンポーネントの設計
 
 ## Purpose
-Design system architecture, APIs, component interfaces, and technical specifications.
+システムアーキテクチャ、API、コンポーネントインターフェース、および技術仕様を設計します。
 
 ## Usage
 ```
@@ -14,10 +14,10 @@ Design system architecture, APIs, component interfaces, and technical specificat
 ```
 
 ## Arguments
-- `target` - System, component, or feature to design
-- `--type` - Design type (architecture, api, component, database)
-- `--format` - Output format (diagram, spec, code)
-- `--iterative` - Enable iterative design refinement
+- `target` - 設計対象のシステム、コンポーネント、または機能
+- `--type` - 設計タイプ (architecture, api, component, database)
+- `--format` - 出力形式 (diagram, spec, code)
+- `--iterative` - 反復的な設計の改良を有効にします
 
 ## Execution
 1. Analyze requirements and design constraints

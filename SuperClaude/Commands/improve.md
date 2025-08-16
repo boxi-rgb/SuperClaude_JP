@@ -1,12 +1,12 @@
 ---
 allowed-tools: [Read, Grep, Glob, Edit, MultiEdit, TodoWrite]
-description: "Apply systematic improvements to code quality, performance, and maintainability"
+description: "コードの品質、パフォーマンス、および保守性に対する体系的な改善を適用します"
 ---
 
-# /sc:improve - Code Improvement
+# /sc:improve - コード改善
 
 ## Purpose
-Apply systematic improvements to code quality, performance, maintainability, and best practices.
+コードの品質、パフォーマンス、保守性、およびベストプラクティスに体系的な改善を適用します。
 
 ## Usage
 ```
@@ -14,10 +14,10 @@ Apply systematic improvements to code quality, performance, maintainability, and
 ```
 
 ## Arguments
-- `target` - Files, directories, or project to improve
-- `--type` - Improvement type (quality, performance, maintainability, style)
-- `--safe` - Apply only safe, low-risk improvements
-- `--preview` - Show improvements without applying them
+- `target` - 改善対象のファイル、ディレクトリ、またはプロジェクト
+- `--type` - 改善の種類 (quality, performance, maintainability, style)
+- `--safe` - 安全でリスクの低い改善のみを適用します
+- `--preview` - 改善を適用せずに表示します
 
 ## Execution
 1. Analyze code for improvement opportunities

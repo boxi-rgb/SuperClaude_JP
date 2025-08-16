@@ -1,12 +1,12 @@
 ---
 allowed-tools: [Read, Bash, Glob, TodoWrite, Edit, Write]
-description: "Execute tests, generate test reports, and maintain test coverage"
+description: "テストの実行、テストレポートの生成、およびテストカバレッジの維持"
 ---
 
-# /sc:test - Testing and Quality Assurance
+# /sc:test - テストと品質保証
 
 ## Purpose
-Execute tests, generate comprehensive test reports, and maintain test coverage standards.
+テストを実行し、包括的なテストレポートを生成し、テストカバレッジの基準を維持します。
 
 ## Usage
 ```
@@ -14,11 +14,11 @@ Execute tests, generate comprehensive test reports, and maintain test coverage s
 ```
 
 ## Arguments
-- `target` - Specific tests, files, or entire test suite
-- `--type` - Test type (unit, integration, e2e, all)
-- `--coverage` - Generate coverage reports
-- `--watch` - Run tests in watch mode
-- `--fix` - Automatically fix failing tests when possible
+- `target` - 特定のテスト、ファイル、またはテストスイート全体
+- `--type` - テストの種類 (unit, integration, e2e, all)
+- `--coverage` - カバレッジレポートを生成します
+- `--watch` - ウォッチモードでテストを実行します
+- `--fix` - 可能な場合に失敗したテストを自動的に修正します
 
 ## Execution
 1. Discover and categorize available tests

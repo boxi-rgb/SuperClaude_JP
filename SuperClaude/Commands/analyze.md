@@ -1,12 +1,12 @@
 ---
 allowed-tools: [Read, Grep, Glob, Bash, TodoWrite]
-description: "Analyze code quality, security, performance, and architecture"
+description: "コードの品質、セキュリティ、パフォーマンス、アーキテクチャを分析します"
 ---
 
-# /sc:analyze - Code Analysis
+# /sc:analyze - コード分析
 
 ## Purpose
-Execute comprehensive code analysis across quality, security, performance, and architecture domains.
+品質、セキュリティ、パフォーマンス、アーキテクチャの各領域にわたって包括的なコード分析を実行します。
 
 ## Usage
 ```
@@ -14,10 +14,10 @@ Execute comprehensive code analysis across quality, security, performance, and a
 ```
 
 ## Arguments
-- `target` - Files, directories, or project to analyze
-- `--focus` - Analysis focus area (quality, security, performance, architecture)
-- `--depth` - Analysis depth (quick, deep)
-- `--format` - Output format (text, json, report)
+- `target` - 分析対象のファイル、ディレクトリ、またはプロジェクト
+- `--focus` - 分析の焦点領域（品質、セキュリティ、パフォーマンス、アーキテクチャ）
+- `--depth` - 分析の深さ（quick、deep）
+- `--format` - 出力形式（text、json、report）
 
 ## Execution
 1. Discover and categorize files for analysis

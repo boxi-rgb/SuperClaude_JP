@@ -1,12 +1,12 @@
 ---
 allowed-tools: [Bash, Read, Glob, TodoWrite, Edit]
-description: "Git operations with intelligent commit messages and branch management"
+description: "インテリジェントなコミットメッセージとブランチ管理を伴うGit操作"
 ---
 
-# /sc:git - Git Operations
+# /sc:git - Git操作
 
 ## Purpose
-Execute Git operations with intelligent commit messages, branch management, and workflow optimization.
+インテリジェントなコミットメッセージ、ブランチ管理、ワークフローの最適化を伴うGit操作を実行します。
 
 ## Usage
 ```
@@ -14,11 +14,11 @@ Execute Git operations with intelligent commit messages, branch management, and 
 ```
 
 ## Arguments
-- `operation` - Git operation (add, commit, push, pull, merge, branch, status)
-- `args` - Operation-specific arguments
-- `--smart-commit` - Generate intelligent commit messages
-- `--branch-strategy` - Apply branch naming conventions
-- `--interactive` - Interactive mode for complex operations
+- `operation` - Git操作 (add, commit, push, pull, merge, branch, status)
+- `args` - 操作固有の引数
+- `--smart-commit` - インテリジェントなコミットメッセージを生成します
+- `--branch-strategy` - ブランチの命名規則を適用します
+- `--interactive` - 複雑な操作のための対話モード
 
 ## Execution
 1. Analyze current Git state and repository context

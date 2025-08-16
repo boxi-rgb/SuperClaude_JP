@@ -1,12 +1,12 @@
 ---
 allowed-tools: [Read, Grep, Glob, Write, Edit]
-description: "Create focused documentation for specific components or features"
+description: "特定のコンポーネントや機能に特化したドキュメントを作成します"
 ---
 
-# /sc:document - Focused Documentation
+# /sc:document - 集中ドキュメンテーション
 
 ## Purpose
-Generate precise, focused documentation for specific components, functions, or features.
+特定のコンポーネント、関数、または機能に対して、正確で焦点の絞られたドキュメントを生成します。
 
 ## Usage
 ```
@@ -14,10 +14,10 @@ Generate precise, focused documentation for specific components, functions, or f
 ```
 
 ## Arguments
-- `target` - Specific file, function, or component to document
-- `--type` - Documentation type (inline, external, api, guide)
-- `--style` - Documentation style (brief, detailed)
-- `--template` - Use specific documentation template
+- `target` - ドキュメント化する特定のファイル、関数、またはコンポーネント
+- `--type` - ドキュメントの種類 (inline, external, api, guide)
+- `--style` - ドキュメントのスタイル (brief, detailed)
+- `--template` - 特定のドキュメンテーションテンプレートを使用します
 
 ## Execution
 1. Analyze target component and extract key information

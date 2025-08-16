@@ -1,12 +1,12 @@
 ---
 allowed-tools: [Read, Grep, Glob, Bash, Write]
-description: "Generate comprehensive project documentation and knowledge base"
+description: "包括的なプロジェクトドキュメントとナレッジベースを生成します"
 ---
 
-# /sc:index - Project Documentation
+# /sc:index - プロジェクトドキュメンテーション
 
 ## Purpose
-Create and maintain comprehensive project documentation, indexes, and knowledge bases.
+包括的なプロジェクトドキュメント、インデックス、ナレッジベースを作成および維持します。
 
 ## Usage
 ```
@@ -14,10 +14,10 @@ Create and maintain comprehensive project documentation, indexes, and knowledge 
 ```
 
 ## Arguments
-- `target` - Project directory or specific component to document
-- `--type` - Documentation type (docs, api, structure, readme)
-- `--format` - Output format (md, json, yaml)
-- `--update` - Update existing documentation
+- `target` - ドキュメント化するプロジェクトディレクトリまたは特定のコンポーネント
+- `--type` - ドキュメントの種類 (docs, api, structure, readme)
+- `--format` - 出力形式 (md, json, yaml)
+- `--update` - 既存のドキュメントを更新します
 
 ## Execution
 1. Analyze project structure and identify key components
