@@ -50,6 +50,8 @@ except ImportError:
             return SimpleVersion(version_str)
 
 
+from ..utils.localization import get_string
+
 class Validator:
     """System requirements validator"""
     
@@ -79,22 +81,22 @@ class Validator:
             # Check minimum version
             if version.parse(current_version) < version.parse(min_version):
                 help_msg = self.get_installation_help("python")
-                result = (False, f"Python {min_version}+ required, found {current_version}{help_msg}")
+                result = (False, get_string("validator.python.version_required", min_version, current_version, help_msg))
                 self.validation_cache[cache_key] = result
                 return result
             
             # Check maximum version if specified
             if max_version and version.parse(current_version) > version.parse(max_version):
-                result = (False, f"Python version {current_version} exceeds maximum supported {max_version}")
+                result = (False, get_string("validator.python.version_exceeds_max", current_version, max_version))
                 self.validation_cache[cache_key] = result
                 return result
             
-            result = (True, f"Python {current_version} meets requirements")
+            result = (True, get_string("validator.python.version_ok", current_version))
             self.validation_cache[cache_key] = result
             return result
             
         except Exception as e:
-            result = (False, f"Could not check Python version: {e}")
+            result = (False, get_string("validator.python.check_error", e))
             self.validation_cache[cache_key] = result
             return result
     
@@ -125,7 +127,7 @@ class Validator:
             
             if result.returncode != 0:
                 help_msg = self.get_installation_help("node")
-                result_tuple = (False, f"Node.js not found in PATH{help_msg}")
+                result_tuple = (False, get_string("validator.node.not_found", help_msg))
                 self.validation_cache[cache_key] = result_tuple
                 return result_tuple
             
@@ -139,31 +141,31 @@ class Validator:
             # Check minimum version
             if version.parse(current_version) < version.parse(min_version):
                 help_msg = self.get_installation_help("node")
-                result_tuple = (False, f"Node.js {min_version}+ required, found {current_version}{help_msg}")
+                result_tuple = (False, get_string("validator.node.version_required", min_version, current_version, help_msg))
                 self.validation_cache[cache_key] = result_tuple
                 return result_tuple
             
             # Check maximum version if specified
             if max_version and version.parse(current_version) > version.parse(max_version):
-                result_tuple = (False, f"Node.js version {current_version} exceeds maximum supported {max_version}")
+                result_tuple = (False, get_string("validator.node.version_exceeds_max", current_version, max_version))
                 self.validation_cache[cache_key] = result_tuple
                 return result_tuple
             
-            result_tuple = (True, f"Node.js {current_version} meets requirements")
+            result_tuple = (True, get_string("validator.node.version_ok", current_version))
             self.validation_cache[cache_key] = result_tuple
             return result_tuple
             
         except subprocess.TimeoutExpired:
-            result_tuple = (False, "Node.js version check timed out")
+            result_tuple = (False, get_string("validator.node.timeout"))
             self.validation_cache[cache_key] = result_tuple
             return result_tuple
         except FileNotFoundError:
             help_msg = self.get_installation_help("node")
-            result_tuple = (False, f"Node.js not found in PATH{help_msg}")
+            result_tuple = (False, get_string("validator.node.not_found", help_msg))
             self.validation_cache[cache_key] = result_tuple
             return result_tuple
         except Exception as e:
-            result_tuple = (False, f"Could not check Node.js version: {e}")
+            result_tuple = (False, get_string("validator.node.check_error", e))
             self.validation_cache[cache_key] = result_tuple
             return result_tuple
     
@@ -193,7 +195,7 @@ class Validator:
             
             if result.returncode != 0:
                 help_msg = self.get_installation_help("claude_cli")
-                result_tuple = (False, f"Claude CLI not found in PATH{help_msg}")
+                result_tuple = (False, get_string("validator.claude_cli.not_found", help_msg))
                 self.validation_cache[cache_key] = result_tuple
                 return result_tuple
             
@@ -202,7 +204,7 @@ class Validator:
             version_match = re.search(r'(\d+\.\d+\.\d+)', version_output)
             
             if not version_match:
-                result_tuple = (True, "Claude CLI found (version format unknown)")
+                result_tuple = (True, get_string("validator.claude_cli.unknown_version"))
                 self.validation_cache[cache_key] = result_tuple
                 return result_tuple
             
@@ -210,25 +212,25 @@ class Validator:
             
             # Check minimum version if specified
             if min_version and version.parse(current_version) < version.parse(min_version):
-                result_tuple = (False, f"Claude CLI {min_version}+ required, found {current_version}")
+                result_tuple = (False, get_string("validator.claude_cli.version_required", min_version, current_version))
                 self.validation_cache[cache_key] = result_tuple
                 return result_tuple
             
-            result_tuple = (True, f"Claude CLI {current_version} found")
+            result_tuple = (True, get_string("validator.claude_cli.version_ok", current_version))
             self.validation_cache[cache_key] = result_tuple
             return result_tuple
             
         except subprocess.TimeoutExpired:
-            result_tuple = (False, "Claude CLI version check timed out")
+            result_tuple = (False, get_string("validator.claude_cli.timeout"))
             self.validation_cache[cache_key] = result_tuple
             return result_tuple
         except FileNotFoundError:
             help_msg = self.get_installation_help("claude_cli")
-            result_tuple = (False, f"Claude CLI not found in PATH{help_msg}")
+            result_tuple = (False, get_string("validator.claude_cli.not_found", help_msg))
             self.validation_cache[cache_key] = result_tuple
             return result_tuple
         except Exception as e:
-            result_tuple = (False, f"Could not check Claude CLI: {e}")
+            result_tuple = (False, get_string("validator.claude_cli.check_error", e))
             self.validation_cache[cache_key] = result_tuple
             return result_tuple
     
@@ -261,7 +263,7 @@ class Validator:
             )
             
             if result.returncode != 0:
-                result_tuple = (False, f"{tool_name} not found or command failed")
+                result_tuple = (False, get_string("validator.tool.not_found", tool_name))
                 self.validation_cache[cache_key] = result_tuple
                 return result_tuple
             
@@ -274,32 +276,32 @@ class Validator:
                     current_version = version_match.group(1)
                     
                     if version.parse(current_version) < version.parse(min_version):
-                        result_tuple = (False, f"{tool_name} {min_version}+ required, found {current_version}")
+                        result_tuple = (False, get_string("validator.tool.version_required", tool_name, min_version, current_version))
                         self.validation_cache[cache_key] = result_tuple
                         return result_tuple
                     
-                    result_tuple = (True, f"{tool_name} {current_version} found")
+                    result_tuple = (True, get_string("validator.tool.version_ok", tool_name, current_version))
                     self.validation_cache[cache_key] = result_tuple
                     return result_tuple
                 else:
-                    result_tuple = (True, f"{tool_name} found (version unknown)")
+                    result_tuple = (True, get_string("validator.tool.unknown_version", tool_name))
                     self.validation_cache[cache_key] = result_tuple
                     return result_tuple
             else:
-                result_tuple = (True, f"{tool_name} found")
+                result_tuple = (True, get_string("validator.tool.found", tool_name))
                 self.validation_cache[cache_key] = result_tuple
                 return result_tuple
                 
         except subprocess.TimeoutExpired:
-            result_tuple = (False, f"{tool_name} check timed out")
+            result_tuple = (False, get_string("validator.tool.timeout", tool_name))
             self.validation_cache[cache_key] = result_tuple
             return result_tuple
         except FileNotFoundError:
-            result_tuple = (False, f"{tool_name} not found in PATH")
+            result_tuple = (False, get_string("validator.tool.not_in_path", tool_name))
             self.validation_cache[cache_key] = result_tuple
             return result_tuple
         except Exception as e:
-            result_tuple = (False, f"Could not check {tool_name}: {e}")
+            result_tuple = (False, get_string("validator.tool.check_error", tool_name, e))
             self.validation_cache[cache_key] = result_tuple
             return result_tuple
     
@@ -327,15 +329,15 @@ class Validator:
             free_mb = stat_result.free / (1024 * 1024)
             
             if free_mb < required_mb:
-                result = (False, f"Insufficient disk space: {free_mb:.1f}MB free, {required_mb}MB required")
+                result = (False, get_string("validator.disk.insufficient", free_mb, required_mb))
             else:
-                result = (True, f"Sufficient disk space: {free_mb:.1f}MB free")
+                result = (True, get_string("validator.disk.sufficient", free_mb))
             
             self.validation_cache[cache_key] = result
             return result
             
         except Exception as e:
-            result = (False, f"Could not check disk space: {e}")
+            result = (False, get_string("validator.disk.check_error", e))
             self.validation_cache[cache_key] = result
             return result
     
@@ -363,12 +365,12 @@ class Validator:
             test_file.touch()
             test_file.unlink()
             
-            result = (True, f"Write access confirmed for {path}")
+            result = (True, get_string("validator.perms.write_ok", path))
             self.validation_cache[cache_key] = result
             return result
             
         except Exception as e:
-            result = (False, f"No write access to {path}: {e}")
+            result = (False, get_string("validator.perms.no_write", path, e))
             self.validation_cache[cache_key] = result
             return result
     
@@ -392,7 +394,7 @@ class Validator:
                 python_req.get("max_version")
             )
             if not success:
-                errors.append(f"Python: {message}")
+                errors.append(get_string("validator.reqs.python_error", message))
         
         # Check Node.js requirements
         if "node" in requirements:
@@ -402,7 +404,7 @@ class Validator:
                 node_req.get("max_version")
             )
             if not success:
-                errors.append(f"Node.js: {message}")
+                errors.append(get_string("validator.reqs.node_error", message))
         
         # Check disk space
         if "disk_space_mb" in requirements:
@@ -411,7 +413,7 @@ class Validator:
                 requirements["disk_space_mb"]
             )
             if not success:
-                errors.append(f"Disk space: {message}")
+                errors.append(get_string("validator.reqs.disk_error", message))
         
         # Check external tools
         if "external_tools" in requirements:
@@ -560,20 +562,20 @@ class Validator:
         tool_commands = commands.get(tool_name, {})
         
         if not tool_commands:
-            return f"No installation instructions available for {tool_name}"
+            return get_string("validator.help.no_instructions", tool_name)
         
         # Get platform-specific command or fallback to 'all'
         install_cmd = tool_commands.get(platform, tool_commands.get("all", ""))
         description = tool_commands.get("description", "")
         
         if install_cmd:
-            help_text = f"\n💡 Installation Help for {tool_name}:\n"
+            help_text = f"\n{get_string('validator.help.header', tool_name)}\n"
             if description:
                 help_text += f"   {description}\n"
-            help_text += f"   Command: {install_cmd}\n"
+            help_text += f"   {get_string('validator.help.command', install_cmd)}\n"
             return help_text
         
-        return f"No installation instructions available for {tool_name} on {platform}"
+        return get_string("validator.help.no_instructions_platform", tool_name, platform)
     
     def diagnose_system(self) -> Dict[str, Any]:
         """
@@ -596,7 +598,7 @@ class Validator:
             "message": python_msg
         }
         if not python_success:
-            diagnostics["issues"].append("Python version issue")
+            diagnostics["issues"].append(get_string("validator.diag.python_issue"))
             diagnostics["recommendations"].append(self.get_installation_help("python"))
         
         # Check Node.js
@@ -606,7 +608,7 @@ class Validator:
             "message": node_msg
         }
         if not node_success:
-            diagnostics["issues"].append("Node.js not found or version issue")
+            diagnostics["issues"].append(get_string("validator.diag.node_issue"))
             diagnostics["recommendations"].append(self.get_installation_help("node"))
         
         # Check Claude CLI
@@ -616,7 +618,7 @@ class Validator:
             "message": claude_msg
         }
         if not claude_success:
-            diagnostics["issues"].append("Claude CLI not found")
+            diagnostics["issues"].append(get_string("validator.diag.cli_issue"))
             diagnostics["recommendations"].append(self.get_installation_help("claude_cli"))
         
         # Check disk space
@@ -626,7 +628,7 @@ class Validator:
             "message": disk_msg
         }
         if not disk_success:
-            diagnostics["issues"].append("Insufficient disk space")
+            diagnostics["issues"].append(get_string("validator.diag.disk_issue"))
         
         # Check common PATH issues
         self._diagnose_path_issues(diagnostics)
@@ -666,18 +668,18 @@ class Validator:
             if not tool_found:
                 # Only report as missing if none of the alternatives were found
                 if len(tool_alternatives) > 1:
-                    path_issues.append(f"{display_name} not found in PATH")
+                    path_issues.append(get_string("validator.diag.path_issue", display_name))
                 else:
-                    path_issues.append(f"{tool_alternatives[0]} not found in PATH")
+                    path_issues.append(get_string("validator.diag.path_issue", tool_alternatives[0]))
         
         if path_issues:
             diagnostics["issues"].extend(path_issues)
             diagnostics["recommendations"].append(
-                "\n💡 PATH Issue Help:\n"
-                "   Some tools may not be in your PATH. Try:\n"
-                "   - Restart your terminal after installation\n"
-                "   - Check your shell configuration (.bashrc, .zshrc)\n"
-                "   - Use full paths to tools if needed\n"
+                f"\n{get_string('validator.diag.path_help_header')}\n"
+                f"   {get_string('validator.diag.path_help_1')}\n"
+                f"   {get_string('validator.diag.path_help_2')}\n"
+                f"   {get_string('validator.diag.path_help_3')}\n"
+                f"   {get_string('validator.diag.path_help_4')}\n"
             )
     
     def clear_cache(self) -> None:

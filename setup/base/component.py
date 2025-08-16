@@ -10,6 +10,7 @@ from ..managers.file_manager import FileManager
 from ..managers.settings_manager import SettingsManager
 from ..utils.logger import get_logger
 from ..utils.security import SecurityValidator
+from ..utils.localization import get_string
 
 
 class Component(ABC):
@@ -56,7 +57,7 @@ class Component(ABC):
         # Check if we have read access to source files
         source_dir = self._get_source_dir()
         if not source_dir or (source_dir and not source_dir.exists()):
-            errors.append(f"Source directory not found: {source_dir}")
+            errors.append(get_string("component.prereq.source_dir_not_found", source_dir))
             return False, errors
 
         # Check if all required framework files exist
@@ -67,14 +68,14 @@ class Component(ABC):
                 missing_files.append(filename)
 
         if missing_files:
-            errors.append(f"Missing component files: {missing_files}")
+            errors.append(get_string("component.prereq.missing_files", missing_files))
 
         # Check write permissions to install directory
         has_perms, missing = SecurityValidator.check_permissions(
             self.install_dir, {'write'}
         )
         if not has_perms:
-            errors.append(f"No write permissions to {self.install_dir}: {missing}")
+            errors.append(get_string("component.prereq.no_write_permission", self.install_dir, missing))
 
         # Validate installation target
         is_safe, validation_errors = SecurityValidator.validate_installation_target(self.install_component_subdir)
@@ -92,7 +93,7 @@ class Component(ABC):
             errors.extend(security_errors)
 
         if not self.file_manager.ensure_directory(self.install_component_subdir):
-            errors.append(f"Could not create install directory: {self.install_component_subdir}")
+            errors.append(get_string("component.prereq.create_install_dir_error", self.install_component_subdir))
 
         return len(errors) == 0, errors
     
@@ -129,7 +130,7 @@ class Component(ABC):
         try:
             return self._install(config)
         except Exception as e:
-            self.logger.exception(f"Unexpected error during {repr(self)} installation: {e}")
+            self.logger.exception(get_string("component.install.unexpected_error", repr(self), e))
             return False
 
     @abstractmethod
@@ -156,19 +157,19 @@ class Component(ABC):
         # Copy framework files
         success_count = 0
         for source, target in files_to_install:
-            self.logger.debug(f"Copying {source.name} to {target}")
+            self.logger.debug(get_string("component.install.copying", source.name, target))
 
             if self.file_manager.copy_file(source, target):
                 success_count += 1
-                self.logger.debug(f"Successfully copied {source.name}")
+                self.logger.debug(get_string("component.install.copy_success", source.name))
             else:
-                self.logger.error(f"Failed to copy {source.name}")
+                self.logger.error(get_string("component.install.copy_failed", source.name))
 
         if success_count != len(files_to_install):
-            self.logger.error(f"Only {success_count}/{len(files_to_install)} files copied successfully")
+            self.logger.error(get_string("component.install.copy_summary_error", success_count, len(files_to_install)))
             return False
 
-        self.logger.success(f"{repr(self)} component installed successfully ({success_count} files)")
+        self.logger.success(get_string("component.install.success", repr(self), success_count))
 
         return self._post_install()
 
@@ -260,11 +261,11 @@ class Component(ABC):
         # Check if all files exist
         for _, target in self.get_files_to_install():
             if not target.exists():
-                errors.append(f"Missing file: {target}")
+                errors.append(get_string("component.validate.missing_file", target))
         
         # Check version in settings
         if not self.get_installed_version():
-            errors.append("Component not registered in settings.json")
+            errors.append(get_string("component.validate.not_registered"))
         
         return len(errors) == 0, errors
     
@@ -320,11 +321,11 @@ class Component(ABC):
 
         try:
             if not directory.exists():
-                self.logger.warning(f"Source directory not found: {directory}")
+                self.logger.warning(get_string("component.discover.source_dir_not_found", directory))
                 return []
 
             if not directory.is_dir():
-                self.logger.warning(f"Source path is not a directory: {directory}")
+                self.logger.warning(get_string("component.discover.source_not_a_dir", directory))
                 return []
 
             # Discover files with the specified extension
@@ -338,17 +339,17 @@ class Component(ABC):
             # Sort for consistent ordering
             files.sort()
 
-            self.logger.debug(f"Discovered {len(files)} {extension} files in {directory}")
+            self.logger.debug(get_string("component.discover.discovered_files", len(files), extension, directory))
             if files:
-                self.logger.debug(f"Files found: {files}")
+                self.logger.debug(get_string("component.discover.files_found", files))
 
             return files
 
         except PermissionError:
-            self.logger.error(f"Permission denied accessing directory: {directory}")
+            self.logger.error(get_string("component.discover.permission_denied", directory))
             return []
         except Exception as e:
-            self.logger.error(f"Error discovering files in {directory}: {e}")
+            self.logger.error(get_string("component.discover.error", directory, e))
             return []
     
     def __str__(self) -> str:

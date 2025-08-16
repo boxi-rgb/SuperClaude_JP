@@ -7,6 +7,7 @@ import inspect
 from typing import Dict, List, Set, Optional, Type
 from pathlib import Path
 from ..base.component import Component
+from ..utils.localization import get_string
 
 
 class ComponentRegistry:
@@ -96,10 +97,10 @@ class ComponentRegistry:
                         self.component_instances[component_name] = instance
                         
                     except Exception as e:
-                        print(f"Warning: Could not instantiate component {name}: {e}")
+                        print(get_string("registry.error.instantiate", name, e))
         
         except Exception as e:
-            print(f"Warning: Could not load component module {module_name}: {e}")
+            print(get_string("registry.error.load_module", module_name, e))
     
     def _build_dependency_graph(self) -> None:
         """Build dependency graph for all discovered components"""
@@ -108,7 +109,7 @@ class ComponentRegistry:
                 dependencies = instance.get_dependencies()
                 self.dependency_graph[name] = set(dependencies)
             except Exception as e:
-                print(f"Warning: Could not get dependencies for {name}: {e}")
+                print(get_string("registry.error.get_deps", name, e))
                 self.dependency_graph[name] = set()
     
     def get_component_class(self, component_name: str) -> Optional[Type[Component]]:
@@ -144,7 +145,7 @@ class ComponentRegistry:
                 try:
                     return component_class(install_dir)
                 except Exception as e:
-                    print(f"Error creating component instance {component_name}: {e}")
+                    print(get_string("registry.error.create_instance", component_name, e))
                     return None
         
         return self.component_instances.get(component_name)
@@ -201,10 +202,10 @@ class ComponentRegistry:
                 return
                 
             if name in resolving:
-                raise ValueError(f"Circular dependency detected involving {name}")
+                raise ValueError(get_string("registry.error.circular_dependency", name))
                 
             if name not in self.dependency_graph:
-                raise ValueError(f"Unknown component: {name}")
+                raise ValueError(get_string("registry.error.unknown_component", name))
                 
             resolving.add(name)
             
@@ -268,7 +269,7 @@ class ComponentRegistry:
         for name, deps in self.dependency_graph.items():
             missing_deps = deps - all_components
             if missing_deps:
-                errors.append(f"Component {name} has missing dependencies: {missing_deps}")
+                errors.append(get_string("registry.error.missing_deps", name, missing_deps))
         
         # Check for circular dependencies
         for name in all_components:
@@ -334,7 +335,7 @@ class ComponentRegistry:
             
             if not current_level:
                 # This shouldn't happen if dependency graph is valid
-                raise ValueError("Circular dependency detected in installation order calculation")
+                raise ValueError(get_string("registry.error.circular_dependency_order"))
             
             levels.append(current_level)
             remaining -= set(current_level)
@@ -360,7 +361,7 @@ class ComponentRegistry:
             if instance:
                 instances[name] = instance
             else:
-                print(f"Warning: Could not create instance for component {name}")
+                print(get_string("registry.error.create_instance_warning", name))
         
         return instances
     
