@@ -10,6 +10,7 @@ from typing import Dict, Any, Optional, List
 from pathlib import Path
 from datetime import datetime
 import copy
+from ..utils.localization import get_string
 
 
 class SettingsManager:
@@ -41,7 +42,7 @@ class SettingsManager:
             with open(self.settings_file, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except (json.JSONDecodeError, IOError) as e:
-            raise ValueError(f"Could not load settings from {self.settings_file}: {e}")
+            raise ValueError(get_string("settings.error.load_settings", self.settings_file, e))
     
     def save_settings(self, settings: Dict[str, Any], create_backup: bool = True) -> None:
         """
@@ -63,7 +64,7 @@ class SettingsManager:
             with open(self.settings_file, 'w', encoding='utf-8') as f:
                 json.dump(settings, f, indent=2, ensure_ascii=False, sort_keys=True)
         except IOError as e:
-            raise ValueError(f"Could not save settings to {self.settings_file}: {e}")
+            raise ValueError(get_string("settings.error.save_settings", self.settings_file, e))
     
     def load_metadata(self) -> Dict[str, Any]:
         """
@@ -79,7 +80,7 @@ class SettingsManager:
             with open(self.metadata_file, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except (json.JSONDecodeError, IOError) as e:
-            raise ValueError(f"Could not load metadata from {self.metadata_file}: {e}")
+            raise ValueError(get_string("settings.error.load_metadata", self.metadata_file, e))
     
     def save_metadata(self, metadata: Dict[str, Any]) -> None:
         """
@@ -96,7 +97,7 @@ class SettingsManager:
             with open(self.metadata_file, 'w', encoding='utf-8') as f:
                 json.dump(metadata, f, indent=2, ensure_ascii=False, sort_keys=True)
         except IOError as e:
-            raise ValueError(f"Could not save metadata to {self.metadata_file}: {e}")
+            raise ValueError(get_string("settings.error.save_metadata", self.metadata_file, e))
 
     def merge_metadata(self, modifications: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -415,7 +416,7 @@ class SettingsManager:
             Path to backup file
         """
         if not self.settings_file.exists():
-            raise ValueError("Cannot backup non-existent settings file")
+            raise ValueError(get_string("settings.error.backup_nonexistent"))
         
         # Create backup directory
         self.backup_dir.mkdir(parents=True, exist_ok=True)

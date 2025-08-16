@@ -17,6 +17,7 @@ from ..utils.ui import (
     display_warning, Menu, confirm, ProgressBar, Colors
 )
 from ..utils.logger import get_logger
+from ..utils.localization import get_string
 from .. import DEFAULT_INSTALL_DIR, PROJECT_ROOT
 from . import OperationBase
 
@@ -34,8 +35,8 @@ def register_parser(subparsers, global_parser=None) -> argparse.ArgumentParser:
     
     parser = subparsers.add_parser(
         "uninstall",
-        help="Remove SuperClaude framework installation",
-        description="Uninstall SuperClaude Framework components",
+        help=get_string("uninstall.parser.help"),
+        description=get_string("uninstall.parser.description"),
         epilog="""
 Examples:
   SuperClaude uninstall                    # Interactive uninstall
@@ -52,39 +53,39 @@ Examples:
         "--components",
         type=str,
         nargs="+",
-        help="Specific components to uninstall"
+        help=get_string("uninstall.parser.components_help")
     )
     
     parser.add_argument(
         "--complete",
         action="store_true",
-        help="Complete uninstall (remove all files and directories)"
+        help=get_string("uninstall.parser.complete_help")
     )
     
     # Data preservation options
     parser.add_argument(
         "--keep-backups",
         action="store_true",
-        help="Keep backup files during uninstall"
+        help=get_string("uninstall.parser.keep_backups_help")
     )
     
     parser.add_argument(
         "--keep-logs",
         action="store_true",
-        help="Keep log files during uninstall"
+        help=get_string("uninstall.parser.keep_logs_help")
     )
     
     parser.add_argument(
         "--keep-settings",
         action="store_true",
-        help="Keep user settings during uninstall"
+        help=get_string("uninstall.parser.keep_settings_help")
     )
     
     # Safety options
     parser.add_argument(
         "--no-confirm",
         action="store_true",
-        help="Skip confirmation prompts (use with caution)"
+        help=get_string("uninstall.parser.no_confirm_help")
     )
     
     return parser
@@ -131,26 +132,26 @@ def get_installation_info(install_dir: Path) -> Dict[str, Any]:
 
 def display_uninstall_info(info: Dict[str, Any]) -> None:
     """Display installation information before uninstall"""
-    print(f"\n{Colors.CYAN}{Colors.BRIGHT}Current Installation{Colors.RESET}")
+    print(f"\n{Colors.CYAN}{Colors.BRIGHT}{get_string('uninstall.info.header')}{Colors.RESET}")
     print("=" * 50)
     
     if not info["exists"]:
-        print(f"{Colors.YELLOW}No SuperClaude installation found{Colors.RESET}")
+        print(f"{Colors.YELLOW}{get_string('uninstall.info.no_installation')}{Colors.RESET}")
         return
     
-    print(f"{Colors.BLUE}Installation Directory:{Colors.RESET} {info['install_dir']}")
+    print(f"{Colors.BLUE}{get_string('uninstall.info.directory')}{Colors.RESET} {info['install_dir']}")
     
     if info["components"]:
-        print(f"{Colors.BLUE}Installed Components:{Colors.RESET}")
+        print(f"{Colors.BLUE}{get_string('uninstall.info.components')}{Colors.RESET}")
         for component, version in info["components"].items():
             print(f"  {component}: v{version}")
     
-    print(f"{Colors.BLUE}Files:{Colors.RESET} {len(info['files'])}")
-    print(f"{Colors.BLUE}Directories:{Colors.RESET} {len(info['directories'])}")
+    print(f"{Colors.BLUE}{get_string('uninstall.info.files')}{Colors.RESET} {len(info['files'])}")
+    print(f"{Colors.BLUE}{get_string('uninstall.info.directories')}{Colors.RESET} {len(info['directories'])}")
     
     if info["total_size"] > 0:
         from ..utils.ui import format_size
-        print(f"{Colors.BLUE}Total Size:{Colors.RESET} {format_size(info['total_size'])}")
+        print(f"{Colors.BLUE}{get_string('uninstall.info.total_size')}{Colors.RESET} {format_size(info['total_size'])}")
     
     print()
 
@@ -168,7 +169,7 @@ def get_components_to_uninstall(args: argparse.Namespace, installed_components: 
         # Validate that specified components are installed
         invalid_components = [c for c in args.components if c not in installed_components]
         if invalid_components:
-            logger.error(f"Components not installed: {invalid_components}")
+            logger.error(get_string("uninstall.components.not_installed", invalid_components))
             return None
         return args.components
     
@@ -181,16 +182,16 @@ def interactive_uninstall_selection(installed_components: Dict[str, str]) -> Opt
     if not installed_components:
         return []
     
-    print(f"\n{Colors.CYAN}Uninstall Options:{Colors.RESET}")
+    print(f"\n{Colors.CYAN}{get_string('uninstall.selection.header')}{Colors.RESET}")
     
     # Create menu options
     preset_options = [
-        "Complete Uninstall (remove everything)",
-        "Remove Specific Components",
-        "Cancel Uninstall"
+        get_string("uninstall.selection.complete"),
+        get_string("uninstall.selection.specific"),
+        get_string("uninstall.selection.cancel")
     ]
     
-    menu = Menu("Select uninstall option:", preset_options)
+    menu = Menu(get_string("uninstall.selection.prompt"), preset_options)
     choice = menu.display()
     
     if choice == -1 or choice == 2:  # Cancelled
@@ -205,7 +206,7 @@ def interactive_uninstall_selection(installed_components: Dict[str, str]) -> Opt
             component_options.append(f"{component} (v{version})")
             component_names.append(component)
         
-        component_menu = Menu("Select components to uninstall:", component_options, multi_select=True)
+        component_menu = Menu(get_string("uninstall.selection.select_components"), component_options, multi_select=True)
         selections = component_menu.display()
         
         if not selections:
@@ -218,13 +219,13 @@ def interactive_uninstall_selection(installed_components: Dict[str, str]) -> Opt
 
 def display_uninstall_plan(components: List[str], args: argparse.Namespace, info: Dict[str, Any]) -> None:
     """Display uninstall plan"""
-    print(f"\n{Colors.CYAN}{Colors.BRIGHT}Uninstall Plan{Colors.RESET}")
+    print(f"\n{Colors.CYAN}{Colors.BRIGHT}{get_string('uninstall.plan.header')}{Colors.RESET}")
     print("=" * 50)
     
-    print(f"{Colors.BLUE}Installation Directory:{Colors.RESET} {info['install_dir']}")
+    print(f"{Colors.BLUE}{get_string('uninstall.info.directory')}{Colors.RESET} {info['install_dir']}")
     
     if components:
-        print(f"{Colors.BLUE}Components to remove:{Colors.RESET}")
+        print(f"{Colors.BLUE}{get_string('uninstall.plan.components_to_remove')}{Colors.RESET}")
         for i, component_name in enumerate(components, 1):
             version = info["components"].get(component_name, "unknown")
             print(f"  {i}. {component_name} (v{version})")
@@ -232,17 +233,17 @@ def display_uninstall_plan(components: List[str], args: argparse.Namespace, info
     # Show what will be preserved
     preserved = []
     if args.keep_backups:
-        preserved.append("backup files")
+        preserved.append(get_string("uninstall.plan.backup_files"))
     if args.keep_logs:
-        preserved.append("log files")
+        preserved.append(get_string("uninstall.plan.log_files"))
     if args.keep_settings:
-        preserved.append("user settings")
+        preserved.append(get_string("uninstall.plan.user_settings"))
     
     if preserved:
-        print(f"{Colors.GREEN}Will preserve:{Colors.RESET} {', '.join(preserved)}")
+        print(f"{Colors.GREEN}{get_string('uninstall.plan.preserving')}{Colors.RESET} {', '.join(preserved)}")
     
     if args.complete:
-        print(f"{Colors.RED}WARNING: Complete uninstall will remove all SuperClaude files{Colors.RESET}")
+        print(f"{Colors.RED}{get_string('uninstall.plan.warning_complete')}{Colors.RESET}")
     
     print()
 
@@ -262,7 +263,7 @@ def create_uninstall_backup(install_dir: Path, components: List[str]) -> Optiona
         
         import tarfile
         
-        logger.info(f"Creating uninstall backup: {backup_path}")
+        logger.info(get_string("uninstall.backup.creating", backup_path))
         
         with tarfile.open(backup_path, "w:gz") as tar:
             for component in components:
@@ -271,11 +272,11 @@ def create_uninstall_backup(install_dir: Path, components: List[str]) -> Optiona
                 # This would need component-specific backup logic
                 pass
         
-        logger.success(f"Backup created: {backup_path}")
+        logger.success(get_string("uninstall.backup.success", backup_path))
         return backup_path
         
     except Exception as e:
-        logger.warning(f"Could not create backup: {e}")
+        logger.warning(get_string("uninstall.backup.error", e))
         return None
 
 
@@ -295,39 +296,39 @@ def perform_uninstall(components: List[str], args: argparse.Namespace, info: Dic
         # Setup progress tracking
         progress = ProgressBar(
             total=len(components),
-            prefix="Uninstalling: ",
+            prefix=get_string("uninstall.perform.prefix"),
             suffix=""
         )
         
         # Uninstall components
-        logger.info(f"Uninstalling {len(components)} components...")
+        logger.info(get_string("uninstall.perform.uninstalling", len(components)))
         
         uninstalled_components = []
         failed_components = []
         
         for i, component_name in enumerate(components):
-            progress.update(i, f"Uninstalling {component_name}")
+            progress.update(i, get_string("uninstall.perform.component_uninstalling", component_name))
             
             try:
                 if component_name in component_instances:
                     instance = component_instances[component_name]
                     if instance.uninstall():
                         uninstalled_components.append(component_name)
-                        logger.debug(f"Successfully uninstalled {component_name}")
+                        logger.debug(get_string("uninstall.perform.success", component_name))
                     else:
                         failed_components.append(component_name)
-                        logger.error(f"Failed to uninstall {component_name}")
+                        logger.error(get_string("uninstall.perform.failed", component_name))
                 else:
-                    logger.warning(f"Component {component_name} not found, skipping")
+                    logger.warning(get_string("uninstall.perform.not_found", component_name))
                     
             except Exception as e:
-                logger.error(f"Error uninstalling {component_name}: {e}")
+                logger.error(get_string("uninstall.perform.error", component_name, e))
                 failed_components.append(component_name)
             
-            progress.update(i + 1, f"Processed {component_name}")
+            progress.update(i + 1, get_string("uninstall.perform.processed", component_name))
             time.sleep(0.1)  # Brief pause for visual effect
         
-        progress.finish("Uninstall complete")
+        progress.finish(get_string("uninstall.perform.complete"))
         
         # Handle complete uninstall cleanup
         if args.complete:
@@ -337,18 +338,18 @@ def perform_uninstall(components: List[str], args: argparse.Namespace, info: Dic
         duration = time.time() - start_time
         
         if failed_components:
-            logger.warning(f"Uninstall completed with some failures in {duration:.1f} seconds")
-            logger.warning(f"Failed components: {', '.join(failed_components)}")
+            logger.warning(get_string("uninstall.perform.failures", f"{duration:.1f}"))
+            logger.warning(get_string("uninstall.perform.failed_components", ', '.join(failed_components)))
         else:
-            logger.success(f"Uninstall completed successfully in {duration:.1f} seconds")
+            logger.success(get_string("uninstall.perform.success_duration", f"{duration:.1f}"))
         
         if uninstalled_components:
-            logger.info(f"Uninstalled components: {', '.join(uninstalled_components)}")
+            logger.info(get_string("uninstall.perform.uninstalled_components", ', '.join(uninstalled_components)))
         
         return len(failed_components) == 0
         
     except Exception as e:
-        logger.exception(f"Unexpected error during uninstall: {e}")
+        logger.exception(get_string("uninstall.perform.unexpected_error", e))
         return False
 
 
@@ -372,9 +373,9 @@ def cleanup_installation_directory(install_dir: Path, args: argparse.Namespace) 
         if args.complete and not preserve_patterns:
             # Complete removal
             if file_manager.remove_directory(install_dir):
-                logger.info(f"Removed installation directory: {install_dir}")
+                logger.info(get_string("uninstall.cleanup.removed_dir", install_dir))
             else:
-                logger.warning(f"Could not remove installation directory: {install_dir}")
+                logger.warning(get_string("uninstall.cleanup.remove_error", install_dir))
         else:
             # Selective removal
             for item in install_dir.iterdir():
@@ -392,7 +393,7 @@ def cleanup_installation_directory(install_dir: Path, args: argparse.Namespace) 
                         file_manager.remove_directory(item)
                         
     except Exception as e:
-        logger.error(f"Error during cleanup: {e}")
+        logger.error(get_string("uninstall.cleanup.error", e))
 
 
 def run(args: argparse.Namespace) -> int:
@@ -405,9 +406,9 @@ def run(args: argparse.Namespace) -> int:
     actual_dir = args.install_dir.resolve()
 
     if not str(actual_dir).startswith(str(expected_home)):
-        print(f"\n[✗] Installation must be inside your user profile directory.")
-        print(f"    Expected prefix: {expected_home}")
-        print(f"    Provided path:   {actual_dir}")
+        print(f"\n[✗] {get_string('install.run.invalid_path_header')}")
+        print(f"    {get_string('install.run.invalid_path_expected', expected_home)}")
+        print(f"    {get_string('install.run.invalid_path_provided', actual_dir)}")
         sys.exit(1)
     
     try:
@@ -421,8 +422,8 @@ def run(args: argparse.Namespace) -> int:
         # Display header
         if not args.quiet:
             display_header(
-                "SuperClaude Uninstall v3.0",
-                "Removing SuperClaude framework components"
+                get_string("uninstall.run.header"),
+                get_string("uninstall.run.subtitle")
             )
         
         # Get installation information
@@ -434,16 +435,16 @@ def run(args: argparse.Namespace) -> int:
         
         # Check if SuperClaude is installed
         if not info["exists"]:
-            logger.warning(f"No SuperClaude installation found in {args.install_dir}")
+            logger.warning(get_string("uninstall.run.not_found", args.install_dir))
             return 0
         
         # Get components to uninstall
         components = get_components_to_uninstall(args, info["components"])
         if components is None:
-            logger.info("Uninstall cancelled by user")
+            logger.info(get_string("uninstall.run.cancelled"))
             return 0
         elif not components:
-            logger.info("No components selected for uninstall")
+            logger.info(get_string("uninstall.run.no_components_selected"))
             return 0
         
         # Display uninstall plan
@@ -453,12 +454,12 @@ def run(args: argparse.Namespace) -> int:
         # Confirmation
         if not args.no_confirm and not args.yes:
             if args.complete:
-                warning_msg = "This will completely remove SuperClaude. Continue?"
+                warning_msg = get_string("uninstall.run.confirm_complete")
             else:
-                warning_msg = f"This will remove {len(components)} component(s). Continue?"
+                warning_msg = get_string("uninstall.run.confirm_specific", len(components))
             
             if not confirm(warning_msg, default=False):
-                logger.info("Uninstall cancelled by user")
+                logger.info(get_string("uninstall.run.cancelled"))
                 return 0
         
         # Create backup if not dry run and not keeping backups
@@ -470,21 +471,21 @@ def run(args: argparse.Namespace) -> int:
         
         if success:
             if not args.quiet:
-                display_success("SuperClaude uninstall completed successfully!")
+                display_success(get_string("uninstall.run.success"))
                 
                 if not args.dry_run:
-                    print(f"\n{Colors.CYAN}Uninstall complete:{Colors.RESET}")
-                    print(f"SuperClaude has been removed from {args.install_dir}")
+                    print(f"\n{Colors.CYAN}{get_string('uninstall.run.complete_header')}{Colors.RESET}")
+                    print(get_string("uninstall.run.removed_from", args.install_dir))
                     if not args.complete:
-                        print(f"You can reinstall anytime using 'SuperClaude install'")
+                        print(get_string("uninstall.run.reinstall_prompt"))
                     
             return 0
         else:
-            display_error("Uninstall completed with some failures. Check logs for details.")
+            display_error(get_string("uninstall.run.failures"))
             return 1
             
     except KeyboardInterrupt:
-        print(f"\n{Colors.YELLOW}Uninstall cancelled by user{Colors.RESET}")
+        print(f"\n{Colors.YELLOW}{get_string('uninstall.run.cancelled')}{Colors.RESET}")
         return 130
     except Exception as e:
         return operation.handle_operation_error("uninstall", e)

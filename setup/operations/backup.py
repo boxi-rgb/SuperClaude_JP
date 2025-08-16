@@ -18,6 +18,7 @@ from ..utils.ui import (
     display_warning, Menu, confirm, ProgressBar, Colors, format_size
 )
 from ..utils.logger import get_logger
+from ..utils.localization import get_string
 from .. import DEFAULT_INSTALL_DIR
 from . import OperationBase
 
@@ -35,8 +36,8 @@ def register_parser(subparsers, global_parser=None) -> argparse.ArgumentParser:
     
     parser = subparsers.add_parser(
         "backup",
-        help="Backup and restore SuperClaude installations",
-        description="Create, list, restore, and manage SuperClaude installation backups",
+        help=get_string("backup.parser.help"),
+        description=get_string("backup.parser.description"),
         epilog="""
 Examples:
   SuperClaude backup --create               # Create new backup
@@ -56,59 +57,59 @@ Examples:
     operation_group.add_argument(
         "--create",
         action="store_true",
-        help="Create a new backup"
+        help=get_string("backup.parser.create_help")
     )
     
     operation_group.add_argument(
         "--list",
         action="store_true",
-        help="List available backups"
+        help=get_string("backup.parser.list_help")
     )
     
     operation_group.add_argument(
         "--restore",
         nargs="?",
         const="interactive",
-        help="Restore from backup (optionally specify backup file)"
+        help=get_string("backup.parser.restore_help")
     )
     
     operation_group.add_argument(
         "--info",
         type=str,
-        help="Show information about a specific backup file"
+        help=get_string("backup.parser.info_help")
     )
     
     operation_group.add_argument(
         "--cleanup",
         action="store_true",
-        help="Clean up old backup files"
+        help=get_string("backup.parser.cleanup_help")
     )
     
     # Backup options
     parser.add_argument(
         "--backup-dir",
         type=Path,
-        help="Backup directory (default: <install-dir>/backups)"
+        help=get_string("backup.parser.backup_dir_help")
     )
     
     parser.add_argument(
         "--name",
         type=str,
-        help="Custom backup name (for --create)"
+        help=get_string("backup.parser.name_help")
     )
     
     parser.add_argument(
         "--compress",
         choices=["none", "gzip", "bzip2"],
         default="gzip",
-        help="Compression method (default: gzip)"
+        help=get_string("backup.parser.compress_help")
     )
     
     # Restore options
     parser.add_argument(
         "--overwrite",
         action="store_true",
-        help="Overwrite existing files during restore"
+        help=get_string("backup.parser.overwrite_help")
     )
     
     # Cleanup options
@@ -116,13 +117,13 @@ Examples:
         "--keep",
         type=int,
         default=5,
-        help="Number of backups to keep during cleanup (default: 5)"
+        help=get_string("backup.parser.keep_help")
     )
     
     parser.add_argument(
         "--older-than",
         type=int,
-        help="Remove backups older than N days"
+        help=get_string("backup.parser.older_than_help")
     )
     
     return parser
@@ -210,21 +211,21 @@ def list_backups(backup_dir: Path) -> List[Dict[str, Any]]:
 
 def display_backup_list(backups: List[Dict[str, Any]]) -> None:
     """Display list of available backups"""
-    print(f"\n{Colors.CYAN}{Colors.BRIGHT}Available Backups{Colors.RESET}")
+    print(f"\n{Colors.CYAN}{Colors.BRIGHT}{get_string('backup.list.header')}{Colors.RESET}")
     print("=" * 70)
     
     if not backups:
-        print(f"{Colors.YELLOW}No backups found{Colors.RESET}")
+        print(f"{Colors.YELLOW}{get_string('backup.list.no_backups')}{Colors.RESET}")
         return
     
-    print(f"{'Name':<30} {'Size':<10} {'Created':<20} {'Files':<8}")
+    print(f"{get_string('backup.list.name_header'):<30} {get_string('backup.list.size_header'):<10} {get_string('backup.list.created_header'):<20} {get_string('backup.list.files_header'):<8}")
     print("-" * 70)
     
     for backup in backups:
         name = backup["path"].name
-        size = format_size(backup["size"]) if backup["size"] > 0 else "unknown"
-        created = backup["created"].strftime("%Y-%m-%d %H:%M") if backup["created"] else "unknown"
-        files = str(backup.get("files", "unknown"))
+        size = format_size(backup["size"]) if backup["size"] > 0 else get_string("backup.list.unknown")
+        created = backup["created"].strftime("%Y-%m-%d %H:%M") if backup["created"] else get_string("backup.list.unknown")
+        files = str(backup.get("files", get_string("backup.list.unknown")))
         
         print(f"{name:<30} {size:<10} {created:<20} {files:<8}")
     
@@ -238,7 +239,7 @@ def create_backup_metadata(install_dir: Path) -> Dict[str, Any]:
         "created": datetime.now().isoformat(),
         "install_dir": str(install_dir),
         "components": {},
-        "framework_version": "unknown"
+        "framework_version": get_string("backup.list.unknown")
     }
     
     try:
@@ -247,7 +248,7 @@ def create_backup_metadata(install_dir: Path) -> Dict[str, Any]:
         framework_config = settings_manager.get_metadata_setting("framework")
         
         if framework_config:
-            metadata["framework_version"] = framework_config.get("version", "unknown")
+            metadata["framework_version"] = framework_config.get("version", get_string("backup.list.unknown"))
             
             if "components" in framework_config:
                 for component_name in framework_config["components"]:
@@ -267,7 +268,7 @@ def create_backup(args: argparse.Namespace) -> bool:
     try:
         # Check if installation exists
         if not check_installation_exists(args.install_dir):
-            logger.error(f"No SuperClaude installation found in {args.install_dir}")
+            logger.error(get_string("backup.create.no_installation", args.install_dir))
             return False
         
         # Setup backup directory
@@ -292,7 +293,7 @@ def create_backup(args: argparse.Namespace) -> bool:
             backup_file = backup_dir / f"{backup_name}.tar"
             mode = "w"
         
-        logger.info(f"Creating backup: {backup_file}")
+        logger.info(get_string("backup.create.creating", backup_file))
         
         # Create metadata
         metadata = create_backup_metadata(args.install_dir)
@@ -320,23 +321,23 @@ def create_backup(args: argparse.Namespace) -> bool:
                         files_added += 1
                         
                         if files_added % 10 == 0:
-                            logger.debug(f"Added {files_added} files to backup")
+                            logger.debug(get_string("backup.create.added_files", files_added))
                             
                     except Exception as e:
-                        logger.warning(f"Could not add {item} to backup: {e}")
+                        logger.warning(get_string("backup.create.add_error", item, e))
         
         duration = time.time() - start_time
         file_size = backup_file.stat().st_size
         
-        logger.success(f"Backup created successfully in {duration:.1f} seconds")
-        logger.info(f"Backup file: {backup_file}")
-        logger.info(f"Files archived: {files_added}")
-        logger.info(f"Backup size: {format_size(file_size)}")
+        logger.success(get_string("backup.create.success", f"{duration:.1f}"))
+        logger.info(get_string("backup.create.file", backup_file))
+        logger.info(get_string("backup.create.files_archived", files_added))
+        logger.info(get_string("backup.create.size", format_size(file_size)))
         
         return True
         
     except Exception as e:
-        logger.exception(f"Failed to create backup: {e}")
+        logger.exception(get_string("backup.create.failed", e))
         return False
 
 
@@ -346,16 +347,16 @@ def restore_backup(backup_path: Path, args: argparse.Namespace) -> bool:
     
     try:
         if not backup_path.exists():
-            logger.error(f"Backup file not found: {backup_path}")
+            logger.error(get_string("backup.restore.not_found", backup_path))
             return False
         
         # Check backup file
         info = get_backup_info(backup_path)
         if "error" in info:
-            logger.error(f"Invalid backup file: {info['error']}")
+            logger.error(get_string("backup.restore.invalid", info['error']))
             return False
         
-        logger.info(f"Restoring from backup: {backup_path}")
+        logger.info(get_string("backup.restore.restoring", backup_path))
         
         # Determine compression
         if backup_path.suffix == ".gz":
@@ -367,7 +368,7 @@ def restore_backup(backup_path: Path, args: argparse.Namespace) -> bool:
         
         # Create backup of current installation if it exists
         if check_installation_exists(args.install_dir) and not args.dry_run:
-            logger.info("Creating backup of current installation before restore")
+            logger.info(get_string("backup.restore.creating_backup"))
             # This would call create_backup internally
         
         # Extract backup
@@ -385,7 +386,7 @@ def restore_backup(backup_path: Path, args: argparse.Namespace) -> bool:
                     
                     # Check if file exists and overwrite flag
                     if target_path.exists() and not args.overwrite:
-                        logger.warning(f"Skipping existing file: {target_path}")
+                        logger.warning(get_string("backup.restore.skipping", target_path))
                         continue
                     
                     # Extract file
@@ -393,40 +394,40 @@ def restore_backup(backup_path: Path, args: argparse.Namespace) -> bool:
                     files_restored += 1
                     
                     if files_restored % 10 == 0:
-                        logger.debug(f"Restored {files_restored} files")
+                        logger.debug(get_string("backup.restore.restored_files", files_restored))
                         
                 except Exception as e:
-                    logger.warning(f"Could not restore {member.name}: {e}")
+                    logger.warning(get_string("backup.restore.error", member.name, e))
         
         duration = time.time() - start_time
         
-        logger.success(f"Restore completed successfully in {duration:.1f} seconds")
-        logger.info(f"Files restored: {files_restored}")
+        logger.success(get_string("backup.restore.success", f"{duration:.1f}"))
+        logger.info(get_string("backup.restore.files_restored", files_restored))
         
         return True
         
     except Exception as e:
-        logger.exception(f"Failed to restore backup: {e}")
+        logger.exception(get_string("backup.restore.failed", e))
         return False
 
 
 def interactive_restore_selection(backups: List[Dict[str, Any]]) -> Optional[Path]:
     """Interactive backup selection for restore"""
     if not backups:
-        print(f"{Colors.YELLOW}No backups available for restore{Colors.RESET}")
+        print(f"{Colors.YELLOW}{get_string('backup.restore.no_backups')}{Colors.RESET}")
         return None
     
-    print(f"\n{Colors.CYAN}Select Backup to Restore:{Colors.RESET}")
+    print(f"\n{Colors.CYAN}{get_string('backup.restore.select_header')}{Colors.RESET}")
     
     # Create menu options
     backup_options = []
     for backup in backups:
         name = backup["path"].name
-        size = format_size(backup["size"]) if backup["size"] > 0 else "unknown"
-        created = backup["created"].strftime("%Y-%m-%d %H:%M") if backup["created"] else "unknown"
+        size = format_size(backup["size"]) if backup["size"] > 0 else get_string("backup.list.unknown")
+        created = backup["created"].strftime("%Y-%m-%d %H:%M") if backup["created"] else get_string("backup.list.unknown")
         backup_options.append(f"{name} ({size}, {created})")
     
-    menu = Menu("Select backup:", backup_options)
+    menu = Menu(get_string("backup.restore.select_prompt"), backup_options)
     choice = menu.display()
     
     if choice == -1 or choice >= len(backups):
@@ -442,13 +443,14 @@ def cleanup_old_backups(backup_dir: Path, args: argparse.Namespace) -> bool:
     try:
         backups = list_backups(backup_dir)
         if not backups:
-            logger.info("No backups found to clean up")
+            logger.info(get_string("backup.cleanup.no_backups"))
             return True
         
         to_remove = []
         
         # Remove by age
         if args.older_than:
+            from datetime import timedelta
             cutoff_date = datetime.now() - timedelta(days=args.older_than)
             for backup in backups:
                 if backup["created"] and backup["created"] < cutoff_date:
@@ -464,22 +466,22 @@ def cleanup_old_backups(backup_dir: Path, args: argparse.Namespace) -> bool:
         to_remove = list({backup["path"]: backup for backup in to_remove}.values())
         
         if not to_remove:
-            logger.info("No backups need to be cleaned up")
+            logger.info(get_string("backup.cleanup.no_backups"))
             return True
         
-        logger.info(f"Cleaning up {len(to_remove)} old backups")
+        logger.info(get_string("backup.cleanup.cleaning_up", len(to_remove)))
         
         for backup in to_remove:
             try:
                 backup["path"].unlink()
-                logger.info(f"Removed backup: {backup['path'].name}")
+                logger.info(get_string("backup.cleanup.removed", backup['path'].name))
             except Exception as e:
-                logger.warning(f"Could not remove {backup['path'].name}: {e}")
+                logger.warning(get_string("backup.cleanup.error", backup['path'].name, e))
         
         return True
         
     except Exception as e:
-        logger.exception(f"Failed to cleanup backups: {e}")
+        logger.exception(get_string("backup.cleanup.failed", e))
         return False
 
 
@@ -493,9 +495,9 @@ def run(args: argparse.Namespace) -> int:
     actual_dir = args.install_dir.resolve()
 
     if not str(actual_dir).startswith(str(expected_home)):
-        print(f"\n[✗] Installation must be inside your user profile directory.")
-        print(f"    Expected prefix: {expected_home}")
-        print(f"    Provided path:   {actual_dir}")
+        print(f"\n[✗] {get_string('install.run.invalid_path_header')}")
+        print(f"    {get_string('install.run.invalid_path_expected', expected_home)}")
+        print(f"    {get_string('install.run.invalid_path_provided', actual_dir)}")
         sys.exit(1)
     
     try:
@@ -509,8 +511,8 @@ def run(args: argparse.Namespace) -> int:
         # Display header
         if not args.quiet:
             display_header(
-                "SuperClaude Backup v3.0",
-                "Backup and restore SuperClaude installations"
+                get_string("backup.run.header"),
+                get_string("backup.run.subtitle")
             )
         
         backup_dir = get_backup_directory(args)
@@ -530,7 +532,7 @@ def run(args: argparse.Namespace) -> int:
                 backups = list_backups(backup_dir)
                 backup_path = interactive_restore_selection(backups)
                 if not backup_path:
-                    logger.info("Restore cancelled by user")
+                    logger.info(get_string("backup.run.restore_cancelled"))
                     return 0
             else:
                 # Specific backup file
@@ -547,21 +549,21 @@ def run(args: argparse.Namespace) -> int:
             
             info = get_backup_info(backup_path)
             if info["exists"]:
-                print(f"\n{Colors.CYAN}Backup Information:{Colors.RESET}")
-                print(f"File: {info['path']}")
-                print(f"Size: {format_size(info['size'])}")
-                print(f"Created: {info['created']}")
-                print(f"Files: {info.get('files', 'unknown')}")
+                print(f"\n{Colors.CYAN}{get_string('backup.run.info_header')}{Colors.RESET}")
+                print(f"{get_string('backup.run.info_file')} {info['path']}")
+                print(f"{get_string('backup.run.info_size')} {format_size(info['size'])}")
+                print(f"{get_string('backup.run.info_created')} {info['created']}")
+                print(f"{get_string('backup.run.info_files')} {info.get('files', get_string('backup.list.unknown'))}")
                 
                 if info["metadata"]:
                     metadata = info["metadata"]
-                    print(f"Framework Version: {metadata.get('framework_version', 'unknown')}")
+                    print(f"{get_string('backup.run.info_framework_version')} {metadata.get('framework_version', get_string('backup.list.unknown'))}")
                     if metadata.get("components"):
-                        print("Components:")
+                        print(f"{get_string('backup.run.info_components')}")
                         for comp, ver in metadata["components"].items():
                             print(f"  {comp}: v{ver}")
             else:
-                logger.error(f"Backup file not found: {backup_path}")
+                logger.error(get_string("backup.restore.not_found", backup_path))
                 success = False
             success = True
             
@@ -569,21 +571,21 @@ def run(args: argparse.Namespace) -> int:
             success = cleanup_old_backups(backup_dir, args)
         
         else:
-            logger.error("No backup operation specified")
+            logger.error(get_string("backup.run.no_op"))
             success = False
         
         if success:
             if not args.quiet and args.create:
-                display_success("Backup operation completed successfully!")
+                display_success(get_string("backup.run.create_success"))
             elif not args.quiet and args.restore:
-                display_success("Restore operation completed successfully!")
+                display_success(get_string("backup.run.restore_success"))
             return 0
         else:
-            display_error("Backup operation failed. Check logs for details.")
+            display_error(get_string("backup.run.failed"))
             return 1
             
     except KeyboardInterrupt:
-        print(f"\n{Colors.YELLOW}Backup operation cancelled by user{Colors.RESET}")
+        print(f"\n{Colors.YELLOW}{get_string('backup.run.cancelled')}{Colors.RESET}")
         return 130
     except Exception as e:
         return operation.handle_operation_error("backup", e)

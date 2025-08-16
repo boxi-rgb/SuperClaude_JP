@@ -9,6 +9,7 @@ from pathlib import Path
 
 from ..base.component import Component
 from ..utils.ui import display_info, display_warning
+from ..utils.localization import get_string
 
 
 class MCPComponent(Component):
@@ -53,7 +54,7 @@ class MCPComponent(Component):
         return {
             "name": "mcp",
             "version": "3.0.0",
-            "description": "MCP server integration (Context7, Sequential, Magic, Playwright)",
+            "description": get_string("mcp.component.description"),
             "category": "integration"
         }
     
@@ -71,20 +72,20 @@ class MCPComponent(Component):
                 shell=(sys.platform == "win32")
             )
             if result.returncode != 0:
-                errors.append("Node.js not found - required for MCP servers")
+                errors.append(get_string("mcp.validate.no_node"))
             else:
                 version = result.stdout.strip()
-                self.logger.debug(f"Found Node.js {version}")
+                self.logger.debug(get_string("mcp.validate.found_node", version))
                 
                 # Check version (require 18+)
                 try:
                     version_num = int(version.lstrip('v').split('.')[0])
                     if version_num < 18:
-                        errors.append(f"Node.js version {version} found, but version 18+ required")
+                        errors.append(get_string("mcp.validate.node_version_error", version))
                 except:
-                    self.logger.warning(f"Could not parse Node.js version: {version}")
+                    self.logger.warning(get_string("mcp.validate.parse_node_version_error", version))
         except (subprocess.TimeoutExpired, FileNotFoundError):
-            errors.append("Node.js not found - required for MCP servers")
+            errors.append(get_string("mcp.validate.no_node"))
         
         # Check if Claude CLI is available
         try:
@@ -96,12 +97,12 @@ class MCPComponent(Component):
                 shell=(sys.platform == "win32")
             )
             if result.returncode != 0:
-                errors.append("Claude CLI not found - required for MCP server management")
+                errors.append(get_string("mcp.validate.no_claude_cli"))
             else:
                 version = result.stdout.strip()
-                self.logger.debug(f"Found Claude CLI {version}")
+                self.logger.debug(get_string("mcp.validate.found_claude_cli", version))
         except (subprocess.TimeoutExpired, FileNotFoundError):
-            errors.append("Claude CLI not found - required for MCP server management")
+            errors.append(get_string("mcp.validate.no_claude_cli"))
         
         # Check if npm is available
         try:
@@ -113,12 +114,12 @@ class MCPComponent(Component):
                 shell=(sys.platform == "win32")
             )
             if result.returncode != 0:
-                errors.append("npm not found - required for MCP server installation")
+                errors.append(get_string("mcp.validate.no_npm"))
             else:
                 version = result.stdout.strip()
-                self.logger.debug(f"Found npm {version}")
+                self.logger.debug(get_string("mcp.validate.found_npm", version))
         except (subprocess.TimeoutExpired, FileNotFoundError):
-            errors.append("npm not found - required for MCP server installation")
+            errors.append(get_string("mcp.validate.no_npm"))
         
         return len(errors) == 0, errors
     
@@ -155,7 +156,7 @@ class MCPComponent(Component):
             )
             
             if result.returncode != 0:
-                self.logger.warning(f"Could not list MCP servers: {result.stderr}")
+                self.logger.warning(get_string("mcp.status.list_error", result.stderr))
                 return False
             
             # Parse output to check if server is installed
@@ -163,7 +164,7 @@ class MCPComponent(Component):
             return server_name.lower() in output
             
         except (subprocess.TimeoutExpired, subprocess.SubprocessError) as e:
-            self.logger.warning(f"Error checking MCP server status: {e}")
+            self.logger.warning(get_string("mcp.status.check_error", e))
             return False
     
     def _install_mcp_server(self, server_info: Dict[str, Any], config: Dict[str, Any]) -> bool:
@@ -174,35 +175,35 @@ class MCPComponent(Component):
         command = "npx"
         
         try:
-            self.logger.info(f"Installing MCP server: {server_name}")
+            self.logger.info(get_string("mcp.install.installing", server_name))
             
             # Check if already installed
             if self._check_mcp_server_installed(server_name):
-                self.logger.info(f"MCP server {server_name} already installed")
+                self.logger.info(get_string("mcp.install.already_installed", server_name))
                 return True
             
             # Handle API key requirements
             if "api_key_env" in server_info:
                 api_key_env = server_info["api_key_env"]
-                api_key_desc = server_info.get("api_key_description", f"API key for {server_name}")
+                api_key_desc = server_info.get("api_key_description", get_string("mcp.install.api_key_default_desc", server_name))
                 
                 if not config.get("dry_run", False):
-                    display_info(f"MCP server '{server_name}' requires an API key")
-                    display_info(f"Environment variable: {api_key_env}")
-                    display_info(f"Description: {api_key_desc}")
+                    display_info(get_string("mcp.install.api_key_required", server_name))
+                    display_info(get_string("mcp.install.api_key_env", api_key_env))
+                    display_info(get_string("mcp.install.api_key_desc", api_key_desc))
                     
                     # Check if API key is already set
                     import os
                     if not os.getenv(api_key_env):
-                        display_warning(f"API key {api_key_env} not found in environment")
-                        self.logger.warning(f"Proceeding without {api_key_env} - server may not function properly")
+                        display_warning(get_string("mcp.install.api_key_not_found", api_key_env))
+                        self.logger.warning(get_string("mcp.install.api_key_proceeding_warning", api_key_env))
             
             # Install using Claude CLI
             if config.get("dry_run"):
-                self.logger.info(f"Would install MCP server (user scope): claude mcp add -s user {server_name} {command} -y {npm_package}")
+                self.logger.info(get_string("mcp.install.dry_run", server_name, command, npm_package))
                 return True
             
-            self.logger.debug(f"Running: claude mcp add -s user {server_name} {command} -y {npm_package}")
+            self.logger.debug(get_string("mcp.install.running", server_name, command, npm_package))
             
             result = subprocess.run(
                 ["claude", "mcp", "add", "-s", "user", "--", server_name, command, "-y", npm_package],
@@ -213,31 +214,31 @@ class MCPComponent(Component):
             )
             
             if result.returncode == 0:
-                self.logger.success(f"Successfully installed MCP server (user scope): {server_name}")
+                self.logger.success(get_string("mcp.install.success", server_name))
                 return True
             else:
                 error_msg = result.stderr.strip() if result.stderr else "Unknown error"
-                self.logger.error(f"Failed to install MCP server {server_name}: {error_msg}")
+                self.logger.error(get_string("mcp.install.failed", server_name, error_msg))
                 return False
                 
         except subprocess.TimeoutExpired:
-            self.logger.error(f"Timeout installing MCP server {server_name}")
+            self.logger.error(get_string("mcp.install.timeout", server_name))
             return False
         except Exception as e:
-            self.logger.error(f"Error installing MCP server {server_name}: {e}")
+            self.logger.error(get_string("mcp.install.error", server_name, e))
             return False
     
     def _uninstall_mcp_server(self, server_name: str) -> bool:
         """Uninstall a single MCP server"""
         try:
-            self.logger.info(f"Uninstalling MCP server: {server_name}")
+            self.logger.info(get_string("mcp.uninstall.uninstalling", server_name))
             
             # Check if installed
             if not self._check_mcp_server_installed(server_name):
-                self.logger.info(f"MCP server {server_name} not installed")
+                self.logger.info(get_string("mcp.uninstall.not_installed", server_name))
                 return True
             
-            self.logger.debug(f"Running: claude mcp remove {server_name} (auto-detect scope)")
+            self.logger.debug(get_string("mcp.uninstall.running", server_name))
             
             result = subprocess.run(
                 ["claude", "mcp", "remove", server_name],
@@ -248,23 +249,23 @@ class MCPComponent(Component):
             )
             
             if result.returncode == 0:
-                self.logger.success(f"Successfully uninstalled MCP server: {server_name}")
+                self.logger.success(get_string("mcp.uninstall.success", server_name))
                 return True
             else:
                 error_msg = result.stderr.strip() if result.stderr else "Unknown error"
-                self.logger.error(f"Failed to uninstall MCP server {server_name}: {error_msg}")
+                self.logger.error(get_string("mcp.uninstall.failed", server_name, error_msg))
                 return False
                 
         except subprocess.TimeoutExpired:
-            self.logger.error(f"Timeout uninstalling MCP server {server_name}")
+            self.logger.error(get_string("mcp.uninstall.timeout", server_name))
             return False
         except Exception as e:
-            self.logger.error(f"Error uninstalling MCP server {server_name}: {e}")
+            self.logger.error(get_string("mcp.uninstall.error", server_name, e))
             return False
     
     def _install(self, config: Dict[str, Any]) -> bool:
         """Install MCP component"""
-        self.logger.info("Installing SuperClaude MCP servers...")
+        self.logger.info(get_string("mcp.component.installing"))
 
         # Validate prerequisites
         success, errors = self.validate_prerequisites()
@@ -285,12 +286,12 @@ class MCPComponent(Component):
                 
                 # Check if this is a required server
                 if server_info.get("required", False):
-                    self.logger.error(f"Required MCP server {server_name} failed to install")
+                    self.logger.error(get_string("mcp.component.required_failed", server_name))
                     return False
 
         # Verify installation
         if not config.get("dry_run", False):
-            self.logger.info("Verifying MCP server installation...")
+            self.logger.info(get_string("mcp.component.verifying"))
             try:
                 result = subprocess.run(
                     ["claude", "mcp", "list"],
@@ -301,21 +302,21 @@ class MCPComponent(Component):
                 )
                 
                 if result.returncode == 0:
-                    self.logger.debug("MCP servers list:")
+                    self.logger.debug(get_string("mcp.component.server_list"))
                     for line in result.stdout.strip().split('\n'):
                         if line.strip():
                             self.logger.debug(f"  {line.strip()}")
                 else:
-                    self.logger.warning("Could not verify MCP server installation")
+                    self.logger.warning(get_string("mcp.component.verify_error"))
                     
             except Exception as e:
-                self.logger.warning(f"Could not verify MCP installation: {e}")
+                self.logger.warning(get_string("mcp.component.verify_exception", e))
 
         if failed_servers:
-            self.logger.warning(f"Some MCP servers failed to install: {failed_servers}")
-            self.logger.success(f"MCP component partially installed ({installed_count} servers)")
+            self.logger.warning(get_string("mcp.component.some_failed", failed_servers))
+            self.logger.success(get_string("mcp.component.partial_success", installed_count))
         else:
-            self.logger.success(f"MCP component installed successfully ({installed_count} servers)")
+            self.logger.success(get_string("mcp.component.success", installed_count))
 
         return self._post_install()
 
@@ -332,9 +333,9 @@ class MCPComponent(Component):
                 "servers_count": len(self.mcp_servers)
             })
 
-            self.logger.info("Updated metadata with MCP component registration")
+            self.logger.info(get_string("mcp.component.registration_updated"))
         except Exception as e:
-            self.logger.error(f"Failed to update metadata: {e}")
+            self.logger.error(get_string("mcp.component.metadata_error", e))
             return False
 
         return True
@@ -343,7 +344,7 @@ class MCPComponent(Component):
     def uninstall(self) -> bool:
         """Uninstall MCP component"""
         try:
-            self.logger.info("Uninstalling SuperClaude MCP servers...")
+            self.logger.info(get_string("mcp.component.uninstalling"))
             
             # Uninstall each MCP server
             uninstalled_count = 0
@@ -361,15 +362,15 @@ class MCPComponent(Component):
                     if "mcp" in metadata:
                         del metadata["mcp"]
                         self.settings_manager.save_metadata(metadata)
-                    self.logger.info("Removed MCP component from metadata")
+                    self.logger.info(get_string("mcp.component.removed_from_metadata"))
             except Exception as e:
-                self.logger.warning(f"Could not update metadata: {e}")
+                self.logger.warning(get_string("mcp.component.metadata_error", e))
             
-            self.logger.success(f"MCP component uninstalled ({uninstalled_count} servers removed)")
+            self.logger.success(get_string("mcp.component.uninstall_success", uninstalled_count))
             return True
             
         except Exception as e:
-            self.logger.exception(f"Unexpected error during MCP uninstallation: {e}")
+            self.logger.exception(get_string("mcp.component.uninstall_error", e))
             return False
     
     def get_dependencies(self) -> List[str]:
@@ -379,17 +380,17 @@ class MCPComponent(Component):
     def update(self, config: Dict[str, Any]) -> bool:
         """Update MCP component"""
         try:
-            self.logger.info("Updating SuperClaude MCP servers...")
+            self.logger.info(get_string("mcp.update.updating"))
             
             # Check current version
             current_version = self.settings_manager.get_component_version("mcp")
             target_version = self.get_metadata()["version"]
             
             if current_version == target_version:
-                self.logger.info(f"MCP component already at version {target_version}")
+                self.logger.info(get_string("mcp.update.already_latest", target_version))
                 return True
             
-            self.logger.info(f"Updating MCP component from {current_version} to {target_version}")
+            self.logger.info(get_string("mcp.update.updating_from_to", current_version, target_version))
             
             # For MCP servers, update means reinstall to get latest versions
             updated_count = 0
@@ -408,7 +409,7 @@ class MCPComponent(Component):
                         failed_servers.append(server_name)
                         
                 except Exception as e:
-                    self.logger.error(f"Error updating MCP server {server_name}: {e}")
+                    self.logger.error(get_string("mcp.update.server_error", server_name, e))
                     failed_servers.append(server_name)
             
             # Update metadata
@@ -422,17 +423,17 @@ class MCPComponent(Component):
                     metadata["mcp"]["servers"] = list(self.mcp_servers.keys())
                 self.settings_manager.save_metadata(metadata)
             except Exception as e:
-                self.logger.warning(f"Could not update metadata: {e}")
+                self.logger.warning(get_string("mcp.component.metadata_error", e))
             
             if failed_servers:
-                self.logger.warning(f"Some MCP servers failed to update: {failed_servers}")
+                self.logger.warning(get_string("mcp.update.some_failed", failed_servers))
                 return False
             else:
-                self.logger.success(f"MCP component updated to version {target_version}")
+                self.logger.success(get_string("mcp.update.success", target_version))
                 return True
             
         except Exception as e:
-            self.logger.exception(f"Unexpected error during MCP update: {e}")
+            self.logger.exception(get_string("mcp.update.unexpected_error", e))
             return False
     
     def validate_installation(self) -> Tuple[bool, List[str]]:
@@ -441,14 +442,14 @@ class MCPComponent(Component):
         
         # Check metadata registration
         if not self.settings_manager.is_component_installed("mcp"):
-            errors.append("MCP component not registered in metadata")
+            errors.append(get_string("mcp.validate.not_registered"))
             return False, errors
         
         # Check version matches
         installed_version = self.settings_manager.get_component_version("mcp")
         expected_version = self.get_metadata()["version"]
         if installed_version != expected_version:
-            errors.append(f"Version mismatch: installed {installed_version}, expected {expected_version}")
+            errors.append(get_string("mcp.validate.version_mismatch", installed_version, expected_version))
         
         # Check if Claude CLI is available
         try:
@@ -461,17 +462,17 @@ class MCPComponent(Component):
             )
             
             if result.returncode != 0:
-                errors.append("Could not communicate with Claude CLI for MCP server verification")
+                errors.append(get_string("mcp.validate.cli_error"))
             else:
                 # Check if required servers are installed
                 output = result.stdout.lower()
                 for server_name, server_info in self.mcp_servers.items():
                     if server_info.get("required", False):
                         if server_name.lower() not in output:
-                            errors.append(f"Required MCP server not found: {server_name}")
+                            errors.append(get_string("mcp.validate.server_not_found", server_name))
                             
         except Exception as e:
-            errors.append(f"Could not verify MCP server installation: {e}")
+            errors.append(get_string("mcp.component.verify_exception", e))
         
         return len(errors) == 0, errors
     

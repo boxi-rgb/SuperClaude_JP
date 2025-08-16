@@ -5,6 +5,7 @@ Configuration management for SuperClaude installation system
 import json
 from typing import Dict, Any, List, Optional
 from pathlib import Path
+from ..utils.localization import get_string
 
 # Handle jsonschema import - if not available, use basic validation
 try:
@@ -19,20 +20,20 @@ except ImportError:
         def __init__(self, message):
             self.message = message
             super().__init__(message)
-    
+
     def validate(instance, schema):
         """Dummy validation function"""
         # Basic type checking only
         if "type" in schema:
             expected_type = schema["type"]
             if expected_type == "object" and not isinstance(instance, dict):
-                raise ValidationError(f"Expected object, got {type(instance).__name__}")
+                raise ValidationError(get_string("config.error.expected_object", type(instance).__name__))
             elif expected_type == "array" and not isinstance(instance, list):
-                raise ValidationError(f"Expected array, got {type(instance).__name__}")
+                raise ValidationError(get_string("config.error.expected_array", type(instance).__name__))
             elif expected_type == "string" and not isinstance(instance, str):
-                raise ValidationError(f"Expected string, got {type(instance).__name__}")
+                raise ValidationError(get_string("config.error.expected_string", type(instance).__name__))
             elif expected_type == "integer" and not isinstance(instance, int):
-                raise ValidationError(f"Expected integer, got {type(instance).__name__}")
+                raise ValidationError(get_string("config.error.expected_integer", type(instance).__name__))
         # Skip detailed validation if jsonschema not available
 
 
@@ -166,7 +167,7 @@ class ConfigManager:
             return self._features_cache
             
         if not self.features_file.exists():
-            raise FileNotFoundError(f"Features config not found: {self.features_file}")
+            raise FileNotFoundError(get_string("config.error.features_not_found", self.features_file))
         
         try:
             with open(self.features_file, 'r') as f:
@@ -179,9 +180,9 @@ class ConfigManager:
             return features
             
         except json.JSONDecodeError as e:
-            raise ValidationError(f"Invalid JSON in {self.features_file}: {e}")
+            raise ValidationError(get_string("config.error.invalid_json", self.features_file, e))
         except ValidationError as e:
-            raise ValidationError(f"Invalid features schema: {e.message}")
+            raise ValidationError(get_string("config.error.invalid_features_schema", e.message))
     
     def load_requirements(self) -> Dict[str, Any]:
         """
@@ -198,7 +199,7 @@ class ConfigManager:
             return self._requirements_cache
             
         if not self.requirements_file.exists():
-            raise FileNotFoundError(f"Requirements config not found: {self.requirements_file}")
+            raise FileNotFoundError(get_string("config.error.reqs_not_found", self.requirements_file))
         
         try:
             with open(self.requirements_file, 'r') as f:
@@ -211,9 +212,9 @@ class ConfigManager:
             return requirements
             
         except json.JSONDecodeError as e:
-            raise ValidationError(f"Invalid JSON in {self.requirements_file}: {e}")
+            raise ValidationError(get_string("config.error.invalid_json", self.requirements_file, e))
         except ValidationError as e:
-            raise ValidationError(f"Invalid requirements schema: {e.message}")
+            raise ValidationError(get_string("config.error.invalid_reqs_schema", e.message))
     
     def get_component_info(self, component_name: str) -> Optional[Dict[str, Any]]:
         """
@@ -293,7 +294,7 @@ class ConfigManager:
             ValidationError: If profile is invalid
         """
         if not profile_path.exists():
-            raise FileNotFoundError(f"Profile not found: {profile_path}")
+            raise FileNotFoundError(get_string("config.error.profile_not_found", profile_path))
         
         try:
             with open(profile_path, 'r') as f:
@@ -301,10 +302,10 @@ class ConfigManager:
                 
             # Basic validation
             if "components" not in profile:
-                raise ValidationError("Profile must contain 'components' field")
+                raise ValidationError(get_string("config.error.profile_missing_components"))
                 
             if not isinstance(profile["components"], list):
-                raise ValidationError("Profile 'components' must be a list")
+                raise ValidationError(get_string("config.error.profile_components_not_list"))
             
             # Validate that all components exist
             features = self.load_features()
@@ -312,12 +313,12 @@ class ConfigManager:
             
             for component in profile["components"]:
                 if component not in available_components:
-                    raise ValidationError(f"Unknown component in profile: {component}")
+                    raise ValidationError(get_string("config.error.unknown_component_in_profile", component))
             
             return profile
             
         except json.JSONDecodeError as e:
-            raise ValidationError(f"Invalid JSON in {profile_path}: {e}")
+            raise ValidationError(get_string("config.error.invalid_json", profile_path, e))
     
     def get_system_requirements(self) -> Dict[str, Any]:
         """
@@ -384,12 +385,12 @@ class ConfigManager:
         try:
             self.load_features()
         except Exception as e:
-            errors.append(f"Features config error: {e}")
+            errors.append(get_string("config.error.features_config_error", e))
         
         try:
             self.load_requirements()
         except Exception as e:
-            errors.append(f"Requirements config error: {e}")
+            errors.append(get_string("config.error.reqs_config_error", e))
         
         return errors
     

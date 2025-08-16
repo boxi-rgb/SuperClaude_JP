@@ -18,6 +18,7 @@ from ..utils.ui import (
     display_warning, Menu, confirm, ProgressBar, Colors, format_size
 )
 from ..utils.logger import get_logger
+from ..utils.localization import get_string
 from .. import DEFAULT_INSTALL_DIR, PROJECT_ROOT
 from . import OperationBase
 
@@ -35,8 +36,8 @@ def register_parser(subparsers, global_parser=None) -> argparse.ArgumentParser:
     
     parser = subparsers.add_parser(
         "install",
-        help="Install SuperClaude framework components",
-        description="Install SuperClaude Framework with various options and profiles",
+        help=get_string("install.parser.help"),
+        description=get_string("install.parser.description"),
         epilog="""
 Examples:
   SuperClaude install                          # Interactive installation
@@ -53,45 +54,45 @@ Examples:
     parser.add_argument(
         "--quick", 
         action="store_true",
-        help="Quick installation with pre-selected components"
+        help=get_string("install.parser.quick_help")
     )
     
     parser.add_argument(
         "--minimal",
         action="store_true", 
-        help="Minimal installation (core only)"
+        help=get_string("install.parser.minimal_help")
     )
     
     parser.add_argument(
         "--profile",
         type=str,
-        help="Installation profile (quick, minimal, developer, etc.)"
+        help=get_string("install.parser.profile_help")
     )
     
     parser.add_argument(
         "--components",
         type=str,
         nargs="+",
-        help="Specific components to install"
+        help=get_string("install.parser.components_help")
     )
     
     # Installation options
     parser.add_argument(
         "--no-backup",
         action="store_true",
-        help="Skip backup creation"
+        help=get_string("install.parser.no_backup_help")
     )
     
     parser.add_argument(
         "--list-components",
         action="store_true",
-        help="List available components and exit"
+        help=get_string("install.parser.list_components_help")
     )
     
     parser.add_argument(
         "--diagnose",
         action="store_true",
-        help="Run system diagnostics and show installation help"
+        help=get_string("install.parser.diagnose_help")
     )
     
     return parser
@@ -101,7 +102,7 @@ def validate_system_requirements(validator: Validator, component_names: List[str
     """Validate system requirements"""
     logger = get_logger()
     
-    logger.info("Validating system requirements...")
+    logger.info(get_string("install.validate.validating"))
     
     try:
         # Load requirements configuration
@@ -112,22 +113,22 @@ def validate_system_requirements(validator: Validator, component_names: List[str
         success, errors = validator.validate_component_requirements(component_names, requirements)
         
         if success:
-            logger.success("All system requirements met")
+            logger.success(get_string("install.validate.success"))
             return True
         else:
-            logger.error("System requirements not met:")
+            logger.error(get_string("install.validate.failed"))
             for error in errors:
                 logger.error(f"  - {error}")
             
             # Provide additional guidance
-            print(f"\n{Colors.CYAN}💡 Installation Help:{Colors.RESET}")
-            print("  Run 'SuperClaude install --diagnose' for detailed system diagnostics")
-            print("  and step-by-step installation instructions.")
+            print(f"\n{Colors.CYAN}{get_string('install.validate.help_header')}{Colors.RESET}")
+            print(f"  {get_string('install.validate.help_diagnose')}")
+            print(f"  {get_string('install.validate.help_instructions')}")
             
             return False
             
     except Exception as e:
-        logger.error(f"Could not validate system requirements: {e}")
+        logger.error(get_string("install.validate.error", e))
         return False
 
 
@@ -148,7 +149,7 @@ def get_components_to_install(args: argparse.Namespace, registry: ComponentRegis
             profile = config_manager.load_profile(profile_path)
             return profile["components"]
         except Exception as e:
-            logger.error(f"Could not load profile '{args.profile}': {e}")
+            logger.error(get_string("install.components.load_profile_error", args.profile, e))
             return None
     
     # Quick installation
@@ -158,7 +159,7 @@ def get_components_to_install(args: argparse.Namespace, registry: ComponentRegis
             profile = config_manager.load_profile(profile_path)
             return profile["components"]
         except Exception as e:
-            logger.warning(f"Could not load quick profile: {e}")
+            logger.warning(get_string("install.components.load_quick_profile_error", e))
             return ["core"]  # Fallback to core only
     
     # Minimal installation
@@ -178,7 +179,7 @@ def interactive_component_selection(registry: ComponentRegistry, config_manager:
         available_components = registry.list_components()
         
         if not available_components:
-            logger.error("No components available for installation")
+            logger.error(get_string("install.components.no_components_available"))
             return None
         
         # Create component menu with descriptions
@@ -188,23 +189,23 @@ def interactive_component_selection(registry: ComponentRegistry, config_manager:
         for component_name in available_components:
             metadata = registry.get_component_metadata(component_name)
             if metadata:
-                description = metadata.get("description", "No description")
-                category = metadata.get("category", "unknown")
+                description = metadata.get("description", get_string("install.components.no_description"))
+                category = metadata.get("category", get_string("install.components.unknown_category"))
                 menu_options.append(f"{component_name} ({category}) - {description}")
                 component_info[component_name] = metadata
             else:
-                menu_options.append(f"{component_name} - Component description unavailable")
+                menu_options.append(f"{component_name} - {get_string('install.components.unavailable_description')}")
                 component_info[component_name] = {"description": "Unknown"}
         
         # Add preset options
         preset_options = [
-            "Quick Installation (recommended components)",
-            "Minimal Installation (core only)",
-            "Custom Selection"
+            get_string("install.components.quick_install"),
+            get_string("install.components.minimal_install"),
+            get_string("install.components.custom_selection")
         ]
         
-        print(f"\n{Colors.CYAN}SuperClaude Installation Options:{Colors.RESET}")
-        menu = Menu("Select installation type:", preset_options)
+        print(f"\n{Colors.CYAN}{get_string('install.components.options_header')}{Colors.RESET}")
+        menu = Menu(get_string("install.components.select_type"), preset_options)
         choice = menu.display()
         
         if choice == -1:  # Cancelled
@@ -219,12 +220,12 @@ def interactive_component_selection(registry: ComponentRegistry, config_manager:
         elif choice == 1:  # Minimal
             return ["core"]
         elif choice == 2:  # Custom
-            print(f"\n{Colors.CYAN}Available Components:{Colors.RESET}")
-            component_menu = Menu("Select components to install:", menu_options, multi_select=True)
+            print(f"\n{Colors.CYAN}{get_string('install.components.available_header')}{Colors.RESET}")
+            component_menu = Menu(get_string("install.components.select_components"), menu_options, multi_select=True)
             selections = component_menu.display()
             
             if not selections:
-                logger.warning("No components selected")
+                logger.warning(get_string("install.components.no_components_selected"))
                 return None
             
             return [available_components[i] for i in selections]
@@ -232,7 +233,7 @@ def interactive_component_selection(registry: ComponentRegistry, config_manager:
         return None
         
     except Exception as e:
-        logger.error(f"Error in component selection: {e}")
+        logger.error(get_string("install.components.selection_error", e))
         return None
 
 
@@ -240,21 +241,21 @@ def display_installation_plan(components: List[str], registry: ComponentRegistry
     """Display installation plan"""
     logger = get_logger()
     
-    print(f"\n{Colors.CYAN}{Colors.BRIGHT}Installation Plan{Colors.RESET}")
+    print(f"\n{Colors.CYAN}{Colors.BRIGHT}{get_string('install.plan.header')}{Colors.RESET}")
     print("=" * 50)
     
     # Resolve dependencies
     try:
         ordered_components = registry.resolve_dependencies(components)
         
-        print(f"{Colors.BLUE}Installation Directory:{Colors.RESET} {install_dir}")
-        print(f"{Colors.BLUE}Components to install:{Colors.RESET}")
+        print(f"{Colors.BLUE}{get_string('install.plan.directory')}{Colors.RESET} {install_dir}")
+        print(f"{Colors.BLUE}{get_string('install.plan.components')}{Colors.RESET}")
         
         total_size = 0
         for i, component_name in enumerate(ordered_components, 1):
             metadata = registry.get_component_metadata(component_name)
             if metadata:
-                description = metadata.get("description", "No description")
+                description = metadata.get("description", get_string("install.components.no_description"))
                 print(f"  {i}. {component_name} - {description}")
                 
                 # Get size estimate if component supports it
@@ -266,15 +267,15 @@ def display_installation_plan(components: List[str], registry: ComponentRegistry
                 except Exception:
                     pass
             else:
-                print(f"  {i}. {component_name} - Unknown component")
+                print(f"  {i}. {component_name} - {get_string('install.plan.unknown_component')}")
         
         if total_size > 0:
-            print(f"\n{Colors.BLUE}Estimated size:{Colors.RESET} {format_size(total_size)}")
+            print(f"\n{Colors.BLUE}{get_string('install.plan.estimated_size')}{Colors.RESET} {format_size(total_size)}")
         
         print()
         
     except Exception as e:
-        logger.error(f"Could not resolve dependencies: {e}")
+        logger.error(get_string("install.plan.resolve_error", e))
         raise
 
 
@@ -282,17 +283,17 @@ def run_system_diagnostics(validator: Validator) -> None:
     """Run comprehensive system diagnostics"""
     logger = get_logger()
     
-    print(f"\n{Colors.CYAN}{Colors.BRIGHT}SuperClaude System Diagnostics{Colors.RESET}")
+    print(f"\n{Colors.CYAN}{Colors.BRIGHT}{get_string('install.diagnostics.header')}{Colors.RESET}")
     print("=" * 50)
     
     # Run diagnostics
     diagnostics = validator.diagnose_system()
     
     # Display platform info
-    print(f"{Colors.BLUE}Platform:{Colors.RESET} {diagnostics['platform']}")
+    print(f"{Colors.BLUE}{get_string('install.diagnostics.platform')}{Colors.RESET} {diagnostics['platform']}")
     
     # Display check results
-    print(f"\n{Colors.BLUE}System Checks:{Colors.RESET}")
+    print(f"\n{Colors.BLUE}{get_string('install.diagnostics.checks')}{Colors.RESET}")
     all_passed = True
     
     for check_name, check_info in diagnostics['checks'].items():
@@ -307,28 +308,28 @@ def run_system_diagnostics(validator: Validator) -> None:
     
     # Display issues and recommendations
     if diagnostics['issues']:
-        print(f"\n{Colors.YELLOW}Issues Found:{Colors.RESET}")
+        print(f"\n{Colors.YELLOW}{get_string('install.diagnostics.issues')}{Colors.RESET}")
         for issue in diagnostics['issues']:
             print(f"  ⚠️  {issue}")
         
-        print(f"\n{Colors.CYAN}Recommendations:{Colors.RESET}")
+        print(f"\n{Colors.CYAN}{get_string('install.diagnostics.recommendations')}{Colors.RESET}")
         for recommendation in diagnostics['recommendations']:
             print(recommendation)
     
     # Summary
     if all_passed:
-        print(f"\n{Colors.GREEN}✅ All system checks passed! Your system is ready for SuperClaude.{Colors.RESET}")
+        print(f"\n{Colors.GREEN}{get_string('install.diagnostics.all_passed')}{Colors.RESET}")
     else:
-        print(f"\n{Colors.YELLOW}⚠️  Some issues found. Please address the recommendations above.{Colors.RESET}")
+        print(f"\n{Colors.YELLOW}{get_string('install.diagnostics.issues_found')}{Colors.RESET}")
     
-    print(f"\n{Colors.BLUE}Next steps:{Colors.RESET}")
+    print(f"\n{Colors.BLUE}{get_string('install.diagnostics.next_steps')}{Colors.RESET}")
     if all_passed:
-        print("  1. Run 'SuperClaude install' to proceed with installation")
-        print("  2. Choose your preferred installation mode (quick, minimal, or custom)")
+        print(f"  {get_string('install.diagnostics.next_steps_passed_1')}")
+        print(f"  {get_string('install.diagnostics.next_steps_passed_2')}")
     else:
-        print("  1. Install missing dependencies using the commands above")
-        print("  2. Restart your terminal after installing tools")
-        print("  3. Run 'SuperClaude install --diagnose' again to verify")
+        print(f"  {get_string('install.diagnostics.next_steps_failed_1')}")
+        print(f"  {get_string('install.diagnostics.next_steps_failed_2')}")
+        print(f"  {get_string('install.diagnostics.next_steps_failed_3')}")
 
 
 def perform_installation(components: List[str], args: argparse.Namespace) -> bool:
@@ -360,12 +361,12 @@ def perform_installation(components: List[str], args: argparse.Namespace) -> boo
         # Setup progress tracking
         progress = ProgressBar(
             total=len(ordered_components),
-            prefix="Installing: ",
+            prefix=get_string("install.perform.prefix"),
             suffix=""
         )
         
         # Install components
-        logger.info(f"Installing {len(ordered_components)} components...")
+        logger.info(get_string("install.perform.installing", len(ordered_components)))
         
         config = {
             "force": args.force,
@@ -378,38 +379,38 @@ def perform_installation(components: List[str], args: argparse.Namespace) -> boo
         # Update progress
         for i, component_name in enumerate(ordered_components):
             if component_name in installer.installed_components:
-                progress.update(i + 1, f"Installed {component_name}")
+                progress.update(i + 1, get_string("install.perform.installed", component_name))
             else:
-                progress.update(i + 1, f"Failed {component_name}")
+                progress.update(i + 1, get_string("install.perform.failed", component_name))
             time.sleep(0.1)  # Brief pause for visual effect
         
-        progress.finish("Installation complete")
+        progress.finish(get_string("install.perform.complete"))
         
         # Show results
         duration = time.time() - start_time
         
         if success:
-            logger.success(f"Installation completed successfully in {duration:.1f} seconds")
+            logger.success(get_string("install.perform.success", f"{duration:.1f}"))
             
             # Show summary
             summary = installer.get_installation_summary()
             if summary['installed']:
-                logger.info(f"Installed components: {', '.join(summary['installed'])}")
+                logger.info(get_string("install.perform.installed_components", ', '.join(summary['installed'])))
             
             if summary['backup_path']:
-                logger.info(f"Backup created: {summary['backup_path']}")
+                logger.info(get_string("install.perform.backup_created", summary['backup_path']))
                 
         else:
-            logger.error(f"Installation completed with errors in {duration:.1f} seconds")
+            logger.error(get_string("install.perform.error", f"{duration:.1f}"))
             
             summary = installer.get_installation_summary()
             if summary['failed']:
-                logger.error(f"Failed components: {', '.join(summary['failed'])}")
+                logger.error(get_string("install.perform.failed_components", ', '.join(summary['failed'])))
         
         return success
         
     except Exception as e:
-        logger.exception(f"Unexpected error during installation: {e}")
+        logger.exception(get_string("install.perform.unexpected_error", e))
         return False
 
 
@@ -423,9 +424,9 @@ def run(args: argparse.Namespace) -> int:
     actual_dir = args.install_dir.resolve()
 
     if not str(actual_dir).startswith(str(expected_home)):
-        print(f"\n[✗] Installation must be inside your user profile directory.")
-        print(f"    Expected prefix: {expected_home}")
-        print(f"    Provided path:   {actual_dir}")
+        print(f"\n[✗] {get_string('install.run.invalid_path_header')}")
+        print(f"    {get_string('install.run.invalid_path_expected', expected_home)}")
+        print(f"    {get_string('install.run.invalid_path_provided', actual_dir)}")
         sys.exit(1)
     
     try:
@@ -439,8 +440,8 @@ def run(args: argparse.Namespace) -> int:
         # Display header
         if not args.quiet:
             display_header(
-                "SuperClaude Installation v3.0",
-                "Installing SuperClaude framework components"
+                get_string("install.run.header"),
+                get_string("install.run.subtitle")
             )
         
         # Handle special modes
@@ -450,17 +451,17 @@ def run(args: argparse.Namespace) -> int:
             
             components = registry.list_components()
             if components:
-                print(f"\n{Colors.CYAN}Available Components:{Colors.RESET}")
+                print(f"\n{Colors.CYAN}{get_string('install.components.available_header')}{Colors.RESET}")
                 for component_name in components:
                     metadata = registry.get_component_metadata(component_name)
                     if metadata:
-                        desc = metadata.get("description", "No description")
-                        category = metadata.get("category", "unknown")
+                        desc = metadata.get("description", get_string("install.components.no_description"))
+                        category = metadata.get("category", get_string("install.components.unknown_category"))
                         print(f"  {component_name} ({category}) - {desc}")
                     else:
-                        print(f"  {component_name} - Unknown component")
+                        print(f"  {component_name} - {get_string('install.plan.unknown_component')}")
             else:
-                print("No components found")
+                print(get_string("install.run.no_components_found"))
             return 0
         
         # Handle diagnostic mode
@@ -470,7 +471,7 @@ def run(args: argparse.Namespace) -> int:
             return 0
         
         # Create component registry and load configuration
-        logger.info("Initializing installation system...")
+        logger.info(get_string("install.run.initializing"))
         
         registry = ComponentRegistry(PROJECT_ROOT / "setup" / "components")
         registry.discover_components()
@@ -481,7 +482,7 @@ def run(args: argparse.Namespace) -> int:
         # Validate configuration
         config_errors = config_manager.validate_config_files()
         if config_errors:
-            logger.error("Configuration validation failed:")
+            logger.error(get_string("install.run.config_validation_failed"))
             for error in config_errors:
                 logger.error(f"  - {error}")
             return 1
@@ -489,23 +490,23 @@ def run(args: argparse.Namespace) -> int:
         # Get components to install
         components = get_components_to_install(args, registry, config_manager)
         if not components:
-            logger.error("No components selected for installation")
+            logger.error(get_string("install.run.no_components_selected"))
             return 1
         
         # Validate system requirements
         if not validate_system_requirements(validator, components):
             if not args.force:
-                logger.error("System requirements not met. Use --force to override.")
+                logger.error(get_string("install.run.reqs_not_met"))
                 return 1
             else:
-                logger.warning("System requirements not met, but continuing due to --force flag")
+                logger.warning(get_string("install.run.reqs_not_met_force"))
         
         # Check for existing installation
         if args.install_dir.exists() and not args.force:
             if not args.dry_run:
-                logger.warning(f"Installation directory already exists: {args.install_dir}")
-                if not args.yes and not confirm("Continue and update existing installation?", default=False):
-                    logger.info("Installation cancelled by user")
+                logger.warning(get_string("install.run.dir_exists", args.install_dir))
+                if not args.yes and not confirm(get_string("install.run.confirm_update"), default=False):
+                    logger.info(get_string("install.run.cancelled"))
                     return 0
         
         # Display installation plan
@@ -513,8 +514,8 @@ def run(args: argparse.Namespace) -> int:
             display_installation_plan(components, registry, args.install_dir)
             
             if not args.dry_run:
-                if not args.yes and not confirm("Proceed with installation?", default=True):
-                    logger.info("Installation cancelled by user")
+                if not args.yes and not confirm(get_string("install.run.confirm_proceed"), default=True):
+                    logger.info(get_string("install.run.cancelled"))
                     return 0
         
         # Perform installation
@@ -522,21 +523,21 @@ def run(args: argparse.Namespace) -> int:
         
         if success:
             if not args.quiet:
-                display_success("SuperClaude installation completed successfully!")
+                display_success(get_string("install.run.success"))
                 
                 if not args.dry_run:
-                    print(f"\n{Colors.CYAN}Next steps:{Colors.RESET}")
-                    print(f"1. Restart your Claude Code session")
-                    print(f"2. Framework files are now available in {args.install_dir}")
-                    print(f"3. Use SuperClaude commands and features in Claude Code")
+                    print(f"\n{Colors.CYAN}{get_string('install.run.next_steps_header')}{Colors.RESET}")
+                    print(get_string("install.run.next_steps_1"))
+                    print(get_string("install.run.next_steps_2", args.install_dir))
+                    print(get_string("install.run.next_steps_3"))
                     
             return 0
         else:
-            display_error("Installation failed. Check logs for details.")
+            display_error(get_string("install.run.failed"))
             return 1
             
     except KeyboardInterrupt:
-        print(f"\n{Colors.YELLOW}Installation cancelled by user{Colors.RESET}")
+        print(f"\n{Colors.YELLOW}{get_string('install.run.cancelled')}{Colors.RESET}")
         return 130
     except Exception as e:
         return operation.handle_operation_error("install", e)

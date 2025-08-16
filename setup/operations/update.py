@@ -18,6 +18,7 @@ from ..utils.ui import (
     display_warning, Menu, confirm, ProgressBar, Colors, format_size
 )
 from ..utils.logger import get_logger
+from ..utils.localization import get_string
 from .. import DEFAULT_INSTALL_DIR, PROJECT_ROOT
 from . import OperationBase
 
@@ -35,8 +36,8 @@ def register_parser(subparsers, global_parser=None) -> argparse.ArgumentParser:
     
     parser = subparsers.add_parser(
         "update",
-        help="Update existing SuperClaude installation",
-        description="Update SuperClaude Framework components to latest versions",
+        help=get_string("update.parser.help"),
+        description=get_string("update.parser.description"),
         epilog="""
 Examples:
   SuperClaude update                       # Interactive update
@@ -52,34 +53,34 @@ Examples:
     parser.add_argument(
         "--check",
         action="store_true",
-        help="Check for available updates without installing"
+        help=get_string("update.parser.check_help")
     )
     
     parser.add_argument(
         "--components",
         type=str,
         nargs="+",
-        help="Specific components to update"
+        help=get_string("update.parser.components_help")
     )
     
     # Backup options
     parser.add_argument(
         "--backup",
         action="store_true",
-        help="Create backup before update"
+        help=get_string("update.parser.backup_help")
     )
     
     parser.add_argument(
         "--no-backup",
         action="store_true",
-        help="Skip backup creation"
+        help=get_string("update.parser.no_backup_help")
     )
     
     # Update options
     parser.add_argument(
         "--reinstall",
         action="store_true",
-        help="Reinstall components even if versions match"
+        help=get_string("update.parser.reinstall_help")
     )
     
     return parser
@@ -122,24 +123,24 @@ def get_available_updates(installed_components: Dict[str, str], registry: Compon
 
 def display_update_check(installed_components: Dict[str, str], available_updates: Dict[str, Dict[str, str]]) -> None:
     """Display update check results"""
-    print(f"\n{Colors.CYAN}{Colors.BRIGHT}Update Check Results{Colors.RESET}")
+    print(f"\n{Colors.CYAN}{Colors.BRIGHT}{get_string('update.check.results_header')}{Colors.RESET}")
     print("=" * 50)
     
     if not installed_components:
-        print(f"{Colors.YELLOW}No SuperClaude installation found{Colors.RESET}")
+        print(f"{Colors.YELLOW}{get_string('update.check.no_installation')}{Colors.RESET}")
         return
     
-    print(f"{Colors.BLUE}Currently installed components:{Colors.RESET}")
+    print(f"{Colors.BLUE}{get_string('update.check.installed_components')}{Colors.RESET}")
     for component, version in installed_components.items():
         print(f"  {component}: v{version}")
     
     if available_updates:
-        print(f"\n{Colors.GREEN}Available updates:{Colors.RESET}")
+        print(f"\n{Colors.GREEN}{get_string('update.check.available_updates')}{Colors.RESET}")
         for component, info in available_updates.items():
             print(f"  {component}: v{info['current']} → v{info['available']}")
             print(f"    {info['description']}")
     else:
-        print(f"\n{Colors.GREEN}All components are up to date{Colors.RESET}")
+        print(f"\n{Colors.GREEN}{get_string('update.check.all_up_to_date')}{Colors.RESET}")
     
     print()
 
@@ -154,13 +155,13 @@ def get_components_to_update(args: argparse.Namespace, installed_components: Dic
         # Validate that specified components are installed
         invalid_components = [c for c in args.components if c not in installed_components]
         if invalid_components:
-            logger.error(f"Components not installed: {invalid_components}")
+            logger.error(get_string("update.components.not_installed", invalid_components))
             return None
         return args.components
     
     # If no updates available and not forcing reinstall
     if not available_updates and not args.reinstall:
-        logger.info("No updates available")
+        logger.info(get_string("update.components.no_updates_available"))
         return []
     
     # Interactive selection
@@ -179,7 +180,7 @@ def interactive_update_selection(available_updates: Dict[str, Dict[str, str]],
     if not available_updates:
         return []
     
-    print(f"\n{Colors.CYAN}Available Updates:{Colors.RESET}")
+    print(f"\n{Colors.CYAN}{get_string('update.selection.header')}{Colors.RESET}")
     
     # Create menu options
     update_options = []
@@ -191,12 +192,12 @@ def interactive_update_selection(available_updates: Dict[str, Dict[str, str]],
     
     # Add bulk options
     preset_options = [
-        "Update All Components",
-        "Select Individual Components", 
-        "Cancel Update"
+        get_string("update.selection.update_all"),
+        get_string("update.selection.select_individual"),
+        get_string("update.selection.cancel")
     ]
     
-    menu = Menu("Select update option:", preset_options)
+    menu = Menu(get_string("update.selection.prompt"), preset_options)
     choice = menu.display()
     
     if choice == -1 or choice == 2:  # Cancelled
@@ -204,7 +205,7 @@ def interactive_update_selection(available_updates: Dict[str, Dict[str, str]],
     elif choice == 0:  # Update all
         return component_names
     elif choice == 1:  # Select individual
-        component_menu = Menu("Select components to update:", update_options, multi_select=True)
+        component_menu = Menu(get_string("update.selection.select_components"), update_options, multi_select=True)
         selections = component_menu.display()
         
         if not selections:
@@ -218,11 +219,11 @@ def interactive_update_selection(available_updates: Dict[str, Dict[str, str]],
 def display_update_plan(components: List[str], available_updates: Dict[str, Dict[str, str]], 
                        installed_components: Dict[str, str], install_dir: Path) -> None:
     """Display update plan"""
-    print(f"\n{Colors.CYAN}{Colors.BRIGHT}Update Plan{Colors.RESET}")
+    print(f"\n{Colors.CYAN}{Colors.BRIGHT}{get_string('update.plan.header')}{Colors.RESET}")
     print("=" * 50)
     
-    print(f"{Colors.BLUE}Installation Directory:{Colors.RESET} {install_dir}")
-    print(f"{Colors.BLUE}Components to update:{Colors.RESET}")
+    print(f"{Colors.BLUE}{get_string('install.plan.directory')}{Colors.RESET} {install_dir}")
+    print(f"{Colors.BLUE}{get_string('update.plan.components')}{Colors.RESET}")
     
     for i, component_name in enumerate(components, 1):
         if component_name in available_updates:
@@ -230,7 +231,7 @@ def display_update_plan(components: List[str], available_updates: Dict[str, Dict
             print(f"  {i}. {component_name}: v{info['current']} → v{info['available']}")
         else:
             current_version = installed_components.get(component_name, "unknown")
-            print(f"  {i}. {component_name}: v{current_version} (reinstall)")
+            print(f"  {i}. {component_name}: v{current_version} {get_string('update.plan.reinstall')}")
     
     print()
 
@@ -252,7 +253,7 @@ def perform_update(components: List[str], args: argparse.Namespace) -> bool:
         component_instances = registry.create_component_instances(components, args.install_dir)
         
         if not component_instances:
-            logger.error("No valid component instances created")
+            logger.error(get_string("install.perform.unexpected_error", "No valid component instances created"))
             return False
         
         # Register components with installer
@@ -261,12 +262,12 @@ def perform_update(components: List[str], args: argparse.Namespace) -> bool:
         # Setup progress tracking
         progress = ProgressBar(
             total=len(components),
-            prefix="Updating: ",
+            prefix=get_string("update.perform.prefix"),
             suffix=""
         )
         
         # Update components
-        logger.info(f"Updating {len(components)} components...")
+        logger.info(get_string("update.perform.updating", len(components)))
         
         # Determine backup strategy
         backup = args.backup or (not args.no_backup and not args.dry_run)
@@ -283,38 +284,38 @@ def perform_update(components: List[str], args: argparse.Namespace) -> bool:
         # Update progress
         for i, component_name in enumerate(components):
             if component_name in installer.updated_components:
-                progress.update(i + 1, f"Updated {component_name}")
+                progress.update(i + 1, get_string("update.perform.updated", component_name))
             else:
-                progress.update(i + 1, f"Failed {component_name}")
+                progress.update(i + 1, get_string("update.perform.failed", component_name))
             time.sleep(0.1)  # Brief pause for visual effect
         
-        progress.finish("Update complete")
+        progress.finish(get_string("update.perform.complete"))
         
         # Show results
         duration = time.time() - start_time
         
         if success:
-            logger.success(f"Update completed successfully in {duration:.1f} seconds")
+            logger.success(get_string("update.perform.success", f"{duration:.1f}"))
             
             # Show summary
             summary = installer.get_update_summary()
             if summary.get('updated'):
-                logger.info(f"Updated components: {', '.join(summary['updated'])}")
+                logger.info(get_string("update.perform.updated_components", ', '.join(summary['updated'])))
             
             if summary.get('backup_path'):
-                logger.info(f"Backup created: {summary['backup_path']}")
+                logger.info(get_string("install.perform.backup_created", summary['backup_path']))
                 
         else:
-            logger.error(f"Update completed with errors in {duration:.1f} seconds")
+            logger.error(get_string("update.perform.error", f"{duration:.1f}"))
             
             summary = installer.get_update_summary()
             if summary.get('failed'):
-                logger.error(f"Failed components: {', '.join(summary['failed'])}")
+                logger.error(get_string("update.perform.failed_components", ', '.join(summary['failed'])))
         
         return success
         
     except Exception as e:
-        logger.exception(f"Unexpected error during update: {e}")
+        logger.exception(get_string("update.perform.unexpected_error", e))
         return False
 
 
@@ -328,9 +329,9 @@ def run(args: argparse.Namespace) -> int:
     actual_dir = args.install_dir.resolve()
 
     if not str(actual_dir).startswith(str(expected_home)):
-        print(f"\n[✗] Installation must be inside your user profile directory.")
-        print(f"    Expected prefix: {expected_home}")
-        print(f"    Provided path:   {actual_dir}")
+        print(f"\n[✗] {get_string('install.run.invalid_path_header')}")
+        print(f"    {get_string('install.run.invalid_path_expected', expected_home)}")
+        print(f"    {get_string('install.run.invalid_path_provided', actual_dir)}")
         sys.exit(1)
     
     try:
@@ -344,18 +345,18 @@ def run(args: argparse.Namespace) -> int:
         # Display header
         if not args.quiet:
             display_header(
-                "SuperClaude Update v3.0",
-                "Updating SuperClaude framework components"
+                get_string("update.run.header"),
+                get_string("update.run.subtitle")
             )
         
         # Check if SuperClaude is installed
         if not check_installation_exists(args.install_dir):
-            logger.error(f"SuperClaude installation not found in {args.install_dir}")
-            logger.info("Use 'SuperClaude install' to install SuperClaude first")
+            logger.error(get_string("update.run.not_found", args.install_dir))
+            logger.info(get_string("update.run.install_first"))
             return 1
         
         # Create component registry
-        logger.info("Checking for available updates...")
+        logger.info(get_string("update.run.checking"))
         
         registry = ComponentRegistry(PROJECT_ROOT / "setup" / "components")
         registry.discover_components()
@@ -363,7 +364,7 @@ def run(args: argparse.Namespace) -> int:
         # Get installed components
         installed_components = get_installed_components(args.install_dir)
         if not installed_components:
-            logger.error("Could not determine installed components")
+            logger.error(get_string("update.run.could_not_get_installed"))
             return 1
         
         # Check for available updates
@@ -380,10 +381,10 @@ def run(args: argparse.Namespace) -> int:
         # Get components to update
         components = get_components_to_update(args, installed_components, available_updates)
         if components is None:
-            logger.info("Update cancelled by user")
+            logger.info(get_string("update.run.cancelled"))
             return 0
         elif not components:
-            logger.info("No components selected for update")
+            logger.info(get_string("update.run.no_components_selected"))
             return 0
         
         # Display update plan
@@ -391,8 +392,8 @@ def run(args: argparse.Namespace) -> int:
             display_update_plan(components, available_updates, installed_components, args.install_dir)
             
             if not args.dry_run:
-                if not args.yes and not confirm("Proceed with update?", default=True):
-                    logger.info("Update cancelled by user")
+                if not args.yes and not confirm(get_string("update.run.confirm_proceed"), default=True):
+                    logger.info(get_string("update.run.cancelled"))
                     return 0
         
         # Perform update
@@ -400,21 +401,21 @@ def run(args: argparse.Namespace) -> int:
         
         if success:
             if not args.quiet:
-                display_success("SuperClaude update completed successfully!")
+                display_success(get_string("update.run.success"))
                 
                 if not args.dry_run:
-                    print(f"\n{Colors.CYAN}Next steps:{Colors.RESET}")
-                    print(f"1. Restart your Claude Code session")
-                    print(f"2. Updated components are now available")
-                    print(f"3. Check for any breaking changes in documentation")
+                    print(f"\n{Colors.CYAN}{get_string('install.run.next_steps_header')}{Colors.RESET}")
+                    print(get_string("update.run.next_steps_1"))
+                    print(get_string("update.run.next_steps_2"))
+                    print(get_string("update.run.next_steps_3"))
                     
             return 0
         else:
-            display_error("Update failed. Check logs for details.")
+            display_error(get_string("update.run.failed"))
             return 1
             
     except KeyboardInterrupt:
-        print(f"\n{Colors.YELLOW}Update cancelled by user{Colors.RESET}")
+        print(f"\n{Colors.YELLOW}{get_string('update.run.cancelled')}{Colors.RESET}")
         return 130
     except Exception as e:
         return operation.handle_operation_error("update", e)

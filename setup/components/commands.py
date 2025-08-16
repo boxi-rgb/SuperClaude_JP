@@ -6,6 +6,7 @@ from typing import Dict, List, Tuple, Optional, Any
 from pathlib import Path
 
 from ..base.component import Component
+from ..utils.localization import get_string
 
 class CommandsComponent(Component):
     """SuperClaude slash commands component"""
@@ -19,7 +20,7 @@ class CommandsComponent(Component):
         return {
             "name": "commands",
             "version": "3.0.0",
-            "description": "SuperClaude slash command definitions",
+            "description": get_string("commands.component.description"),
             "category": "commands"
         }
     
@@ -42,7 +43,7 @@ class CommandsComponent(Component):
     
     def _install(self, config: Dict[str, Any]) -> bool:
         """Install commands component"""
-        self.logger.info("Installing SuperClaude command definitions...")
+        self.logger.info(get_string("commands.install.installing"))
 
         # Check for and migrate existing commands from old location
         self._migrate_existing_commands()
@@ -54,7 +55,7 @@ class CommandsComponent(Component):
         try:
             metadata_mods = self.get_metadata_modifications()
             self.settings_manager.update_metadata(metadata_mods)
-            self.logger.info("Updated metadata with commands configuration")
+            self.logger.info(get_string("commands.install.metadata_updated"))
 
             # Add component registration to metadata
             self.settings_manager.add_component_registration("commands", {
@@ -62,9 +63,9 @@ class CommandsComponent(Component):
                 "category": "commands",
                 "files_count": len(self.component_files)
             })
-            self.logger.info("Updated metadata with commands component registration")
+            self.logger.info(get_string("commands.install.registration_updated"))
         except Exception as e:
-            self.logger.error(f"Failed to update metadata: {e}")
+            self.logger.error(get_string("commands.install.metadata_error", e))
             return False
 
         return True
@@ -72,7 +73,7 @@ class CommandsComponent(Component):
     def uninstall(self) -> bool:
         """Uninstall commands component"""
         try:
-            self.logger.info("Uninstalling SuperClaude commands component...")
+            self.logger.info(get_string("commands.uninstall.uninstalling"))
             
             # Remove command files from sc subdirectory
             commands_dir = self.install_dir / "commands" / "sc"
@@ -82,9 +83,9 @@ class CommandsComponent(Component):
                 file_path = commands_dir / filename
                 if self.file_manager.remove_file(file_path):
                     removed_count += 1
-                    self.logger.debug(f"Removed {filename}")
+                    self.logger.debug(get_string("commands.uninstall.removed", filename))
                 else:
-                    self.logger.warning(f"Could not remove {filename}")
+                    self.logger.warning(get_string("commands.uninstall.remove_error", filename))
             
             # Also check and remove any old commands in root commands directory
             old_commands_dir = self.install_dir / "commands"
@@ -95,12 +96,12 @@ class CommandsComponent(Component):
                 if old_file_path.exists() and old_file_path.is_file():
                     if self.file_manager.remove_file(old_file_path):
                         old_removed_count += 1
-                        self.logger.debug(f"Removed old {filename}")
+                        self.logger.debug(get_string("commands.uninstall.removed_old", filename))
                     else:
-                        self.logger.warning(f"Could not remove old {filename}")
+                        self.logger.warning(get_string("commands.uninstall.remove_old_error", filename))
             
             if old_removed_count > 0:
-                self.logger.info(f"Also removed {old_removed_count} commands from old location")
+                self.logger.info(get_string("commands.uninstall.also_removed_old", old_removed_count))
             
             removed_count += old_removed_count
             
@@ -110,7 +111,7 @@ class CommandsComponent(Component):
                     remaining_files = list(commands_dir.iterdir())
                     if not remaining_files:
                         commands_dir.rmdir()
-                        self.logger.debug("Removed empty sc commands directory")
+                        self.logger.debug(get_string("commands.uninstall.removed_sc_dir"))
                         
                         # Also remove parent commands directory if empty
                         parent_commands_dir = self.install_dir / "commands"
@@ -118,9 +119,9 @@ class CommandsComponent(Component):
                             remaining_files = list(parent_commands_dir.iterdir())
                             if not remaining_files:
                                 parent_commands_dir.rmdir()
-                                self.logger.debug("Removed empty parent commands directory")
+                                self.logger.debug(get_string("commands.uninstall.removed_parent_dir"))
             except Exception as e:
-                self.logger.warning(f"Could not remove commands directory: {e}")
+                self.logger.warning(get_string("commands.uninstall.remove_dir_error", e))
             
             # Update metadata to remove commands component
             try:
@@ -131,15 +132,15 @@ class CommandsComponent(Component):
                     if "commands" in metadata:
                         del metadata["commands"]
                         self.settings_manager.save_metadata(metadata)
-                    self.logger.info("Removed commands component from metadata")
+                    self.logger.info(get_string("commands.uninstall.removed_from_metadata"))
             except Exception as e:
-                self.logger.warning(f"Could not update metadata: {e}")
+                self.logger.warning(get_string("commands.uninstall.metadata_error", e))
             
-            self.logger.success(f"Commands component uninstalled ({removed_count} files removed)")
+            self.logger.success(get_string("commands.uninstall.success", removed_count))
             return True
             
         except Exception as e:
-            self.logger.exception(f"Unexpected error during commands uninstallation: {e}")
+            self.logger.exception(get_string("commands.uninstall.unexpected_error", e))
             return False
     
     def get_dependencies(self) -> List[str]:
@@ -149,17 +150,17 @@ class CommandsComponent(Component):
     def update(self, config: Dict[str, Any]) -> bool:
         """Update commands component"""
         try:
-            self.logger.info("Updating SuperClaude commands component...")
+            self.logger.info(get_string("commands.update.updating"))
             
             # Check current version
             current_version = self.settings_manager.get_component_version("commands")
             target_version = self.get_metadata()["version"]
             
             if current_version == target_version:
-                self.logger.info(f"Commands component already at version {target_version}")
+                self.logger.info(get_string("commands.update.already_latest", target_version))
                 return True
             
-            self.logger.info(f"Updating commands component from {current_version} to {target_version}")
+            self.logger.info(get_string("commands.update.updating_from_to", current_version, target_version))
             
             # Create backup of existing command files
             commands_dir = self.install_dir / "commands" / "sc"
@@ -172,7 +173,7 @@ class CommandsComponent(Component):
                         backup_path = self.file_manager.backup_file(file_path)
                         if backup_path:
                             backup_files.append(backup_path)
-                            self.logger.debug(f"Backed up {filename}")
+                            self.logger.debug(get_string("commands.update.backed_up", filename))
             
             # Perform installation (overwrites existing files)
             success = self.install(config)
@@ -185,22 +186,22 @@ class CommandsComponent(Component):
                     except Exception:
                         pass  # Ignore cleanup errors
                 
-                self.logger.success(f"Commands component updated to version {target_version}")
+                self.logger.success(get_string("commands.update.success", target_version))
             else:
                 # Restore from backup on failure
-                self.logger.warning("Update failed, restoring from backup...")
+                self.logger.warning(get_string("commands.update.restore_failed"))
                 for backup_path in backup_files:
                     try:
                         original_path = backup_path.with_suffix('')
                         backup_path.rename(original_path)
-                        self.logger.debug(f"Restored {original_path.name}")
+                        self.logger.debug(get_string("commands.update.restored", original_path.name))
                     except Exception as e:
-                        self.logger.error(f"Could not restore {backup_path}: {e}")
+                        self.logger.error(get_string("commands.update.restore_error", backup_path, e))
             
             return success
             
         except Exception as e:
-            self.logger.exception(f"Unexpected error during commands update: {e}")
+            self.logger.exception(get_string("commands.update.unexpected_error", e))
             return False
     
     def validate_installation(self) -> Tuple[bool, List[str]]:
@@ -210,26 +211,26 @@ class CommandsComponent(Component):
         # Check if sc commands directory exists
         commands_dir = self.install_dir / "commands" / "sc"
         if not commands_dir.exists():
-            errors.append("SC commands directory not found")
+            errors.append(get_string("commands.validate.no_sc_dir"))
             return False, errors
         
         # Check if all command files exist
         for filename in self.component_files:
             file_path = commands_dir / filename
             if not file_path.exists():
-                errors.append(f"Missing command file: {filename}")
+                errors.append(get_string("commands.validate.missing_file", filename))
             elif not file_path.is_file():
-                errors.append(f"Command file is not a regular file: {filename}")
+                errors.append(get_string("commands.validate.not_a_file", filename))
         
         # Check metadata registration
         if not self.settings_manager.is_component_installed("commands"):
-            errors.append("Commands component not registered in metadata")
+            errors.append(get_string("commands.validate.not_registered"))
         else:
             # Check version matches
             installed_version = self.settings_manager.get_component_version("commands")
             expected_version = self.get_metadata()["version"]
             if installed_version != expected_version:
-                errors.append(f"Version mismatch: installed {installed_version}, expected {expected_version}")
+                errors.append(get_string("commands.validate.version_mismatch", installed_version, expected_version))
         
         return len(errors) == 0, errors
     
@@ -284,11 +285,11 @@ class CommandsComponent(Component):
                         commands_to_migrate.append(filename)
             
             if commands_to_migrate:
-                self.logger.info(f"Found {len(commands_to_migrate)} existing commands to migrate to sc/ subdirectory")
+                self.logger.info(get_string("commands.migrate.found_commands", len(commands_to_migrate)))
                 
                 # Ensure new directory exists
                 if not self.file_manager.ensure_directory(new_commands_dir):
-                    self.logger.error(f"Could not create sc commands directory: {new_commands_dir}")
+                    self.logger.error(get_string("commands.migrate.create_dir_error", new_commands_dir))
                     return
                 
                 # Move files from old to new location
@@ -302,17 +303,17 @@ class CommandsComponent(Component):
                             # Remove old file
                             if self.file_manager.remove_file(old_file_path):
                                 migrated_count += 1
-                                self.logger.debug(f"Migrated {filename} to sc/ subdirectory")
+                                self.logger.debug(get_string("commands.migrate.migrated", filename))
                             else:
-                                self.logger.warning(f"Could not remove old {filename}")
+                                self.logger.warning(get_string("commands.uninstall.remove_old_error", filename))
                         else:
-                            self.logger.warning(f"Could not copy {filename} to sc/ subdirectory")
+                            self.logger.warning(get_string("commands.migrate.copy_error", filename))
                     except Exception as e:
-                        self.logger.warning(f"Error migrating {filename}: {e}")
+                        self.logger.warning(get_string("commands.migrate.error", filename, e))
                 
                 if migrated_count > 0:
-                    self.logger.success(f"Successfully migrated {migrated_count} commands to /sc: namespace")
-                    self.logger.info("Commands are now available as /sc:analyze, /sc:build, etc.")
+                    self.logger.success(get_string("commands.migrate.success", migrated_count))
+                    self.logger.info(get_string("commands.migrate.info"))
                     
                     # Try to remove old commands directory if empty
                     try:
@@ -321,9 +322,9 @@ class CommandsComponent(Component):
                             if not remaining_files:
                                 # Only remove if no user files remain
                                 old_commands_dir.rmdir()
-                                self.logger.debug("Removed empty old commands directory")
+                                self.logger.debug(get_string("commands.migrate.remove_old_dir_error", old_commands_dir))
                     except Exception as e:
-                        self.logger.debug(f"Could not remove old commands directory: {e}")
+                        self.logger.debug(get_string("commands.migrate.remove_old_dir_error", e))
                         
         except Exception as e:
-            self.logger.warning(f"Error during command migration: {e}")
+            self.logger.warning(get_string("commands.migrate.migration_error", e))
