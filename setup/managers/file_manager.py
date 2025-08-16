@@ -8,6 +8,7 @@ from typing import List, Optional, Callable, Dict, Any
 from pathlib import Path
 import fnmatch
 import hashlib
+from ..utils.localization import get_string
 
 
 class FileManager:
@@ -37,13 +38,13 @@ class FileManager:
             True if successful, False otherwise
         """
         if not source.exists():
-            raise FileNotFoundError(f"Source file not found: {source}")
+            raise FileNotFoundError(get_string("file.error.source_not_found", source))
         
         if not source.is_file():
-            raise ValueError(f"Source is not a file: {source}")
+            raise ValueError(get_string("file.error.source_not_a_file", source))
         
         if self.dry_run:
-            print(f"[DRY RUN] Would copy {source} -> {target}")
+            print(get_string("file.dry_run.copy_file", source, target))
             return True
         
         try:
@@ -60,7 +61,7 @@ class FileManager:
             return True
             
         except Exception as e:
-            print(f"Error copying {source} to {target}: {e}")
+            print(get_string("file.error.copy_file_error", source, target, e))
             return False
     
     def copy_directory(self, source: Path, target: Path, ignore_patterns: Optional[List[str]] = None) -> bool:
@@ -76,17 +77,17 @@ class FileManager:
             True if successful, False otherwise
         """
         if not source.exists():
-            raise FileNotFoundError(f"Source directory not found: {source}")
+            raise FileNotFoundError(get_string("file.error.source_dir_not_found", source))
         
         if not source.is_dir():
-            raise ValueError(f"Source is not a directory: {source}")
+            raise ValueError(get_string("file.error.source_not_a_dir", source))
         
         ignore_patterns = ignore_patterns or []
         default_ignores = ['.git', '.gitignore', '__pycache__', '*.pyc', '.DS_Store']
         all_ignores = ignore_patterns + default_ignores
         
         if self.dry_run:
-            print(f"[DRY RUN] Would copy directory {source} -> {target}")
+            print(get_string("file.dry_run.copy_dir", source, target))
             return True
         
         try:
@@ -118,7 +119,7 @@ class FileManager:
             return True
             
         except Exception as e:
-            print(f"Error copying directory {source} to {target}: {e}")
+            print(get_string("file.error.copy_dir_error", source, target, e))
             return False
     
     def ensure_directory(self, directory: Path, mode: int = 0o755) -> bool:
@@ -133,7 +134,7 @@ class FileManager:
             True if successful, False otherwise
         """
         if self.dry_run:
-            print(f"[DRY RUN] Would create directory {directory}")
+            print(get_string("file.dry_run.create_dir", directory))
             return True
         
         try:
@@ -145,7 +146,7 @@ class FileManager:
             return True
             
         except Exception as e:
-            print(f"Error creating directory {directory}: {e}")
+            print(get_string("file.error.create_dir_error", directory, e))
             return False
     
     def remove_file(self, file_path: Path) -> bool:
@@ -162,14 +163,14 @@ class FileManager:
             return True  # Already gone
         
         if self.dry_run:
-            print(f"[DRY RUN] Would remove file {file_path}")
+            print(get_string("file.dry_run.remove_file", file_path))
             return True
         
         try:
             if file_path.is_file():
                 file_path.unlink()
             else:
-                print(f"Warning: {file_path} is not a file, skipping")
+                print(get_string("file.warning.not_a_file", file_path))
                 return False
             
             # Remove from tracking
@@ -179,7 +180,7 @@ class FileManager:
             return True
             
         except Exception as e:
-            print(f"Error removing file {file_path}: {e}")
+            print(get_string("file.error.remove_file_error", file_path, e))
             return False
     
     def remove_directory(self, directory: Path, recursive: bool = False) -> bool:
@@ -198,7 +199,7 @@ class FileManager:
         
         if self.dry_run:
             action = "recursively remove" if recursive else "remove"
-            print(f"[DRY RUN] Would {action} directory {directory}")
+            print(get_string("file.dry_run.remove_dir", action, directory))
             return True
         
         try:
@@ -214,7 +215,7 @@ class FileManager:
             return True
             
         except Exception as e:
-            print(f"Error removing directory {directory}: {e}")
+            print(get_string("file.error.remove_dir_error", directory, e))
             return False
     
     def resolve_home_path(self, path: str) -> Path:
@@ -243,7 +244,7 @@ class FileManager:
             return False
         
         if self.dry_run:
-            print(f"[DRY RUN] Would make {file_path} executable")
+            print(get_string("file.dry_run.make_executable", file_path))
             return True
         
         try:
@@ -257,7 +258,7 @@ class FileManager:
             return True
             
         except Exception as e:
-            print(f"Error making {file_path} executable: {e}")
+            print(get_string("file.error.make_executable_error", file_path, e))
             return False
     
     def get_file_hash(self, file_path: Path, algorithm: str = 'sha256') -> Optional[str]:
@@ -390,7 +391,7 @@ class FileManager:
     def cleanup_tracked_files(self) -> None:
         """Remove all files and directories created during this session"""
         if self.dry_run:
-            print("[DRY RUN] Would cleanup tracked files")
+            print(get_string("file.dry_run.cleanup"))
             return
         
         # Remove files first

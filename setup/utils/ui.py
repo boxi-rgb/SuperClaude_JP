@@ -8,6 +8,10 @@ import time
 import shutil
 from typing import List, Optional, Any, Dict, Union
 from enum import Enum
+from setup.utils.localization import get_string, set_language
+
+# Set the language to Japanese
+set_language('ja')
 
 # Try to import colorama for cross-platform color support
 try:
@@ -94,7 +98,7 @@ class ProgressBar:
         elapsed = time.time() - self.start_time
         if current > 0:
             eta = (elapsed / current) * (self.total - current)
-            eta_str = f" ETA: {self._format_time(eta)}"
+            eta_str = f" {get_string('progress.eta', self._format_time(eta))}"
         else:
             eta_str = ""
         
@@ -128,7 +132,7 @@ class ProgressBar:
         """
         self.update(self.current + 1, message)
     
-    def finish(self, message: str = 'Complete') -> None:
+    def finish(self, message: str = get_string('progress.complete')) -> None:
         """
         Complete progress bar
         
@@ -141,13 +145,13 @@ class ProgressBar:
     def _format_time(self, seconds: float) -> str:
         """Format time duration as human-readable string"""
         if seconds < 60:
-            return f"{seconds:.0f}s"
+            return f"{seconds:.0f}{get_string('time.seconds')}"
         elif seconds < 3600:
-            return f"{seconds/60:.0f}m {seconds%60:.0f}s"
+            return f"{seconds/60:.0f}{get_string('time.minutes')} {seconds%60:.0f}{get_string('time.seconds')}"
         else:
             hours = seconds // 3600
             minutes = (seconds % 3600) // 60
-            return f"{hours:.0f}h {minutes:.0f}m"
+            return f"{hours:.0f}{get_string('time.hours')} {minutes:.0f}{get_string('time.minutes')}"
 
 
 class Menu:
@@ -185,9 +189,9 @@ class Menu:
                 print(f"{Colors.YELLOW}{i:2d}.{Colors.RESET} {option}")
         
         if self.multi_select:
-            print(f"\n{Colors.BLUE}Enter numbers separated by commas (e.g., 1,3,5) or 'all' for all options:{Colors.RESET}")
+            print(f"\n{Colors.BLUE}{get_string('menu.multi_select_prompt')}{Colors.RESET}")
         else:
-            print(f"\n{Colors.BLUE}Enter your choice (1-{len(self.options)}):{Colors.RESET}")
+            print(f"\n{Colors.BLUE}{get_string('menu.single_select_prompt', len(self.options))}{Colors.RESET}")
         
         while True:
             try:
@@ -208,9 +212,9 @@ class Menu:
                                 if 0 <= idx < len(self.options):
                                     selections.append(idx)
                                 else:
-                                    raise ValueError(f"Invalid option: {part}")
+                                    raise ValueError(get_string('menu.invalid_option', part))
                             else:
-                                raise ValueError(f"Invalid input: {part}")
+                                raise ValueError(get_string('menu.invalid_input', part))
                         return list(set(selections))  # Remove duplicates
                 else:
                     if user_input.isdigit():
@@ -218,16 +222,16 @@ class Menu:
                         if 0 <= choice < len(self.options):
                             return choice
                         else:
-                            print(f"{Colors.RED}Invalid choice. Please enter a number between 1 and {len(self.options)}.{Colors.RESET}")
+                            print(f"{Colors.RED}{get_string('menu.invalid_choice', len(self.options))}{Colors.RESET}")
                     else:
-                        print(f"{Colors.RED}Please enter a valid number.{Colors.RESET}")
+                        print(f"{Colors.RED}{get_string('menu.invalid_number')}{Colors.RESET}")
                         
             except (ValueError, KeyboardInterrupt) as e:
                 if isinstance(e, KeyboardInterrupt):
-                    print(f"\n{Colors.YELLOW}Operation cancelled.{Colors.RESET}")
+                    print(f"\n{Colors.YELLOW}{get_string('general.operation_cancelled')}{Colors.RESET}")
                     return [] if self.multi_select else -1
                 else:
-                    print(f"{Colors.RED}Invalid input: {e}{Colors.RESET}")
+                    print(f"{Colors.RED}{get_string('menu.invalid_input', e)}{Colors.RESET}")
 
 
 def confirm(message: str, default: bool = True) -> bool:
@@ -241,7 +245,7 @@ def confirm(message: str, default: bool = True) -> bool:
     Returns:
         True if confirmed, False otherwise
     """
-    suffix = "[Y/n]" if default else "[y/N]"
+    suffix = get_string('confirm.prompt_yes_default') if default else get_string('confirm.prompt_no_default')
     print(f"{Colors.BLUE}{message} {suffix}{Colors.RESET}")
     
     while True:
@@ -255,10 +259,10 @@ def confirm(message: str, default: bool = True) -> bool:
             elif response in ['n', 'no', 'false', '0']:
                 return False
             else:
-                print(f"{Colors.RED}Please enter 'y' or 'n' (or press Enter for default).{Colors.RESET}")
+                print(f"{Colors.RED}{get_string('confirm.invalid_choice')}{Colors.RESET}")
                 
         except KeyboardInterrupt:
-            print(f"\n{Colors.YELLOW}Operation cancelled.{Colors.RESET}")
+            print(f"\n{Colors.YELLOW}{get_string('general.operation_cancelled')}{Colors.RESET}")
             return False
 
 
@@ -279,27 +283,27 @@ def display_header(title: str, subtitle: str = '') -> None:
 
 def display_info(message: str) -> None:
     """Display info message"""
-    print(f"{Colors.BLUE}[INFO] {message}{Colors.RESET}")
+    print(f"{Colors.BLUE}{get_string('info.prefix')} {message}{Colors.RESET}")
 
 
 def display_success(message: str) -> None:
     """Display success message"""
-    print(f"{Colors.GREEN}[✓] {message}{Colors.RESET}")
+    print(f"{Colors.GREEN}{get_string('success.prefix')} {message}{Colors.RESET}")
 
 
 def display_warning(message: str) -> None:
     """Display warning message"""
-    print(f"{Colors.YELLOW}[!] {message}{Colors.RESET}")
+    print(f"{Colors.YELLOW}{get_string('warning.prefix')} {message}{Colors.RESET}")
 
 
 def display_error(message: str) -> None:
     """Display error message"""
-    print(f"{Colors.RED}[✗] {message}{Colors.RESET}")
+    print(f"{Colors.RED}{get_string('error.prefix')} {message}{Colors.RESET}")
 
 
 def display_step(step: int, total: int, message: str) -> None:
     """Display step progress"""
-    print(f"{Colors.CYAN}[{step}/{total}] {message}{Colors.RESET}")
+    print(f"{Colors.CYAN}{get_string('step.prefix', step, total)} {message}{Colors.RESET}")
 
 
 def display_table(headers: List[str], rows: List[List[str]], title: str = '') -> None:
@@ -339,12 +343,12 @@ def display_table(headers: List[str], rows: List[List[str]], title: str = '') ->
     print()
 
 
-def wait_for_key(message: str = "Press Enter to continue...") -> None:
+def wait_for_key(message: str = get_string("general.press_enter_to_continue")) -> None:
     """Wait for user to press a key"""
     try:
         input(f"{Colors.BLUE}{message}{Colors.RESET}")
     except KeyboardInterrupt:
-        print(f"\n{Colors.YELLOW}Operation cancelled.{Colors.RESET}")
+        print(f"\n{Colors.YELLOW}{get_string('general.operation_cancelled')}{Colors.RESET}")
 
 
 def clear_screen() -> None:
@@ -356,7 +360,7 @@ def clear_screen() -> None:
 class StatusSpinner:
     """Simple status spinner for long operations"""
     
-    def __init__(self, message: str = "Working..."):
+    def __init__(self, message: str = get_string("spinner.working")):
         """
         Initialize spinner
         
@@ -403,27 +407,27 @@ class StatusSpinner:
 
 def format_size(size_bytes: int) -> str:
     """Format file size in human-readable format"""
-    for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
+    for unit in [get_string('size.bytes'), get_string('size.kilobytes'), get_string('size.megabytes'), get_string('size.gigabytes'), get_string('size.terabytes')]:
         if size_bytes < 1024.0:
             return f"{size_bytes:.1f} {unit}"
         size_bytes /= 1024.0
-    return f"{size_bytes:.1f} PB"
+    return f"{size_bytes:.1f} {get_string('size.petabytes')}"
 
 
 def format_duration(seconds: float) -> str:
     """Format duration in human-readable format"""
     if seconds < 1:
-        return f"{seconds*1000:.0f}ms"
+        return f"{seconds*1000:.0f}{get_string('time.milliseconds')}"
     elif seconds < 60:
-        return f"{seconds:.1f}s"
+        return f"{seconds:.1f}{get_string('time.seconds')}"
     elif seconds < 3600:
         minutes = seconds // 60
         secs = seconds % 60
-        return f"{minutes:.0f}m {secs:.0f}s"
+        return f"{minutes:.0f}{get_string('time.minutes')} {secs:.0f}{get_string('time.seconds')}"
     else:
         hours = seconds // 3600
         minutes = (seconds % 3600) // 60
-        return f"{hours:.0f}h {minutes:.0f}m"
+        return f"{hours:.0f}{get_string('time.hours')} {minutes:.0f}{get_string('time.minutes')}"
 
 
 def truncate_text(text: str, max_length: int, suffix: str = "...") -> str:

@@ -7,6 +7,7 @@ from pathlib import Path
 import shutil
 
 from ..base.component import Component
+from ..utils.localization import get_string
 
 class CoreComponent(Component):
     """Core SuperClaude framework files component"""
@@ -20,7 +21,7 @@ class CoreComponent(Component):
         return {
             "name": "core",
             "version": "3.0.0",
-            "description": "SuperClaude framework documentation and core files",
+            "description": get_string("core.component.description"),
             "category": "core"
         }
     
@@ -30,7 +31,7 @@ class CoreComponent(Component):
             "framework": {
                 "version": "3.0.0",
                 "name": "SuperClaude",
-                "description": "AI-enhanced development framework for Claude Code",
+                "description": get_string("core.framework.description"),
                 "installation_type": "global",
                 "components": ["core"]
             },
@@ -44,7 +45,7 @@ class CoreComponent(Component):
     
     def _install(self, config: Dict[str, Any]) -> bool:
         """Install core component"""
-        self.logger.info("Installing SuperClaude core framework files...")
+        self.logger.info(get_string("core.install.installing"))
 
         return super()._install(config);
 
@@ -53,7 +54,7 @@ class CoreComponent(Component):
         try:
             metadata_mods = self.get_metadata_modifications()
             self.settings_manager.update_metadata(metadata_mods)
-            self.logger.info("Updated metadata with framework configuration")
+            self.logger.info(get_string("core.install.metadata_updated"))
             
             # Add component registration to metadata
             self.settings_manager.add_component_registration("core", {
@@ -62,13 +63,13 @@ class CoreComponent(Component):
                 "files_count": len(self.component_files)
             })
 
-            self.logger.info("Updated metadata with core component registration")
+            self.logger.info(get_string("core.install.registration_updated"))
             
             # Migrate any existing SuperClaude data from settings.json
             if self.settings_manager.migrate_superclaude_data():
-                self.logger.info("Migrated existing SuperClaude data from settings.json")
+                self.logger.info(get_string("core.install.migrated_data"))
         except Exception as e:
-            self.logger.error(f"Failed to update metadata: {e}")
+            self.logger.error(get_string("core.install.metadata_error", e))
             return False
 
         # Create additional directories for other components
@@ -76,7 +77,7 @@ class CoreComponent(Component):
         for dirname in additional_dirs:
             dir_path = self.install_dir / dirname
             if not self.file_manager.ensure_directory(dir_path):
-                self.logger.warning(f"Could not create directory: {dir_path}")
+                self.logger.warning(get_string("core.install.create_dir_error", dir_path))
 
         return True
 
@@ -84,7 +85,7 @@ class CoreComponent(Component):
     def uninstall(self) -> bool:
         """Uninstall core component"""
         try:
-            self.logger.info("Uninstalling SuperClaude core component...")
+            self.logger.info(get_string("core.uninstall.uninstalling"))
             
             # Remove framework files
             removed_count = 0
@@ -92,9 +93,9 @@ class CoreComponent(Component):
                 file_path = self.install_dir / filename
                 if self.file_manager.remove_file(file_path):
                     removed_count += 1
-                    self.logger.debug(f"Removed {filename}")
+                    self.logger.debug(get_string("core.uninstall.removed", filename))
                 else:
-                    self.logger.warning(f"Could not remove {filename}")
+                    self.logger.warning(get_string("core.uninstall.remove_error", filename))
             
             # Update metadata to remove core component
             try:
@@ -107,15 +108,15 @@ class CoreComponent(Component):
                             del metadata[key]
 
                     self.settings_manager.save_metadata(metadata)
-                    self.logger.info("Removed core component from metadata")
+                    self.logger.info(get_string("core.uninstall.removed_from_metadata"))
             except Exception as e:
-                self.logger.warning(f"Could not update metadata: {e}")
+                self.logger.warning(get_string("core.uninstall.metadata_error", e))
             
-            self.logger.success(f"Core component uninstalled ({removed_count} files removed)")
+            self.logger.success(get_string("core.uninstall.success", removed_count))
             return True
             
         except Exception as e:
-            self.logger.exception(f"Unexpected error during core uninstallation: {e}")
+            self.logger.exception(get_string("core.uninstall.unexpected_error", e))
             return False
     
     def get_dependencies(self) -> List[str]:
@@ -125,17 +126,17 @@ class CoreComponent(Component):
     def update(self, config: Dict[str, Any]) -> bool:
         """Update core component"""
         try:
-            self.logger.info("Updating SuperClaude core component...")
+            self.logger.info(get_string("core.update.updating"))
             
             # Check current version
             current_version = self.settings_manager.get_component_version("core")
             target_version = self.get_metadata()["version"]
             
             if current_version == target_version:
-                self.logger.info(f"Core component already at version {target_version}")
+                self.logger.info(get_string("core.update.already_latest", target_version))
                 return True
             
-            self.logger.info(f"Updating core component from {current_version} to {target_version}")
+            self.logger.info(get_string("core.update.updating_from_to", current_version, target_version))
             
             # Create backup of existing files
             backup_files = []
@@ -145,7 +146,7 @@ class CoreComponent(Component):
                     backup_path = self.file_manager.backup_file(file_path)
                     if backup_path:
                         backup_files.append(backup_path)
-                        self.logger.debug(f"Backed up {filename}")
+                        self.logger.debug(get_string("core.update.backed_up", filename))
             
             # Perform installation (overwrites existing files)
             success = self.install(config)
@@ -158,22 +159,22 @@ class CoreComponent(Component):
                     except Exception:
                         pass  # Ignore cleanup errors
                 
-                self.logger.success(f"Core component updated to version {target_version}")
+                self.logger.success(get_string("core.update.success", target_version))
             else:
                 # Restore from backup on failure
-                self.logger.warning("Update failed, restoring from backup...")
+                self.logger.warning(get_string("core.update.restore_failed"))
                 for backup_path in backup_files:
                     try:
                         original_path = backup_path.with_suffix('')
                         shutil.move(str(backup_path), str(original_path))
-                        self.logger.debug(f"Restored {original_path.name}")
+                        self.logger.debug(get_string("core.update.restored", original_path.name))
                     except Exception as e:
-                        self.logger.error(f"Could not restore {backup_path}: {e}")
+                        self.logger.error(get_string("core.update.restore_error", backup_path, e))
             
             return success
             
         except Exception as e:
-            self.logger.exception(f"Unexpected error during core update: {e}")
+            self.logger.exception(get_string("core.update.unexpected_error", e))
             return False
     
     def validate_installation(self) -> Tuple[bool, List[str]]:
@@ -184,32 +185,32 @@ class CoreComponent(Component):
         for filename in self.component_files:
             file_path = self.install_dir / filename
             if not file_path.exists():
-                errors.append(f"Missing framework file: {filename}")
+                errors.append(get_string("core.validate.missing_file", filename))
             elif not file_path.is_file():
-                errors.append(f"Framework file is not a regular file: {filename}")
+                errors.append(get_string("core.validate.not_a_file", filename))
         
         # Check metadata registration
         if not self.settings_manager.is_component_installed("core"):
-            errors.append("Core component not registered in metadata")
+            errors.append(get_string("core.validate.not_registered"))
         else:
             # Check version matches
             installed_version = self.settings_manager.get_component_version("core")
             expected_version = self.get_metadata()["version"]
             if installed_version != expected_version:
-                errors.append(f"Version mismatch: installed {installed_version}, expected {expected_version}")
+                errors.append(get_string("core.validate.version_mismatch", installed_version, expected_version))
         
         # Check metadata structure
         try:
             framework_config = self.settings_manager.get_metadata_setting("framework")
             if not framework_config:
-                errors.append("Missing framework configuration in metadata")
+                errors.append(get_string("core.validate.missing_config"))
             else:
                 required_keys = ["version", "name", "description"]
                 for key in required_keys:
                     if key not in framework_config:
-                        errors.append(f"Missing framework.{key} in metadata")
+                        errors.append(get_string("core.validate.missing_key", key))
         except Exception as e:
-            errors.append(f"Could not validate metadata: {e}")
+            errors.append(get_string("core.validate.metadata_error", e))
         
         return len(errors) == 0, errors
     

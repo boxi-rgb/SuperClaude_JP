@@ -32,6 +32,7 @@ sys.path.insert(0, str(setup_dir))
 
 # Try to import utilities from the setup package
 try:
+    from setup.utils.localization import get_string, set_language
     from setup.utils.ui import (
         display_header, display_info, display_success, display_error,
         display_warning, Colors
@@ -64,17 +65,17 @@ def create_global_parser() -> argparse.ArgumentParser:
     global_parser = argparse.ArgumentParser(add_help=False)
 
     global_parser.add_argument("--verbose", "-v", action="store_true",
-                               help="Enable verbose logging")
+                               help=get_string("global.verbose_help"))
     global_parser.add_argument("--quiet", "-q", action="store_true",
-                               help="Suppress all output except errors")
+                               help=get_string("global.quiet_help"))
     global_parser.add_argument("--install-dir", type=Path, default=DEFAULT_INSTALL_DIR,
-                               help=f"Target installation directory (default: {DEFAULT_INSTALL_DIR})")
+                               help=get_string("global.install_dir_help", DEFAULT_INSTALL_DIR))
     global_parser.add_argument("--dry-run", action="store_true",
-                               help="Simulate operation without making changes")
+                               help=get_string("global.dry_run_help"))
     global_parser.add_argument("--force", action="store_true",
-                               help="Force execution, skipping checks")
+                               help=get_string("global.force_help"))
     global_parser.add_argument("--yes", "-y", action="store_true",
-                               help="Automatically answer yes to all prompts")
+                               help=get_string("global.yes_help"))
 
     return global_parser
 
@@ -130,12 +131,21 @@ def setup_global_environment(args: argparse.Namespace):
 
 def get_operation_modules() -> Dict[str, str]:
     """Return supported operations and their descriptions"""
-    return {
-        "install": "Install SuperClaude framework components",
-        "update": "Update existing SuperClaude installation",
-        "uninstall": "Remove SuperClaude installation",
-        "backup": "Backup and restore operations"
-    }
+    try:
+        return {
+            "install": get_string("op.install"),
+            "update": get_string("op.update"),
+            "uninstall": get_string("op.uninstall"),
+            "backup": get_string("op.backup")
+        }
+    except NameError:
+        # Fallback for when localization is not available
+        return {
+            "install": "Install SuperClaude framework components",
+            "update": "Update existing SuperClaude installation",
+            "uninstall": "Remove SuperClaude installation",
+            "backup": "Backup and restore operations"
+        }
 
 
 def load_operation_module(name: str):
@@ -197,6 +207,13 @@ def handle_legacy_fallback(op: str, args: argparse.Namespace) -> int:
 def main() -> int:
     """Main entry point"""
     try:
+        # Set language
+        try:
+            set_language('ja')
+        except NameError:
+            # In case of fallback, this will not be defined
+            pass
+
         parser, subparsers, global_parser = create_parser()
         operations = register_operation_parsers(subparsers, global_parser)
         args = parser.parse_args()
@@ -204,8 +221,8 @@ def main() -> int:
         # No operation provided? Show help manually unless in quiet mode
         if not args.operation:
             if not args.quiet:
-                display_header("SuperClaude Framework v3.0", "Unified CLI for all operations")
-                print(f"{Colors.CYAN}Available operations:{Colors.RESET}")
+                display_header(get_string("main.title"), get_string("main.subtitle"))
+                print(f"{Colors.CYAN}{get_string('main.available_operations')}{Colors.RESET}")
                 for op, desc in get_operation_modules().items():
                     print(f"  {op:<12} {desc}")
             return 0

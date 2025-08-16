@@ -6,6 +6,7 @@ from typing import Dict, List, Tuple, Optional, Any
 from pathlib import Path
 
 from ..base.component import Component
+from ..utils.localization import get_string
 
 
 class HooksComponent(Component):
@@ -29,7 +30,7 @@ class HooksComponent(Component):
         return {
             "name": "hooks",
             "version": "3.0.0",
-            "description": "Claude Code hooks integration (future-ready)",
+            "description": get_string("hooks.component.description"),
             "category": "integration"
         }
     def get_metadata_modifications(self) -> Dict[str, Any]:
@@ -63,17 +64,17 @@ class HooksComponent(Component):
 
     def _install(self, config: Dict[str, Any]) -> bool:
         """Install hooks component"""
-        self.logger.info("Installing SuperClaude hooks component...")
+        self.logger.info(get_string("hooks.install.installing"))
 
         # This component is future-ready - hooks aren't implemented yet
         source_dir = self._get_source_dir()
 
         if not source_dir.exists() or (source_dir / "PLACEHOLDER.py").exists  :
-            self.logger.info("Hooks are not yet implemented - installing placeholder component")
+            self.logger.info(get_string("hooks.install.placeholder"))
             
             # Create placeholder hooks directory
             if not self.file_manager.ensure_directory(self.install_component_subdir):
-                self.logger.error(f"Could not create hooks directory: {self.install_component_subdir}")
+                self.logger.error(get_string("hooks.install.create_dir_error", self.install_component_subdir))
                 return False
 
             # Create placeholder file
@@ -103,9 +104,9 @@ pass
             try:
                 with open(placeholder_path, 'w') as f:
                     f.write(placeholder_content)
-                self.logger.debug("Created hooks placeholder file")
+                self.logger.debug(get_string("hooks.install.placeholder_created"))
             except Exception as e:
-                self.logger.warning(f"Could not create placeholder file: {e}")
+                self.logger.warning(get_string("hooks.install.placeholder_error", e))
             
             # Update settings with placeholder registration
             try:
@@ -120,16 +121,16 @@ pass
                     }
                 }
                 self.settings_manager.update_metadata(metadata_mods)
-                self.logger.info("Updated metadata with hooks component registration")
+                self.logger.info(get_string("hooks.install.registration_updated"))
             except Exception as e:
-                self.logger.error(f"Failed to update metadata for hooks component: {e}")
+                self.logger.error(get_string("hooks.install.metadata_error", e))
                 return False
             
-            self.logger.success("Hooks component installed successfully (placeholder)")
+            self.logger.success(get_string("hooks.install.success_placeholder"))
             return True
 
         # If hooks source directory exists, install actual hooks
-        self.logger.info("Installing actual hook files...")
+        self.logger.info(get_string("hooks.install.installing_actual"))
 
         # Validate installation
         success, errors = self.validate_prerequisites(Path("hooks"))
@@ -142,25 +143,25 @@ pass
         files_to_install = self.get_files_to_install()
 
         if not files_to_install:
-            self.logger.warning("No hook files found to install")
+            self.logger.warning(get_string("hooks.install.no_hooks_found"))
             return False
 
         # Copy hook files
         success_count = 0
         for source, target in files_to_install:
-            self.logger.debug(f"Copying {source.name} to {target}")
+            self.logger.debug(get_string("hooks.install.copying", source.name, target))
             
             if self.file_manager.copy_file(source, target):
                 success_count += 1
-                self.logger.debug(f"Successfully copied {source.name}")
+                self.logger.debug(get_string("hooks.install.copy_success", source.name))
             else:
-                self.logger.error(f"Failed to copy {source.name}")
+                self.logger.error(get_string("hooks.install.copy_failed", source.name))
 
         if success_count != len(files_to_install):
-            self.logger.error(f"Only {success_count}/{len(files_to_install)} hook files copied successfully")
+            self.logger.error(get_string("hooks.install.copy_summary_error", success_count, len(files_to_install)))
             return False
 
-        self.logger.success(f"Hooks component installed successfully ({success_count} hook files)")
+        self.logger.success(get_string("hooks.install.success", success_count))
 
         return self._post_install()
 
@@ -169,7 +170,7 @@ pass
         try:
             metadata_mods = self.get_metadata_modifications()
             self.settings_manager.update_metadata(metadata_mods)
-            self.logger.info("Updated metadata with hooks configuration")
+            self.logger.info(get_string("hooks.install.metadata_updated"))
 
             # Add hook registration to metadata
             self.settings_manager.add_component_registration("hooks", {
@@ -178,9 +179,9 @@ pass
                 "files_count": len(self.hook_files)
             })
 
-            self.logger.info("Updated metadata with commands component registration")
+            self.logger.info(get_string("commands.install.registration_updated"))
         except Exception as e:
-            self.logger.error(f"Failed to update metadata: {e}")
+            self.logger.error(get_string("hooks.install.metadata_error", e))
             return False
 
         return True
@@ -188,7 +189,7 @@ pass
     def uninstall(self) -> bool:
         """Uninstall hooks component"""
         try:
-            self.logger.info("Uninstalling SuperClaude hooks component...")
+            self.logger.info(get_string("hooks.uninstall.uninstalling"))
             
             # Remove hook files and placeholder
             removed_count = 0
@@ -198,13 +199,13 @@ pass
                 file_path = self.install_component_subdir / filename
                 if self.file_manager.remove_file(file_path):
                     removed_count += 1
-                    self.logger.debug(f"Removed {filename}")
+                    self.logger.debug(get_string("hooks.uninstall.removed", filename))
             
             # Remove placeholder file
             placeholder_path = self.install_component_subdir / "PLACEHOLDER.py"
             if self.file_manager.remove_file(placeholder_path):
                 removed_count += 1
-                self.logger.debug("Removed hooks placeholder")
+                self.logger.debug(get_string("hooks.uninstall.removed_placeholder"))
             
             # Remove hooks directory if empty
             try:
@@ -212,9 +213,9 @@ pass
                     remaining_files = list(self.install_component_subdir.iterdir())
                     if not remaining_files:
                         self.install_component_subdir.rmdir()
-                        self.logger.debug("Removed empty hooks directory")
+                        self.logger.debug(get_string("hooks.uninstall.removed_dir"))
             except Exception as e:
-                self.logger.warning(f"Could not remove hooks directory: {e}")
+                self.logger.warning(get_string("hooks.uninstall.remove_dir_error", e))
             
             # Update settings.json to remove hooks component and configuration
             try:
@@ -227,15 +228,15 @@ pass
                         del settings["hooks"]
                         self.settings_manager.save_settings(settings)
                     
-                    self.logger.info("Removed hooks component and configuration from settings.json")
+                    self.logger.info(get_string("hooks.uninstall.removed_from_settings"))
             except Exception as e:
-                self.logger.warning(f"Could not update settings.json: {e}")
+                self.logger.warning(get_string("hooks.uninstall.settings_error", e))
             
-            self.logger.success(f"Hooks component uninstalled ({removed_count} files removed)")
+            self.logger.success(get_string("hooks.uninstall.success", removed_count))
             return True
             
         except Exception as e:
-            self.logger.exception(f"Unexpected error during hooks uninstallation: {e}")
+            self.logger.exception(get_string("hooks.uninstall.unexpected_error", e))
             return False
     
     def get_dependencies(self) -> List[str]:
@@ -245,17 +246,17 @@ pass
     def update(self, config: Dict[str, Any]) -> bool:
         """Update hooks component"""
         try:
-            self.logger.info("Updating SuperClaude hooks component...")
+            self.logger.info(get_string("hooks.update.updating"))
             
             # Check current version
             current_version = self.settings_manager.get_component_version("hooks")
             target_version = self.get_metadata()["version"]
             
             if current_version == target_version:
-                self.logger.info(f"Hooks component already at version {target_version}")
+                self.logger.info(get_string("hooks.update.already_latest", target_version))
                 return True
             
-            self.logger.info(f"Updating hooks component from {current_version} to {target_version}")
+            self.logger.info(get_string("hooks.update.updating_from_to", current_version, target_version))
             
             # Create backup of existing hook files
             backup_files = []
@@ -267,7 +268,7 @@ pass
                         backup_path = self.file_manager.backup_file(file_path)
                         if backup_path:
                             backup_files.append(backup_path)
-                            self.logger.debug(f"Backed up {filename}")
+                            self.logger.debug(get_string("hooks.update.backed_up", filename))
             
             # Perform installation (overwrites existing files)
             success = self.install(config)
@@ -280,22 +281,22 @@ pass
                     except Exception:
                         pass  # Ignore cleanup errors
                 
-                self.logger.success(f"Hooks component updated to version {target_version}")
+                self.logger.success(get_string("hooks.update.success", target_version))
             else:
                 # Restore from backup on failure
-                self.logger.warning("Update failed, restoring from backup...")
+                self.logger.warning(get_string("hooks.update.restore_failed"))
                 for backup_path in backup_files:
                     try:
                         original_path = backup_path.with_suffix('')
                         backup_path.rename(original_path)
-                        self.logger.debug(f"Restored {original_path.name}")
+                        self.logger.debug(get_string("hooks.update.restored", original_path.name))
                     except Exception as e:
-                        self.logger.error(f"Could not restore {backup_path}: {e}")
+                        self.logger.error(get_string("hooks.update.restore_error", backup_path, e))
             
             return success
             
         except Exception as e:
-            self.logger.exception(f"Unexpected error during hooks update: {e}")
+            self.logger.exception(get_string("hooks.update.unexpected_error", e))
             return False
     
     def validate_installation(self) -> Tuple[bool, List[str]]:
@@ -304,25 +305,25 @@ pass
         
         # Check if hooks directory exists
         if not self.install_component_subdir.exists():
-            errors.append("Hooks directory not found")
+            errors.append(get_string("hooks.validate.no_dir"))
             return False, errors
         
         # Check settings.json registration
         if not self.settings_manager.is_component_installed("hooks"):
-            errors.append("Hooks component not registered in settings.json")
+            errors.append(get_string("hooks.validate.not_registered"))
         else:
             # Check version matches
             installed_version = self.settings_manager.get_component_version("hooks")
             expected_version = self.get_metadata()["version"]
             if installed_version != expected_version:
-                errors.append(f"Version mismatch: installed {installed_version}, expected {expected_version}")
+                errors.append(get_string("hooks.validate.version_mismatch", installed_version, expected_version))
         
         # Check if we have either actual hooks or placeholder
         has_placeholder = (self.install_component_subdir / "PLACEHOLDER.py").exists()
         has_actual_hooks = any((self.install_component_subdir / filename).exists() for filename in self.hook_files)
         
         if not has_placeholder and not has_actual_hooks:
-            errors.append("No hook files or placeholder found")
+            errors.append(get_string("hooks.validate.no_files"))
         
         return len(errors) == 0, errors
     
