@@ -18,17 +18,6 @@ import difflib
 from pathlib import Path
 from typing import Dict, Callable
 
-# This needed a modification for windows and python 3.10 - JPShag
-# Resolved ImportError: cannot import 'setup.utils.ui' because the sibling 'setup' directory was not on sys.path.
-# Find the setup directory relative to this file
-setup_dir = Path(__file__).parent.parent / "setup"
-if not setup_dir.exists():
-    # Try alternative location if running from installed package
-    setup_dir = Path(__file__).parent / "setup"
-
-# Add to sys.path
-sys.path.insert(0, str(setup_dir))
-
 
 # Try to import utilities from the setup package
 try:

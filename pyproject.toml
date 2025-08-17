@@ -45,7 +45,12 @@ path = "VERSION"
 pattern = "(?P<version>.*)"
 
 [tool.hatch.build.targets.wheel]
-packages = ["SuperClaude"]
+packages = [
+    "SuperClaude",
+    "setup",
+    "config",
+    "profiles"
+]
 
 [tool.hatch.build.targets.sdist]
 include = [
