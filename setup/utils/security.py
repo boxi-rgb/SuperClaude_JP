@@ -32,6 +32,7 @@ import os
 from pathlib import Path
 from typing import List, Optional, Tuple, Set
 import urllib.parse
+from setup.utils.localization import get_string
 
 
 class SecurityValidator:
@@ -133,6 +134,10 @@ class SecurityValidator:
             - error_message: Detailed error message with suggestions if validation fails
         """
         try:
+            # Check for null bytes
+            if '\x00' in str(path):
+                return False, get_string("security.validate_path.null_byte")
+
             # Convert to absolute path
             abs_path = path.resolve()
             
@@ -143,11 +148,11 @@ class SecurityValidator:
             
             # Check path length
             if len(str(abs_path)) > cls.MAX_PATH_LENGTH:
-                return False, f"Path too long: {len(str(abs_path))} > {cls.MAX_PATH_LENGTH}"
+                return False, get_string("security.validate_path.too_long", len(str(abs_path)), cls.MAX_PATH_LENGTH)
             
             # Check filename length
             if len(abs_path.name) > cls.MAX_FILENAME_LENGTH:
-                return False, f"Filename too long: {len(abs_path.name)} > {cls.MAX_FILENAME_LENGTH}"
+                return False, get_string("security.validate_path.filename_too_long", len(abs_path.name), cls.MAX_FILENAME_LENGTH)
             
             # Check for dangerous patterns using platform-specific validation
             # Always check traversal patterns (platform independent) - use original path string
@@ -175,7 +180,7 @@ class SecurityValidator:
             # Check for dangerous filenames
             for pattern in cls.DANGEROUS_FILENAMES:
                 if re.search(pattern, abs_path.name, re.IGNORECASE):
-                    return False, f"Dangerous filename pattern detected: {pattern}"
+                    return False, get_string("security.validate_path.dangerous_filename", pattern)
             
             # Check if path is within base directory
             if base_dir:
@@ -183,11 +188,11 @@ class SecurityValidator:
                 try:
                     abs_path.relative_to(base_abs)
                 except ValueError:
-                    return False, f"Path outside allowed directory: {abs_path} not in {base_abs}"
+                    return False, get_string("security.validate_path.outside_allowed_dir", abs_path, base_abs)
             
             # Check for null bytes
             if '\x00' in str(path):
-                return False, "Null byte detected in path"
+                return False, get_string("security.validate_path.null_byte")
             
             # Check for Windows reserved names
             if os.name == 'nt':
@@ -199,12 +204,12 @@ class SecurityValidator:
                 
                 name_without_ext = abs_path.stem.upper()
                 if name_without_ext in reserved_names:
-                    return False, f"Reserved Windows filename: {name_without_ext}"
+                    return False, get_string("security.validate_path.reserved_windows_name", name_without_ext)
             
-            return True, "Path is safe"
+            return True, get_string("security.validate_path.safe")
             
         except Exception as e:
-            return False, f"Path validation error: {e}"
+            return False, get_string("security.validate_path.error", e)
     
     @classmethod
     def validate_file_extension(cls, path: Path) -> Tuple[bool, str]:
@@ -220,12 +225,12 @@ class SecurityValidator:
         extension = path.suffix.lower()
         
         if not extension:
-            return True, "No extension (allowed)"
+            return True, get_string("security.validate_extension.no_extension")
         
         if extension in cls.ALLOWED_EXTENSIONS:
-            return True, f"Extension {extension} is allowed"
+            return True, get_string("security.validate_extension.allowed", extension)
         else:
-            return False, f"Extension {extension} is not allowed"
+            return False, get_string("security.validate_extension.not_allowed", extension)
     
     @classmethod
     def sanitize_filename(cls, filename: str) -> str:
@@ -315,26 +320,26 @@ class SecurityValidator:
             
             # Check scheme
             if parsed.scheme not in ['http', 'https']:
-                return False, f"Invalid scheme: {parsed.scheme}"
+                return False, get_string("security.validate_url.invalid_scheme", parsed.scheme)
             
             # Check for localhost/private IPs (basic check)
             hostname = parsed.hostname
             if hostname:
                 if hostname.lower() in ['localhost', '127.0.0.1', '::1']:
-                    return False, "Localhost URLs not allowed"
+                    return False, get_string("security.validate_url.localhost_not_allowed")
                 
                 # Basic private IP check
                 if hostname.startswith('192.168.') or hostname.startswith('10.') or hostname.startswith('172.'):
-                    return False, "Private IP addresses not allowed"
+                    return False, get_string("security.validate_url.private_ip_not_allowed")
             
             # Check URL length
             if len(url) > 2048:
-                return False, "URL too long"
+                return False, get_string("security.validate_url.too_long")
             
-            return True, "URL is safe"
+            return True, get_string("security.validate_url.safe")
             
         except Exception as e:
-            return False, f"URL validation error: {e}"
+            return False, get_string("security.validate_url.error", e)
     
     @classmethod
     def check_permissions(cls, path: Path, required_permissions: Set[str]) -> Tuple[bool, List[str]]:
@@ -355,7 +360,7 @@ class SecurityValidator:
                 # For non-existent paths, check parent directory
                 parent = path.parent
                 if not parent.exists():
-                    missing.append("path does not exist")
+                    missing.append(get_string("security.check_permissions.path_not_exist"))
                     return False, missing
                 path = parent
             
@@ -374,7 +379,7 @@ class SecurityValidator:
             return len(missing) == 0, missing
             
         except Exception as e:
-            missing.append(f"permission check error: {e}")
+            missing.append(get_string("security.check_permissions.error", e))
             return False, missing
     
     @classmethod
@@ -394,7 +399,7 @@ class SecurityValidator:
         try:
             abs_target = target_dir.resolve()
         except Exception as e:
-            errors.append(f"Cannot resolve target path: {e}")
+            errors.append(get_string("security.validate_target.resolve_error", e))
             return False, errors
             
         # Windows-specific path normalization
@@ -413,7 +418,7 @@ class SecurityValidator:
                 home_path = Path.home()
             except (RuntimeError, OSError):
                 # If we can't determine home directory, skip .claude special handling
-                cls._log_security_decision("WARN", f"Cannot determine home directory for .claude validation: {abs_target}")
+                cls._log_security_decision("WARN", get_string("security.validate_target.log_home_dir_error", abs_target))
                 # Fall through to regular validation
             else:
                 try:
@@ -424,7 +429,7 @@ class SecurityValidator:
                     if os.name == 'nt':
                         # Check for junction points and symbolic links on Windows
                         if cls._is_windows_junction_or_symlink(abs_target):
-                            errors.append("Installation to junction points or symbolic links is not allowed for security")
+                            errors.append(get_string("security.validate_target.no_junctions"))
                             return False, errors
                         
                         # Additional validation: verify it's in the current user's profile directory
@@ -438,28 +443,28 @@ class SecurityValidator:
                             except ValueError:
                                 # Path is outside user's home directory
                                 current_user = os.environ.get('USERNAME', home_path.name)
-                                errors.append(f"Installation must be in current user's directory ({current_user})")
+                                errors.append(get_string("security.validate_target.must_be_in_user_dir", current_user))
                                 return False, errors
                     
                     # Check permissions
                     has_perms, missing = cls.check_permissions(target_dir, {'read', 'write'})
                     if not has_perms:
                         if os.name == 'nt':
-                            errors.append(f"Insufficient permissions for Windows installation: {missing}. Try running as administrator or check folder permissions.")
+                            errors.append(get_string("security.validate_target.insufficient_perms_windows", missing))
                         else:
-                            errors.append(f"Insufficient permissions: missing {missing}")
+                            errors.append(get_string("security.validate_target.insufficient_perms", missing))
                     
                     # Log successful validation for audit trail
-                    cls._log_security_decision("ALLOW", f"Claude directory installation validated: {abs_target}")
+                    cls._log_security_decision("ALLOW", get_string("security.validate_target.log_claude_dir_validated", abs_target))
                     return len(errors) == 0, errors
                     
                 except ValueError:
                     # Not under current user's home directory
                     if os.name == 'nt':
-                        errors.append("Claude installation must be in your user directory (e.g., C:\\Users\\YourName\\.claude)")
+                        errors.append(get_string("security.validate_target.claude_must_be_in_user_dir_windows"))
                     else:
-                        errors.append("Claude installation must be in your home directory (e.g., ~/.claude)")
-                    cls._log_security_decision("DENY", f"Claude directory outside user home: {abs_target}")
+                        errors.append(get_string("security.validate_target.claude_must_be_in_home_dir"))
+                    cls._log_security_decision("DENY", get_string("security.validate_target.log_claude_dir_outside_home", abs_target))
                     return False, errors
         
         # Validate path for non-.claude directories
@@ -468,23 +473,23 @@ class SecurityValidator:
             if os.name == 'nt':
                 # Enhanced Windows error messages
                 if "dangerous path pattern" in msg.lower():
-                    errors.append(f"Invalid Windows path: {msg}. Ensure path doesn't contain dangerous patterns or reserved directories.")
+                    errors.append(get_string("security.validate_target.invalid_windows_path", msg))
                 elif "path too long" in msg.lower():
-                    errors.append(f"Windows path too long: {msg}. Windows has a 260 character limit for most paths.")
+                    errors.append(get_string("security.validate_target.windows_path_too_long", msg))
                 elif "reserved" in msg.lower():
-                    errors.append(f"Windows reserved name: {msg}. Avoid names like CON, PRN, AUX, NUL, COM1-9, LPT1-9.")
+                    errors.append(get_string("security.validate_target.windows_reserved_name", msg))
                 else:
-                    errors.append(f"Invalid target path: {msg}")
+                    errors.append(get_string("security.validate_target.invalid_target_path", msg))
             else:
-                errors.append(f"Invalid target path: {msg}")
+                errors.append(get_string("security.validate_target.invalid_target_path", msg))
         
         # Check permissions with platform-specific guidance
         has_perms, missing = cls.check_permissions(target_dir, {'read', 'write'})
         if not has_perms:
             if os.name == 'nt':
-                errors.append(f"Insufficient Windows permissions: {missing}. Try running as administrator or check folder security settings in Properties > Security.")
+                errors.append(get_string("security.validate_target.insufficient_perms_windows_long", missing))
             else:
-                errors.append(f"Insufficient permissions: {missing}. Try: chmod 755 {target_dir}")
+                errors.append(get_string("security.validate_target.insufficient_perms_unix", missing, target_dir))
         
         # Check if it's a system directory with enhanced messages
         system_dirs = [
@@ -501,16 +506,16 @@ class SecurityValidator:
             try:
                 if abs_target.is_relative_to(sys_dir):
                     if os.name == 'nt':
-                        errors.append(f"Cannot install to Windows system directory: {sys_dir}. Use a location in your user profile instead (e.g., C:\\Users\\YourName\\).")
+                        errors.append(get_string("security.validate_target.cannot_install_to_windows_system_dir", sys_dir))
                     else:
-                        errors.append(f"Cannot install to system directory: {sys_dir}. Use a location in your home directory instead (~/).")
-                    cls._log_security_decision("DENY", f"Attempted installation to system directory: {sys_dir}")
+                        errors.append(get_string("security.validate_target.cannot_install_to_system_dir", sys_dir))
+                    cls._log_security_decision("DENY", get_string("security.validate_target.log_system_dir_attempt", sys_dir))
                     break
             except (ValueError, AttributeError):
                 # is_relative_to not available in older Python versions
                 try:
                     abs_target.relative_to(sys_dir)
-                    errors.append(f"Cannot install to system directory: {sys_dir}")
+                    errors.append(get_string("security.validate_target.cannot_install_to_system_dir", sys_dir))
                     break
                 except ValueError:
                     continue
@@ -536,17 +541,17 @@ class SecurityValidator:
             # Validate source path
             is_safe, msg = cls.validate_path(source, base_source_dir)
             if not is_safe:
-                errors.append(f"Invalid source path {source}: {msg}")
+                errors.append(get_string("security.validate_components.invalid_source", source, msg))
             
             # Validate target path
             is_safe, msg = cls.validate_path(target, base_target_dir)
             if not is_safe:
-                errors.append(f"Invalid target path {target}: {msg}")
+                errors.append(get_string("security.validate_components.invalid_target", target, msg))
             
             # Validate file extension
             is_allowed, msg = cls.validate_file_extension(source)
             if not is_allowed:
-                errors.append(f"File {source}: {msg}")
+                errors.append(get_string("security.validate_components.file_error", source, msg))
         
         return len(errors) == 0, errors
     
@@ -596,51 +601,33 @@ class SecurityValidator:
             User-friendly error message with suggestions
         """
         if error_type == "traversal":
-            return (
-                f"Security violation: Directory traversal pattern detected in path '{path}'. "
-                f"Paths containing '..' or '//' are not allowed for security reasons. "
-                f"Please use an absolute path without directory traversal characters."
-            )
+            return get_string("security.error.traversal_detected", path)
         elif error_type == "windows_system":
-            if pattern == r'^c:\\windows\\':
-                return (
-                    f"Cannot install to Windows system directory '{path}'. "
-                    f"Please choose a location in your user directory instead, "
-                    f"such as C:\\Users\\{os.environ.get('USERNAME', 'YourName')}\\.claude\\"
-                )
-            elif pattern == r'^c:\\program files\\':
-                return (
-                    f"Cannot install to Program Files directory '{path}'. "
-                    f"Please choose a location in your user directory instead, "
-                    f"such as C:\\Users\\{os.environ.get('USERNAME', 'YourName')}\\.claude\\"
-                )
+            username = os.environ.get('USERNAME', 'YourName')
+            if pattern == r'^c:[/\\]windows[/\\]':
+                return get_string("security.error.install_to_windows_system_dir", path, username)
+            elif pattern == r'^c:[/\\]program files[/\\]':
+                return get_string("security.error.install_to_program_files", path, username)
             else:
-                return (
-                    f"Cannot install to Windows system directory '{path}'. "
-                    f"Please choose a location in your user directory instead."
-                )
+                return get_string("security.error.install_to_windows_system_dir_generic", path)
         elif error_type == "unix_system":
             system_dirs = {
-                r'^/dev/': "/dev (device files)",
-                r'^/etc/': "/etc (system configuration)",
-                r'^/bin/': "/bin (system binaries)",
-                r'^/sbin/': "/sbin (system binaries)",
-                r'^/usr/bin/': "/usr/bin (user binaries)",
-                r'^/usr/sbin/': "/usr/sbin (user system binaries)",
-                r'^/var/': "/var (variable data)",
-                r'^/tmp/': "/tmp (temporary files)",
-                r'^/proc/': "/proc (process information)",
-                r'^/sys/': "/sys (system information)"
+                r'^/dev/': get_string("security.dir_desc.dev"),
+                r'^/etc/': get_string("security.dir_desc.etc"),
+                r'^/bin/': get_string("security.dir_desc.bin"),
+                r'^/sbin/': get_string("security.dir_desc.sbin"),
+                r'^/usr/bin/': get_string("security.dir_desc.usr_bin"),
+                r'^/usr/sbin/': get_string("security.dir_desc.usr_sbin"),
+                r'^/var/': get_string("security.dir_desc.var"),
+                r'^/tmp/': get_string("security.dir_desc.tmp"),
+                r'^/proc/': get_string("security.dir_desc.proc"),
+                r'^/sys/': get_string("security.dir_desc.sys")
             }
             
-            dir_desc = system_dirs.get(pattern, "system directory")
-            return (
-                f"Cannot install to {dir_desc} '{path}'. "
-                f"Please choose a location in your home directory instead, "
-                f"such as ~/.claude/ or ~/SuperClaude/"
-            )
+            dir_desc = system_dirs.get(pattern, get_string("security.dir_desc.default"))
+            return get_string("security.error.install_to_unix_system_dir", dir_desc, path)
         else:
-            return f"Security validation failed for path '{path}'"
+            return get_string("security.error.generic_validation_failed", path)
     
     @classmethod
     def _is_windows_junction_or_symlink(cls, path: Path) -> bool:
@@ -715,12 +702,14 @@ class SecurityValidator:
                 security_logger.setLevel(logging.INFO)
             
             # Log the security decision
-            timestamp = datetime.datetime.now().isoformat()
-            log_message = f"[{action}] {message} (PID: {os.getpid()})"
-            
             if action == "DENY":
+                log_message = get_string("security.log.decision_deny", message, os.getpid())
                 security_logger.warning(log_message)
-            else:
+            elif action == "WARN":
+                log_message = get_string("security.log.decision_warn", message, os.getpid())
+                security_logger.warning(log_message)
+            else: # ALLOW
+                log_message = get_string("security.log.decision_allow", message, os.getpid())
                 security_logger.info(log_message)
                 
         except Exception:
