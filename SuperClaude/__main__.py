@@ -156,41 +156,7 @@ def register_operation_parsers(subparsers, global_parser) -> Dict[str, Callable]
         if module and hasattr(module, 'register_parser') and hasattr(module, 'run'):
             module.register_parser(subparsers, global_parser)
             operations[name] = module.run
-        else:
-            # If module doesn't exist, register a stub parser and fallback to legacy
-            parser = subparsers.add_parser(name, help=f"{desc} (legacy fallback)", parents=[global_parser])
-            parser.add_argument("--legacy", action="store_true", help="Use legacy script")
-            operations[name] = None
     return operations
-
-
-def handle_legacy_fallback(op: str, args: argparse.Namespace) -> int:
-    """Run a legacy operation script if module is unavailable"""
-    script_path = Path(__file__).parent / f"{op}.py"
-
-    if not script_path.exists():
-        display_error(f"No module or legacy script found for operation '{op}'")
-        return 1
-
-    display_warning(f"Falling back to legacy script for '{op}'...")
-
-    cmd = [sys.executable, str(script_path)]
-
-    # Convert args into CLI flags
-    for k, v in vars(args).items():
-        if k in ['operation', 'install_dir'] or v in [None, False]:
-            continue
-        flag = f"--{k.replace('_', '-')}"
-        if v is True:
-            cmd.append(flag)
-        else:
-            cmd.extend([flag, str(v)])
-
-    try:
-        return subprocess.call(cmd)
-    except Exception as e:
-        display_error(f"Legacy execution failed: {e}")
-        return 1
 
 
 def main() -> int:
@@ -229,15 +195,9 @@ def main() -> int:
 
         # Execute operation
         run_func = operations.get(args.operation)
-        if run_func:
-            if logger:
-                logger.info(f"Executing operation: {args.operation}")
-            return run_func(args)
-        else:
-            # Fallback to legacy script
-            if logger:
-                logger.warning(f"Module for '{args.operation}' missing, using legacy fallback")
-            return handle_legacy_fallback(args.operation, args)
+        if logger:
+            logger.info(f"Executing operation: {args.operation}")
+        return run_func(args)
 
     except KeyboardInterrupt:
         print(f"\n{Colors.YELLOW}Operation cancelled by user{Colors.RESET}")
