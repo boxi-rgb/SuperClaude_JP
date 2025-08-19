@@ -40,6 +40,12 @@ Repository = "https://github.com/SuperClaude-Org/SuperClaude_Framework"
 [project.scripts]
 SuperClaude = "SuperClaude.__main__:main"
 
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-mock",
+]
+
 [tool.hatch.version]
 path = "VERSION"
 pattern = "(?P<version>.*)"

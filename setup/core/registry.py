@@ -43,27 +43,13 @@ class ComponentRegistry:
         if not self.components_dir.exists():
             return
         
-        # Add components directory to Python path temporarily
-        import sys
-        original_path = sys.path.copy()
-        
-        try:
-            # Add parent directory to path so we can import setup.components
-            setup_dir = self.components_dir.parent
-            if str(setup_dir) not in sys.path:
-                sys.path.insert(0, str(setup_dir))
+        # Discover all Python files in components directory
+        for py_file in self.components_dir.glob("*.py"):
+            if py_file.name.startswith("__"):
+                continue
             
-            # Discover all Python files in components directory
-            for py_file in self.components_dir.glob("*.py"):
-                if py_file.name.startswith("__"):
-                    continue
-                
-                module_name = py_file.stem
-                self._load_component_module(module_name)
-        
-        finally:
-            # Restore original Python path
-            sys.path = original_path
+            module_name = py_file.stem
+            self._load_component_module(module_name)
         
         # Build dependency graph
         self._build_dependency_graph()
