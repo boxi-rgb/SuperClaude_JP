@@ -157,3 +157,27 @@ complex: "Resource-intensive with comprehensive analysis"
 ### Wave-Enabled Commands
 7 commands: `/analyze`, `/build`, `/design`, `/implement`, `/improve`, `/task`, `/workflow`
 
+---
+
+## Framework Management Commands
+
+These commands are not part of the Wave System and are executed directly from the terminal to manage the SuperClaude framework itself. They provide essential utilities for maintaining your installation.
+
+**`SuperClaude add_mcp [server_name_1] [server_name_2] ...`**
+```yaml
+---
+command: "add_mcp"
+category: "Framework Management"
+purpose: "Install new MCP servers on-demand from the official registry"
+wave-enabled: false
+performance-profile: "standard"
+---
+```
+- **Description**: Installs one or more MCP (Model Context Protocol) servers. This allows you to add new capabilities to SuperClaude after the initial installation without running the full installer.
+- **Usage**: Run this command from your system's terminal, not from within the Claude Code environment.
+- **Arguments**:
+  - `server_name` (required): The name of the MCP server to install (e.g., `magic`, `playwright`). You can provide multiple names.
+  - If no name is provided, it will list all available MCPs from the registry.
+- **Example**:
+  - `python3 -m SuperClaude add_mcp magic`
+  - `SuperClaude add_mcp playwright`
