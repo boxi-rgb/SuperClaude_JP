@@ -4,6 +4,7 @@ MCP component for MCP server integration
 
 import subprocess
 import sys
+import json
 from typing import Dict, List, Tuple, Optional, Any
 from pathlib import Path
 
@@ -19,35 +20,24 @@ class MCPComponent(Component):
         """Initialize MCP component"""
         super().__init__(install_dir)
         
-        # Define MCP servers to install
-        self.mcp_servers = {
-            "sequential-thinking": {
-                "name": "sequential-thinking",
-                "description": "Multi-step problem solving and systematic analysis",
-                "npm_package": "@modelcontextprotocol/server-sequential-thinking",
-                "required": True
-            },
-            "context7": {
-                "name": "context7", 
-                "description": "Official library documentation and code examples",
-                "npm_package": "@upstash/context7-mcp",
-                "required": True
-            },
-            "magic": {
-                "name": "magic",
-                "description": "Modern UI component generation and design systems",
-                "npm_package": "@21st-dev/magic",
-                "required": False,
-                "api_key_env": "TWENTYFIRST_API_KEY",
-                "api_key_description": "21st.dev API key for UI component generation"
-            },
-            "playwright": {
-                "name": "playwright",
-                "description": "Cross-browser E2E testing and automation",
-                "npm_package": "@playwright/mcp@latest",
-                "required": False
-            }
-        }
+        # Load MCP servers from registry
+        self.mcp_servers = self._load_mcp_registry()
+
+    def _load_mcp_registry(self) -> Dict[str, Any]:
+        """Load MCP server registry from JSON file"""
+        try:
+            # Assuming the script is run from the root of the project
+            registry_path = Path("config/mcp_registry.json")
+            if not registry_path.exists():
+                # Fallback for when run from a different context
+                # This path is relative to this file's location
+                registry_path = Path(__file__).parent.parent.parent / "config/mcp_registry.json"
+
+            with open(registry_path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            self.logger.error(f"Failed to load MCP registry: {e}")
+            return {}
     
     def get_metadata(self) -> Dict[str, str]:
         """Get component metadata"""

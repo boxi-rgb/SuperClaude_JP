@@ -1,0 +1,28 @@
+{
+    "sequential-thinking": {
+        "name": "sequential-thinking",
+        "description": "Multi-step problem solving and systematic analysis",
+        "npm_package": "@modelcontextprotocol/server-sequential-thinking",
+        "required": true
+    },
+    "context7": {
+        "name": "context7",
+        "description": "Official library documentation and code examples",
+        "npm_package": "@upstash/context7-mcp",
+        "required": true
+    },
+    "magic": {
+        "name": "magic",
+        "description": "Modern UI component generation and design systems",
+        "npm_package": "@21st-dev/magic",
+        "required": false,
+        "api_key_env": "TWENTYFIRST_API_KEY",
+        "api_key_description": "21st.dev API key for UI component generation"
+    },
+    "playwright": {
+        "name": "playwright",
+        "description": "Cross-browser E2E testing and automation",
+        "npm_package": "@playwright/mcp@latest",
+        "required": false
+    }
+}

@@ -21,6 +21,8 @@ from typing import Dict, Callable
 
 # Try to import utilities from the setup package
 try:
+    from .mcp_manager import MCPManager
+    from .mcp_diagnostics import MCPDiagnostics
     from setup.utils.localization import get_string, set_language
     from setup.utils.ui import (
         display_header, display_info, display_success, display_error,
@@ -120,21 +122,68 @@ def setup_global_environment(args: argparse.Namespace):
 
 def get_operation_modules() -> Dict[str, str]:
     """Return supported operations and their descriptions"""
+    ops = {
+        "install": "Install SuperClaude framework components",
+        "update": "Update existing SuperClaude installation",
+        "uninstall": "Remove SuperClaude installation",
+        "backup": "Backup and restore operations",
+        "add_mcp": "Install a new MCP server on-demand",
+        "diagnose_mcp": "Run diagnostics for MCP server issues"
+    }
+    # Try to use localization if available, but fall back to the hardcoded descriptions
     try:
-        return {
-            "install": get_string("op.install"),
-            "update": get_string("op.update"),
-            "uninstall": get_string("op.uninstall"),
-            "backup": get_string("op.backup")
-        }
+        # These keys exist in the .json locale files
+        ops["install"] = get_string("op.install")
+        ops["update"] = get_string("op.update")
+        ops["uninstall"] = get_string("op.uninstall")
+        ops["backup"] = get_string("op.backup")
+        # For our new commands, we can keep the hardcoded description as a fallback
+        ops["add_mcp"] = get_string("op.add_mcp", "Install a new MCP server on-demand")
+        ops["diagnose_mcp"] = get_string("op.diagnose_mcp", "Run diagnostics for MCP server issues")
     except NameError:
-        # Fallback for when localization is not available
-        return {
-            "install": "Install SuperClaude framework components",
-            "update": "Update existing SuperClaude installation",
-            "uninstall": "Remove SuperClaude installation",
-            "backup": "Backup and restore operations"
-        }
+        # This block will be hit if get_string isn't defined, which is fine.
+        pass
+    return ops
+
+
+def run_add_mcp(args: argparse.Namespace) -> int:
+    """Run the add_mcp operation."""
+    manager = MCPManager()
+    if not args.mcp_names:
+        display_warning("No MCP server names provided. Listing available servers.")
+        manager.list_mcps()
+        return 0
+
+    success_count = 0
+    for name in args.mcp_names:
+        success, message = manager.install_mcp(name)
+        if success:
+            display_success(message)
+            success_count += 1
+        else:
+            display_error(message)
+
+    if success_count == len(args.mcp_names):
+        return 0  # All successful
+    elif success_count > 0:
+        return 2 # Partial success
+    else:
+        return 1 # All failed
+
+
+def register_add_mcp_parser(subparsers, global_parser):
+    """Register the parser for the 'add_mcp' command."""
+    parser = subparsers.add_parser(
+        "add_mcp",
+        help="Install a new MCP server on-demand",
+        parents=[global_parser]
+    )
+    parser.add_argument(
+        "mcp_names",
+        nargs='*',
+        help="The name(s) of the MCP server(s) to install."
+    )
+    parser.set_defaults(run_func=run_add_mcp)
 
 
 def load_operation_module(name: str):
@@ -148,14 +197,48 @@ def load_operation_module(name: str):
         return None
 
 
+def run_diagnose_mcp(args: argparse.Namespace) -> int:
+    """Run the diagnose_mcp operation."""
+    diagnostics = MCPDiagnostics()
+    diagnostics.run()
+    return 0
+
+
+def register_diagnose_mcp_parser(subparsers, global_parser):
+    """Register the parser for the 'diagnose_mcp' command."""
+    parser = subparsers.add_parser(
+        "diagnose_mcp",
+        help="Run a series of checks to troubleshoot MCP server issues.",
+        parents=[global_parser]
+    )
+    parser.set_defaults(run_func=run_diagnose_mcp)
+
+
 def register_operation_parsers(subparsers, global_parser) -> Dict[str, Callable]:
     """Register subcommand parsers and map operation names to their run functions"""
     operations = {}
-    for name, desc in get_operation_modules().items():
-        module = load_operation_module(name)
-        if module and hasattr(module, 'register_parser') and hasattr(module, 'run'):
-            module.register_parser(subparsers, global_parser)
-            operations[name] = module.run
+
+    # Define all commands and their handlers
+    command_handlers = {
+        "add_mcp": {"parser": register_add_mcp_parser, "runner": run_add_mcp},
+        "diagnose_mcp": {"parser": register_diagnose_mcp_parser, "runner": run_diagnose_mcp},
+    }
+
+    all_known_ops = get_operation_modules()
+
+    for name, desc in all_known_ops.items():
+        if name in command_handlers:
+            # Handle locally defined commands
+            handler = command_handlers[name]
+            handler["parser"](subparsers, global_parser)
+            operations[name] = handler["runner"]
+        else:
+            # Handle dynamically loaded commands
+            module = load_operation_module(name)
+            if module and hasattr(module, 'register_parser') and hasattr(module, 'run'):
+                module.register_parser(subparsers, global_parser)
+                operations[name] = module.run
+
     return operations
 
 
@@ -195,6 +278,11 @@ def main() -> int:
 
         # Execute operation
         run_func = operations.get(args.operation)
+
+        if not run_func:
+            display_error(f"No run function found for operation '{args.operation}'.")
+            return 1
+
         if logger:
             logger.info(f"Executing operation: {args.operation}")
         return run_func(args)

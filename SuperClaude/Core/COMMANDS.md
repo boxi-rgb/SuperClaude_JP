@@ -157,3 +157,47 @@ complex: "Resource-intensive with comprehensive analysis"
 ### Wave-Enabled Commands
 7 commands: `/analyze`, `/build`, `/design`, `/implement`, `/improve`, `/task`, `/workflow`
 
+---
+
+## Framework Management Commands
+
+These commands are not part of the Wave System and are executed directly from the terminal to manage the SuperClaude framework itself. They provide essential utilities for maintaining your installation.
+
+**`SuperClaude add_mcp [server_name_1] [server_name_2] ...`**
+```yaml
+---
+command: "add_mcp"
+category: "Framework Management"
+purpose: "Install new MCP servers on-demand from the official registry"
+wave-enabled: false
+performance-profile: "standard"
+---
+```
+- **Description**: Installs one or more MCP (Model Context Protocol) servers. This allows you to add new capabilities to SuperClaude after the initial installation without running the full installer.
+- **Usage**: Run this command from your system's terminal, not from within the Claude Code environment.
+- **Arguments**:
+  - `server_name` (required): The name of the MCP server to install (e.g., `magic`, `playwright`). You can provide multiple names.
+  - If no name is provided, it will list all available MCPs from the registry.
+- **Example**:
+  - `python3 -m SuperClaude add_mcp magic`
+  - `SuperClaude add_mcp playwright`
+
+**`SuperClaude diagnose_mcp`**
+```yaml
+---
+command: "diagnose_mcp"
+category: "Framework Management"
+purpose: "Troubleshoot MCP server installations and configurations"
+wave-enabled: false
+performance-profile: "standard"
+---
+```
+- **Description**: Runs a comprehensive suite of diagnostic checks to identify common issues with MCP servers. This is the recommended first step if you suspect an MCP server is not working correctly.
+- **Usage**: Run this command from your system's terminal. It requires no arguments.
+- **Checks Performed**:
+  - **Level 1 (Prerequisites)**: Verifies the installation and version of `node`, `npm`, and the `claude` CLI.
+  - **Level 2 (Configuration)**: Inspects global and local config files, and validates installed servers against the official registry.
+  - **Level 3 (Liveness)**: Attempts to communicate directly with each installed server to ensure it is responsive.
+  - **Level 4 (API Keys)**: Checks for the presence of required API key environment variables.
+- **Example**:
+  - `SuperClaude diagnose_mcp`
