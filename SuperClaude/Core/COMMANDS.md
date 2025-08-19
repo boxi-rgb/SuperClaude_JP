@@ -181,3 +181,23 @@ performance-profile: "standard"
 - **Example**:
   - `python3 -m SuperClaude add_mcp magic`
   - `SuperClaude add_mcp playwright`
+
+**`SuperClaude diagnose_mcp`**
+```yaml
+---
+command: "diagnose_mcp"
+category: "Framework Management"
+purpose: "Troubleshoot MCP server installations and configurations"
+wave-enabled: false
+performance-profile: "standard"
+---
+```
+- **Description**: Runs a comprehensive suite of diagnostic checks to identify common issues with MCP servers. This is the recommended first step if you suspect an MCP server is not working correctly.
+- **Usage**: Run this command from your system's terminal. It requires no arguments.
+- **Checks Performed**:
+  - **Level 1 (Prerequisites)**: Verifies the installation and version of `node`, `npm`, and the `claude` CLI.
+  - **Level 2 (Configuration)**: Inspects global and local config files, and validates installed servers against the official registry.
+  - **Level 3 (Liveness)**: Attempts to communicate directly with each installed server to ensure it is responsive.
+  - **Level 4 (API Keys)**: Checks for the presence of required API key environment variables.
+- **Example**:
+  - `SuperClaude diagnose_mcp`

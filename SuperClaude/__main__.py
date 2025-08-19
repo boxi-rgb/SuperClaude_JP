@@ -22,6 +22,7 @@ from typing import Dict, Callable
 # Try to import utilities from the setup package
 try:
     from .mcp_manager import MCPManager
+    from .mcp_diagnostics import MCPDiagnostics
     from setup.utils.localization import get_string, set_language
     from setup.utils.ui import (
         display_header, display_info, display_success, display_error,
@@ -126,7 +127,8 @@ def get_operation_modules() -> Dict[str, str]:
         "update": "Update existing SuperClaude installation",
         "uninstall": "Remove SuperClaude installation",
         "backup": "Backup and restore operations",
-        "add_mcp": "Install a new MCP server on-demand"
+        "add_mcp": "Install a new MCP server on-demand",
+        "diagnose_mcp": "Run diagnostics for MCP server issues"
     }
     # Try to use localization if available, but fall back to the hardcoded descriptions
     try:
@@ -135,8 +137,9 @@ def get_operation_modules() -> Dict[str, str]:
         ops["update"] = get_string("op.update")
         ops["uninstall"] = get_string("op.uninstall")
         ops["backup"] = get_string("op.backup")
-        # For our new command, we can keep the hardcoded description as a fallback
+        # For our new commands, we can keep the hardcoded description as a fallback
         ops["add_mcp"] = get_string("op.add_mcp", "Install a new MCP server on-demand")
+        ops["diagnose_mcp"] = get_string("op.diagnose_mcp", "Run diagnostics for MCP server issues")
     except NameError:
         # This block will be hit if get_string isn't defined, which is fine.
         pass
@@ -194,19 +197,48 @@ def load_operation_module(name: str):
         return None
 
 
+def run_diagnose_mcp(args: argparse.Namespace) -> int:
+    """Run the diagnose_mcp operation."""
+    diagnostics = MCPDiagnostics()
+    diagnostics.run()
+    return 0
+
+
+def register_diagnose_mcp_parser(subparsers, global_parser):
+    """Register the parser for the 'diagnose_mcp' command."""
+    parser = subparsers.add_parser(
+        "diagnose_mcp",
+        help="Run a series of checks to troubleshoot MCP server issues.",
+        parents=[global_parser]
+    )
+    parser.set_defaults(run_func=run_diagnose_mcp)
+
+
 def register_operation_parsers(subparsers, global_parser) -> Dict[str, Callable]:
     """Register subcommand parsers and map operation names to their run functions"""
     operations = {}
-    for name, desc in get_operation_modules().items():
-        if name == "add_mcp":
-            register_add_mcp_parser(subparsers, global_parser)
-            operations[name] = run_add_mcp
-            continue
 
-        module = load_operation_module(name)
-        if module and hasattr(module, 'register_parser') and hasattr(module, 'run'):
-            module.register_parser(subparsers, global_parser)
-            operations[name] = module.run
+    # Define all commands and their handlers
+    command_handlers = {
+        "add_mcp": {"parser": register_add_mcp_parser, "runner": run_add_mcp},
+        "diagnose_mcp": {"parser": register_diagnose_mcp_parser, "runner": run_diagnose_mcp},
+    }
+
+    all_known_ops = get_operation_modules()
+
+    for name, desc in all_known_ops.items():
+        if name in command_handlers:
+            # Handle locally defined commands
+            handler = command_handlers[name]
+            handler["parser"](subparsers, global_parser)
+            operations[name] = handler["runner"]
+        else:
+            # Handle dynamically loaded commands
+            module = load_operation_module(name)
+            if module and hasattr(module, 'register_parser') and hasattr(module, 'run'):
+                module.register_parser(subparsers, global_parser)
+                operations[name] = module.run
+
     return operations
 
 
@@ -245,11 +277,7 @@ def main() -> int:
         logger = get_logger()
 
         # Execute operation
-        # For commands with custom registration, the run function is set as a default
-        if hasattr(args, 'run_func'):
-            run_func = args.run_func
-        else:
-            run_func = operations.get(args.operation)
+        run_func = operations.get(args.operation)
 
         if not run_func:
             display_error(f"No run function found for operation '{args.operation}'.")
