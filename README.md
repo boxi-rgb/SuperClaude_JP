@@ -12,126 +12,127 @@
 [![Contributors](https://img.shields.io/github/contributors/SuperClaude-Org/SuperClaude_Framework)](https://github.com/SuperClaude-Org/SuperClaude_Framework/graphs/contributors)
 [![Website](https://img.shields.io/website?url=https://superclaude-org.github.io/SuperClaude_Website/)](https://superclaude-org.github.io/SuperClaude_Website/)
 
-A framework that extends Claude Code with specialized commands, personas, and MCP server integration.
+Claude Codeを専門コマンド、ペルソナ、MCPサーバー統合で拡張するフレームワークです。
 
-**📢 Status**: Initial release, fresh out of beta! Bugs may occur as we continue improving things.
+**📢 ステータス**: 初期リリース、ベータ版を卒業したばかりです！改善を続ける中でバグが発生する可能性があります。
 
-## What is SuperClaude? 🤔
+## SuperClaudeとは？ 🤔
 
-SuperClaude tries to make Claude Code more helpful for development work by adding:
-- 🛠️ **16 specialized commands** for common dev tasks (some work better than others!)
-- 🎭 **Smart personas** that usually pick the right expert for different domains 
-- 🔧 **MCP server integration** for docs, UI components, and browser automation
-- 📋 **Task management** that tries to keep track of progress
-- ⚡ **Token optimization** to help with longer conversations
+SuperClaudeは、以下の機能を追加することで、Claude Codeを開発作業でより役立つものにします:
+- 🛠️ 一般的な開発タスクのための**17の専門コマンド**（一部はまだ改善の余地があります！）
+- 🎭 様々なドメインに適した専門家を自動で選択する**スマートペルソナ**
+- 🔧 ドキュメント、UIコンポーネント、ブラウザ自動化のための**MCPサーバー統合**
+- 📋 進捗を追跡しようと試みる**タスク管理**
+- ⚡ 長い会話を助ける**トークン最適化**
 
-This is what we've been building to make development workflows smoother. Still rough around the edges, but getting better! 😊
+これは、開発ワークフローをよりスムーズにするために私たちが構築してきたものです。まだ粗削りですが、日々改善されています！ 😊
 
-## Current Status 📊
+## 現在のステータス 📊
 
-✅ **What's Working Well:**
-- Installation suite (rewritten from the ground up)
-- Core framework with 9 documentation files 
-- 16 slash commands for various development tasks
-- MCP server integration (Context7, Sequential, Magic, Playwright)
-- Unified CLI installer for easy setup
+✅ **正常に機能しているもの:**
+- インストールスイート（ゼロから再設計）
+- 9つのドキュメントファイルを持つコアフレームワーク
+- 様々な開発タスクのための17のスラッシュコマンド
+- MCPサーバー統合（Context7, Sequential, Magic, Playwright）
+- 簡単なセットアップのための統一CLIインストーラー
 
-⚠️ **Known Issues:**
-- This is an initial release - bugs are expected
-- Some features may not work perfectly yet
-- Documentation is still being improved
-- Hooks system was removed (coming back in v4)
+⚠️ **既知の問題:**
+- これは初期リリースです - バグが予想されます
+- 一部の機能はまだ完璧に動作しない可能性があります
+- ドキュメントはまだ改善中です
+- フックシステムは削除されました（v4で復活予定）
 
-## Key Features ✨
+## 主な特徴 ✨
 
-### Commands 🛠️
-We focused on 16 essential commands for the most common tasks:
+### コマンド 🛠️
+最も一般的なタスクのために、17の必須コマンドに焦点を当てました:
 
-**Development**: `/sc:implement`, `/sc:build`, `/sc:design`  
-**Analysis**: `/sc:analyze`, `/sc:troubleshoot`, `/sc:explain`  
-**Quality**: `/sc:improve`, `/sc:test`, `/sc:cleanup`  
-**Others**: `/sc:document`, `/sc:git`, `/sc:estimate`, `/sc:task`, `/sc:index`, `/sc:load`, `/sc:spawn`
+**開発**: `/sc:implement`, `/sc:build`, `/sc:design`
+**分析**: `/sc:analyze`, `/sc:troubleshoot`, `/sc:explain`
+**品質**: `/sc:improve`, `/sc:test`, `/sc:cleanup`
+**その他**: `/sc:document`, `/sc:git`, `/sc:estimate`, `/sc:task`, `/sc:index`, `/sc:load`, `/sc:spawn`, `/sc:workflow`
 
-### Smart Personas 🎭
-AI specialists that try to jump in when they seem relevant:
-- 🏗️ **architect** - Systems design and architecture stuff
-- 🎨 **frontend** - UI/UX and accessibility  
-- ⚙️ **backend** - APIs and infrastructure
-- 🔍 **analyzer** - Debugging and figuring things out
-- 🛡️ **security** - Security concerns and vulnerabilities
-- ✍️ **scribe** - Documentation and writing
-- *...and 5 more specialists*
+### スマートペルソナ 🎭
+関連性がある場合に自動で介入するAIスペシャリスト:
+- 🏗️ **architect** - システム設計とアーキテクチャ
+- 🎨 **frontend** - UI/UXとアクセシビリティ
+- ⚙️ **backend** - APIとインフラストラクチャ
+- 🔍 **analyzer** - デバッグと問題解明
+- 🛡️ **security** - セキュリティの懸念と脆弱性
+- ✍️ **scribe** - ドキュメントとライティング
+- *...その他5人のスペシャリスト*
 
-*(They don't always pick perfectly, but usually get it right!)*
+*（常に完璧ではありませんが、通常は正しく選択されます！）*
 
-### MCP Integration 🔧
-External tools that connect when useful:
-- **Context7** - Grabs official library docs and patterns 
-- **Sequential** - Helps with complex multi-step thinking  
-- **Magic** - Generates modern UI components 
-- **Playwright** - Browser automation and testing stuff
+### MCP統合 🔧
+役立つ時に接続する外部ツール:
+- **Context7** - 公式ライブラリのドキュメントとパターンを取得
+- **Sequential** - 複雑な多段階思考を支援
+- **Magic** - 最新のUIコンポーネントを生成
+- **Playwright** - ブラウザの自動化とテスト
 
-*(These work pretty well when they connect properly! 🤞)*
+*（正しく接続されれば、これらは非常によく機能します！🤞）*
 
-### 管理コマンド (Management Commands) ⚙️
+### 管理コマンド ⚙️
 - **`SuperClaude add_mcp`** - MCPサーバーを後から追加でインストールします。
 - **`SuperClaude diagnose_mcp`** - MCPサーバー関連の問題を診断するためのトラブルシューティングツールです。
 
-## ⚠️ Upgrading from v2? Important!
+## ⚠️ v2からのアップグレードですか？重要！
 
-If you're coming from SuperClaude v2, you'll need to clean up first:
+SuperClaude v2から移行する場合、まずクリーンアップが必要です:
 
-1. **Uninstall v2** using its uninstaller if available
-2. **Manual cleanup** - delete these if they exist:
+1. **v2のアンインストール** - アンインストーラーが利用可能な場合はそれを使用
+2. **手動クリーンアップ** - 以下のファイル/ディレクトリが存在する場合は削除:
    - `SuperClaude/`
    - `~/.claude/shared/`
    - `~/.claude/commands/` 
    - `~/.claude/CLAUDE.md`
-4. **Then proceed** with v3 installation below
+3. **その後** v3のインストールに進んでください
 
-This is because v3 has a different structure and the old files can cause conflicts.
+これは、v3が異なる構造を持っており、古いファイルが競合を引き起こす可能性があるためです。
 
-### 🔄 **Key Change for v2 Users**
-**The `/build` command changed!** In v2, `/build` was used for feature implementation. In v3:
-- `/sc:build` = compilation/packaging only 
-- `/sc:implement` = feature implementation (NEW!)
+### 🔄 v2ユーザー向けの主な変更点
+**`/build`コマンドが変更されました！** v2では、`/build`は機能実装に使用されていました。v3では:
+- `/sc:build` = コンパイル/パッケージングのみ
+- `/sc:implement` = 機能実装（新規！）
 
-**Migration**: Replace `v2 /build myFeature` with `v3 /sc:implement myFeature`
+**移行**: `v2 /build myFeature` を `v3 /sc:implement myFeature` に置き換えてください
 
-## Installation 📦
+## インストール 📦
 
-SuperClaude installation is a **two-step process**:
-1. First install the Python package
-2. Then run the installer to set up Claude Code integration
+SuperClaudeのインストールは**2段階のプロセス**です:
+1. まずPythonパッケージをインストールします
+2. 次にインストーラーを実行してClaude Codeとの統合をセットアップします
 
-### Step 1: Install the Package
+### ステップ1: パッケージのインストール
 
-**Option A: From PyPI (Recommended)**
+**オプションA: PyPIから（推奨）**
 ```bash
 uv add SuperClaude
 ```
 
-**Option B: From Source**
+**オプションB: ソースから**
 ```bash
 git clone https://github.com/SuperClaude-Org/SuperClaude_Framework.git
 cd SuperClaude_Framework
 uv sync
 ```
-### 🔧 UV / UVX Setup Guide
 
-SuperClaude v3 also supports installation via [`uv`](https://github.com/astral-sh/uv) (a faster, modern Python package manager) or `uvx` for cross-platform usage.
+### 🔧 UV / UVX セットアップガイド
 
-### 🌀 Install with `uv`
+SuperClaude v3は、[`uv`](https://github.com/astral-sh/uv)（高速でモダンなPythonパッケージマネージャー）またはクロスプラットフォーム用の `uvx` を介したインストールもサポートしています。
 
-Make sure `uv` is installed:
+### 🌀 `uv` でインストール
+
+`uv` がインストールされていることを確認してください:
 
 ```bash
 curl -Ls https://astral.sh/uv/install.sh | sh
 ```
 
-> Or follow instructions from: [https://github.com/astral-sh/uv](https://github.com/astral-sh/uv)
+> または、こちらの指示に従ってください: [https://github.com/astral-sh/uv](https://github.com/astral-sh/uv)
 
-Once `uv` is available, you can install SuperClaude like this:
+`uv` が利用可能になったら、次のようにSuperClaudeをインストールできます:
 
 ```bash
 uv venv
@@ -139,35 +140,35 @@ source .venv/bin/activate
 uv pip install SuperClaude
 ```
 
-### ⚡ Install with `uvx` (Cross-platform CLI)
+### ⚡ `uvx` でインストール（クロスプラットフォームCLI）
 
-If you’re using `uvx`, just run:
+`uvx` を使用している場合は、次を実行するだけです:
 
 ```bash
 uvx pip install SuperClaude
 ```
 
-### ✅ Finish Installation
+### ✅ インストールの完了
 
-After installing, continue with the usual installer step:
+インストール後、通常のインストーラーステップに進みます:
 
 ```bash
 python3 -m SuperClaude install
 ```
 
-Or using bash-style CLI:
+またはbash形式のCLIを使用:
 
 ```bash
 SuperClaude install
 ```
 
-### 🧠 Note:
+### 🧠 注意:
 
-* `uv` provides better caching and performance.
-* Compatible with Python 3.8+ and works smoothly with SuperClaude.
+* `uv` は、より優れたキャッシングとパフォーマンスを提供します。
+* Python 3.8+と互換性があり、SuperClaudeとスムーズに動作します。
 
 ---
-**Missing Python?** Install Python 3.7+ first:
+**Pythonがありませんか？** まずPython 3.8+をインストールしてください:
 ```bash
 # Linux (Ubuntu/Debian)
 sudo apt update && sudo apt install python3 python3-pip
@@ -176,164 +177,129 @@ sudo apt update && sudo apt install python3 python3-pip
 brew install python3
 
 # Windows
-# Download from https://python.org/downloads/
+# https://python.org/downloads/ からダウンロード
 ```
 
-### Step 2: Run the Installer
+### ステップ2: インストーラーの実行
 
-After installing the package, run the SuperClaude installer to configure Claude Code (You can use any of the method):
-### ⚠️ Important Note 
-**After installing the SuperClaude.**
-**You can use `SuperClaude commands`
-, `python3 -m SuperClaude commands` or also `python3 SuperClaude commands`**
+パッケージをインストールした後、SuperClaudeインストーラーを実行してClaude Codeを設定します（いずれかの方法を使用できます）:
+### ⚠️ 重要事項
+**SuperClaudeをインストールした後。**
+**`SuperClaude <コマンド>`、`python3 -m SuperClaude <コマンド>`、または `python3 SuperClaude <コマンド>` が使用できます**
 ```bash
-# Quick setup (recommended for most users)
-python3 SuperClaude install
-
-# Interactive selection (choose components)
-python3 SuperClaude install --interactive
-
-# Minimal install (just core framework)
-python3 SuperClaude install --minimal
-
-# Developer setup (everything included)
-python3 SuperClaude install --profile developer
-
-# See all available options
-python3 SuperClaude install --help
-```
-### Or Python Modular Usage
-```bash
-# Quick setup (recommended for most users)
-python3 -m SuperClaude install
-
-# Interactive selection (choose components)
-python3 -m SuperClaude install --interactive
-
-# Minimal install (just core framework)
-python3 -m SuperClaude install --minimal
-
-# Developer setup (everything included)
-python3 -m SuperClaude install --profile developer
-
-# See all available options
-python3 -m SuperClaude install --help
-```
-### Simple bash Command Usage 
-```bash
-# Quick setup (recommended for most users)
+# クイックセットアップ（ほとんどのユーザーに推奨）
 SuperClaude install
 
-# Interactive selection (choose components)
+# インタラクティブ選択（コンポーネントを選択）
 SuperClaude install --interactive
 
-# Minimal install (just core framework)
+# 最小インストール（コアフレームワークのみ）
 SuperClaude install --minimal
 
-# Developer setup (everything included)
+# 開発者向けセットアップ（すべて込み）
 SuperClaude install --profile developer
 
-# See all available options
+# 利用可能なすべてのオプションを表示
 SuperClaude install --help
 ```
 
-**That's it! 🎉** The installer handles everything: framework files, MCP servers, and Claude Code configuration.
+**以上です！🎉** インストーラーがすべてを処理します：フレームワークファイル、MCPサーバー、およびClaude Codeの設定。
 
-## How It Works 🔄
+## 仕組み 🔄
 
-SuperClaude tries to enhance Claude Code through:
+SuperClaudeは、以下を通じてClaude Codeを強化しようと試みます:
 
-1. **Framework Files** - Documentation installed to `~/.claude/` that guides how Claude responds
-2. **Slash Commands** - 16 specialized commands for different dev tasks  
-3. **MCP Servers** - External services that add extra capabilities (when they work!)
-4. **Smart Routing** - Attempts to pick the right tools and experts based on what you're doing
+1. **フレームワークファイル** - `~/.claude/` にインストールされるドキュメントで、Claudeの応答をガイドします
+2. **スラッシュコマンド** - 様々な開発タスクのための17の専門コマンド
+3. **MCPサーバー** - 追加機能を提供する外部サービス（正常に動作する場合！）
+4. **スマートルーティング** - あなたの作業内容に基づいて適切なツールと専門家を選択しようと試みます
 
-Most of the time it plays nicely with Claude Code's existing stuff. 🤝
+ほとんどの場合、Claude Codeの既存の機能とうまく連携します。🤝
 
-## What's Coming in v4 🔮
+## v4での今後の予定 🔮
 
-We're hoping to work on these things for the next version:
-- **Hooks System** - Event-driven stuff (removed from v3, trying to redesign it properly)
-- **MCP Suite** - More external tool integrations  
-- **Better Performance** - Trying to make things faster and less buggy
-- **More Personas** - Maybe a few more domain specialists
-- **Cross-CLI Support** - Might work with other AI coding assistants
+次のバージョンでは、これらのことに取り組みたいと考えています:
+- **フックシステム** - イベント駆動の機能（v3で削除、適切に再設計中）
+- **MCPスイート** - さらなる外部ツール統合
+- **パフォーマンス向上** - より速く、バグの少ない動作を目指します
+- **ペルソナの追加** - さらにいくつかのドメイン専門家を追加するかもしれません
+- **クロスCLIサポート** - 他のAIコーディングアシスタントで動作する可能性があります
 
-*(No promises on timeline though - we're still figuring v3 out! 😅)*
+*（タイムラインは約束できませんが - まだv3を模索中です！😅）*
 
-## Configuration ⚙️
+## 設定 ⚙️
 
-After installation, you can customize SuperClaude by editing:
-- `~/.claude/settings.json` - Main configuration
-- `~/.claude/*.md` - Framework behavior files
+インストール後、以下を編集してSuperClaudeをカスタマイズできます:
+- `~/.claude/settings.json` - メイン設定
+- `~/.claude/*.md` - フレームワークの振る舞いを定義するファイル
 
-Most users probably won't need to change anything - it usually works okay out of the box. 🎛️
+ほとんどのユーザーは何も変更する必要はないでしょう - 通常は初期設定のままで問題なく動作します。🎛️
 
-## Documentation 📖
+## ドキュメント 📖
 
-Want to learn more? Check out our guides:
+さらに詳しく知りたいですか？私たちのガイドをご覧ください:
 
-- 📚 [**User Guide**](https://github.com/SuperClaude-Org/SuperClaude_Framework/blob/master/Docs/superclaude-user-guide.md) - Complete overview and getting started
-- 🛠️ [**Commands Guide**](https://github.com/SuperClaude-Org/SuperClaude_Framework/blob/master/Docs/commands-guide.md) - All 16 slash commands explained  
-- 🏳️ [**Flags Guide**](https://github.com/SuperClaude-Org/SuperClaude_Framework/blob/master/Docs/flags-guide.md) - Command flags and options
-- 🎭 [**Personas Guide**](https://github.com/SuperClaude-Org/SuperClaude_Framework/blob/master/Docs/personas-guide.md) - Understanding the persona system
-- 📦 [**Installation Guide**](https://github.com/SuperClaude-Org/SuperClaude_Framework/blob/master/Docs/installation-guide.md) - Detailed installation instructions
+- 📚 [**ユーザーガイド**](Docs/superclaude-user-guide.md) - 完全な概要と入門
+- 🛠️ [**コマンドガイド**](Docs/commands-guide.md) - 17すべてのスラッシュコマンドの説明
+- 🏳️ [**フラグガイド**](Docs/flags-guide.md) - コマンドのフラグとオプション
+- 🎭 [**ペルソナガイド**](Docs/personas-guide.md) - ペルソナシステムの理解
+- 📦 [**インストールガイド**](Docs/installation-guide.md) - 詳細なインストール手順
 
-These guides have more details than this README and are kept up to date.
+これらのガイドは、このREADMEよりも詳細な情報を含み、常に最新の状態に保たれています。
 
-## Contributing 🤝
+## 貢献 🤝
 
-We welcome contributions! Areas where we could use help:
-- 🐛 **Bug Reports** - Let us know what's broken
-- 📝 **Documentation** - Help us explain things better  
-- 🧪 **Testing** - More test coverage for different setups
-- 💡 **Ideas** - Suggestions for new features or improvements
+貢献を歓迎します！ご協力いただけると助かる分野:
+- 🐛 **バグ報告** - 何が壊れているか教えてください
+- 📝 **ドキュメント** - より良い説明にご協力ください
+- 🧪 **テスト** - 様々なセットアップのためのテストカバレッジ向上
+- 💡 **アイデア** - 新機能や改善点の提案
 
-The codebase is pretty straightforward Python + documentation files.
+コードベースは、非常に単純なPython + ドキュメントファイルで構成されています。
 
-## Project Structure 📁
+## プロジェクト構造 📁
 
 ```
 SuperClaude/
-├── setup.py               # pypi setup file
-├── SuperClaude/           # Framework files  
-│   ├── Core/              # Behavior documentation (COMMANDS.md, FLAGS.md, etc.)
-│   ├── Commands/          # 16 slash command definitions
-│   └── Settings/          # Configuration files
-├── setup/                 # Installation system
-└── profiles/              # Installation profiles (quick, minimal, developer)
+├── setup.py               # pypiセットアップファイル
+├── SuperClaude/           # フレームワークファイル
+│   ├── Core/              # 振る舞いを定義するドキュメント (COMMANDS.md, FLAGS.md, など)
+│   ├── Commands/          # 17のスラッシュコマンド定義
+│   └── Settings/          # 設定ファイル
+├── setup/                 # インストールシステム
+└── profiles/              # インストールプロファイル (quick, minimal, developer)
 ```
 
-## Architecture Notes 🏗️
+## アーキテクチャに関する注意点 🏗️
 
-The v3 architecture focuses on:
-- **Simplicity** - Removed complexity that wasn't adding value
-- **Reliability** - Better installation and fewer breaking changes  
-- **Modularity** - Pick only the components you want
-- **Performance** - Faster operations with smarter caching
+v3のアーキテクチャは以下に焦点を当てています:
+- **シンプルさ** - 価値を生まない複雑さを排除
+- **信頼性** - より良いインストールと少ない破壊的変更
+- **モジュール性** - 必要なコンポーネントだけを選択
+- **パフォーマンス** - よりスマートなキャッシングによる高速な操作
 
-We learned a lot from v2 and tried to address the main pain points.
+私たちはv2から多くを学び、主な問題点に対処しようと試みました。
 
-## FAQ 🙋
+## よくある質問 🙋
 
-**Q: Why was the hooks system removed?**  
-A: It was getting complex and buggy. We're redesigning it properly for v4.
+**Q: なぜフックシステムは削除されたのですか？**
+A: 複雑でバグが多くなっていたためです。v4に向けて適切に再設計しています。
 
-**Q: Does this work with other AI assistants?**  
-A: Currently Claude Code only, but v4 will have broader compatibility.
+**Q: これは他のAIアシスタントで動作しますか？**
+A: 現在はClaude Codeのみですが、v4ではより広範な互換性を持つ予定です。
 
-**Q: Is this stable enough for daily use?**  
-A: The basic stuff works pretty well, but definitely expect some rough edges since it's a fresh release. Probably fine for experimenting! 🧪
+**Q: これは日常的に使用できるほど安定していますか？**
+A: 基本的な機能はかなりうまく動作しますが、リリースされたばかりなので、間違いなくいくつかの荒削りな部分があります。実験には問題ないでしょう！🧪
 
-## SuperClaude Contributors
+## SuperClaude 貢献者
 
 [![Contributors](https://contrib.rocks/image?repo=SuperClaude-Org/SuperClaude_Framework)](https://github.com/SuperClaude-Org/SuperClaude_Framework/graphs/contributors)
 
-## License
+## ライセンス
 
-MIT - [See LICENSE file for details](https://opensource.org/licenses/MIT)
+MIT - [詳細はLICENSEファイルをご覧ください](LICENSE)
 
-## Star History
+## Starの履歴
 
 <a href="https://www.star-history.com/#SuperClaude-Org/SuperClaude_Framework&Date">
  <picture>
@@ -344,6 +310,6 @@ MIT - [See LICENSE file for details](https://opensource.org/licenses/MIT)
 </a>
 ---
 
-*Built by developers who got tired of generic responses. Hope you find it useful! 🙂*
+*ありきたりな応答に飽きた開発者によって作られました。お役に立てれば幸いです！🙂*
 
 ---

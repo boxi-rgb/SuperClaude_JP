@@ -1,37 +1,37 @@
-# SuperClaude Installation Guide 📦
+# SuperClaude インストールガイド 📦
 
-## 🎯 It's Easier Than It Looks!
+## 🎯 見た目より簡単です！
 
-**The honest truth**: This guide looks long because we want to cover all the details, but installation is actually pretty simple. Most people are done in 2 minutes with one command! 
+**正直なところ**: このガイドはすべての詳細を網羅しているため長く見えますが、実際のインストールは非常にシンプルです。ほとんどの人は1つのコマンドで2分で完了します！
 
-### Step 1: Install the Package
+### ステップ1: パッケージのインストール
 
-**Option A: From PyPI (Recommended)**
+**オプションA: PyPIから（推奨）**
 ```bash
 uv add SuperClaude
 ```
 
-**Option B: From Source**
+**オプションB: ソースから**
 ```bash
 git clone https://github.com/SuperClaude-Org/SuperClaude_Framework.git
 cd SuperClaude_Framework
 uv sync
 ```
-### 🔧 UV / UVX Setup Guide
+### 🔧 UV / UVX セットアップガイド
 
-SuperClaude v3 also supports installation via [`uv`](https://github.com/astral-sh/uv) (a faster, modern Python package manager) or `uvx` for cross-platform usage.
+SuperClaude v3は、[`uv`](https://github.com/astral-sh/uv)（高速でモダンなPythonパッケージマネージャー）またはクロスプラットフォーム用の `uvx` を介したインストールもサポートしています。
 
-### 🌀 Install with `uv`
+### 🌀 `uv` でインストール
 
-Make sure `uv` is installed:
+`uv` がインストールされていることを確認してください:
 
 ```bash
 curl -Ls https://astral.sh/uv/install.sh | sh
 ```
 
-> Or follow instructions from: [https://github.com/astral-sh/uv](https://github.com/astral-sh/uv)
+> または、こちらの指示に従ってください: [https://github.com/astral-sh/uv](https://github.com/astral-sh/uv)
 
-Once `uv` is available, you can install SuperClaude like this:
+`uv` が利用可能になったら、次のようにSuperClaudeをインストールできます:
 
 ```bash
 uv venv
@@ -39,213 +39,182 @@ source .venv/bin/activate
 uv pip install SuperClaude
 ```
 
-### ⚡ Install with `uvx` (Cross-platform CLI)
+### ⚡ `uvx` でインストール（クロスプラットフォームCLI）
 
-If you’re using `uvx`, just run:
-
-```bash
-uvx pip install SuperClaude
-```
-## 🔧 UV / UVX Setup Guide
-
-SuperClaude v3 also supports installation via [`uv`](https://github.com/astral-sh/uv) (a faster, modern Python package manager) or `uvx` for cross-platform usage.
-
-### 🌀 Install with `uv`
-
-Make sure `uv` is installed:
-
-```bash
-curl -Ls https://astral.sh/uv/install.sh | sh
-```
-
-> Or follow instructions from: [https://github.com/astral-sh/uv](https://github.com/astral-sh/uv)
-
-Once `uv` is available, you can install SuperClaude like this:
-
-```bash
-uv venv
-source .venv/bin/activate
-uv pip install SuperClaude
-```
-
-### ⚡ Install with `uvx` (Cross-platform CLI)
-
-If you’re using `uvx`, just run:
+`uvx` を使用している場合は、次を実行するだけです:
 
 ```bash
 uvx pip install SuperClaude
 ```
 
-### ✅ Finish Installation
+### ✅ インストールの完了
 
-After installing, continue with the usual installer step:
+インストール後、通常のインストーラーステップに進みます:
 
 ```bash
 python3 -m SuperClaude install
 ```
 
-Or using bash-style CLI:
+またはbash形式のCLIを使用:
 
 ```bash
 SuperClaude install
 ```
 
-### 🧠 Note:
+### 🧠 注意:
 
-* `uv` provides better caching and performance.
-* Compatible with Python 3.8+ and works smoothly with SuperClaude.
-
----
-
-### ⚠️ Important Note 
-**After installing the SuperClaude.**
-**You can use `SuperClaude commands`
-, `python3 -m SuperClaude commands` or also `python3 SuperClaude commands`**
-
-**What just happened?** SuperClaude tried to set up everything you need. Usually no complex configuration, dependency hunting, or setup headaches! 🎉
+* `uv` は、より優れたキャッシングとパフォーマンスを提供します。
+* Python 3.8+と互換性があり、SuperClaudeとスムーズに動作します。
 
 ---
 
-A comprehensive guide to installing SuperClaude v3. But remember - most people never need to read past the quick start above! 😊
+### ⚠️ 重要事項
+**SuperClaudeをインストールした後。**
+**`SuperClaude <コマンド>`、`python3 -m SuperClaude <コマンド>`、または `python3 SuperClaude <コマンド>` が使用できます**
 
-## Before You Start 🔍
+**何が起こったか？** SuperClaudeは必要なものをすべてセットアップしようとしました。通常、複雑な設定、依存関係の検索、セットアップの手間はありません！ 🎉
 
-### What You Need 💻
+---
 
-SuperClaude works on **Windows**, **macOS**, and **Linux**. Here's what you need:
+SuperClaude v3をインストールするための包括的なガイドです。しかし、ほとんどの人は上記のクイックスタート以降を読む必要はないことを覚えておいてください！ 😊
 
-**Required:**
-- **Python 3.8 or newer** - The framework is written in Python
-- **Claude CLI** - SuperClaude enhances Claude Code, so you need it installed first
+## 始める前に 🔍
 
-**Optional (but recommended):**
-- **Node.js 16+** - Only needed if you want MCP server integration
-- **Git** - Helpful for development workflows
+### 必要なもの 💻
 
-### Quick Check 🔍
+SuperClaudeは **Windows**、**macOS**、**Linux** で動作します。必要なものは以下の通りです:
 
-Before installing, let's make sure you have the basics:
+**必須:**
+- **Python 3.8以降** - フレームワークはPythonで書かれています
+- **Claude CLI** - SuperClaudeはClaude Codeを強化するため、最初にインストールしておく必要があります
+
+**任意（推奨）:**
+- **Node.js 16+** - MCPサーバー統合が必要な場合のみ
+- **Git** - 開発ワークフローに役立ちます
+
+### クイックチェック 🔍
+
+インストールする前に、基本的なものが揃っているか確認しましょう:
 
 ```bash
-# Check Python version (should be 3.8+)
+# Pythonのバージョンを確認（3.8+であるべき）
 python3 --version
 
-# Check if Claude CLI is installed
+# Claude CLIがインストールされているか確認
 claude --version
 
-# Check Node.js (optional, for MCP servers)
+# Node.jsを確認（任意、MCPサーバー用）
 node --version
 ```
 
-If any of these fail, see the [Prerequisites Setup](#prerequisites-setup-🛠️) section below.
+これらのいずれかが失敗した場合は、下の[前提条件のセットアップ](#前提条件のセットアップ-️)セクションを参照してください。
 
-## Quick Start 🚀
+## クイックスタート 🚀
 
-**🏆 The "Just Get It Working" Approach (Recommended for 90% of Users)**
-**Option A: From PyPI (Recommended)**
+**🏆 「とにかく動かす」アプローチ（90%のユーザーに推奨）**
+**オプションA: PyPIから（推奨）**
 ```bash
 pip install SuperClaude
 
-# Install with recommended settings  
+# 推奨設定でインストール
 SuperClaude install --quick
 
-# That's it! 🎉
+# これで完了です！ 🎉
 ```
-**Option B: From Source**
+**オプションB: ソースから**
 ```bash
-# Clone the repo
+# リポジトリをクローン
 git clone <repository-url>
 cd SuperClaude
 pip install .
 
-# Install with recommended settings  
+# 推奨設定でインストール
 SuperClaude install --quick
 
-# That's it! 🎉
+# これで完了です！ 🎉
 ```
-**⚠️ Important Note**
-**After installing the SuperClaude.**
-**You can use `SuperClaude commands`
-, `python3 -m SuperClaude commands` or also `python3 SuperClaude commands`**
+**⚠️ 重要事項**
+**SuperClaudeをインストールした後。**
+**`SuperClaude <コマンド>`、`python3 -m SuperClaude <コマンド>`、または `python3 SuperClaude <コマンド>` が使用できます**
 
-**What you just got:**
-- ✅ All 16 smart commands that auto-activate experts
-- ✅ 11 specialist personas that know when to help
-- ✅ Intelligent routing that figures out complexity for you
-- ✅ About 2 minutes of your time and ~50MB disk space
+**何が得られたか:**
+- ✅ 専門家を自動起動する17のスマートコマンドすべて
+- ✅ いつ助けるべきかを知っている11の専門家ペルソナ
+- ✅ 複雑さを自動で解決するインテリジェントなルーティング
+- ✅ 約2分間の時間と約50MBのディスクスペース
 
-**Seriously, you're done.** Open Claude Code, type `/help`, and watch SuperClaude work its magic.
+**本当に、これで完了です。** Claude Codeを開き、`/help`と入力して、SuperClaudeが魔法のように動作するのを見てください。
 
-**Nervous about what it will do?** See first with:
+**何が起こるか心配ですか？** まずは以下で確認してください:
 ```bash
 SuperClaude install --quick --dry-run
 ```
 
-## Installation Options 🎯
+## インストールオプション 🎯
 
-We have three installation profiles to choose from:
+3つのインストールプロファイルから選択できます:
 
-### 🎯 Minimal Installation
+### 🎯 最小インストール
 ```bash
 SuperClaude install --minimal
 ```
-- **What**: Just the core framework files
-- **Time**: ~1 minute
-- **Space**: ~20MB  
-- **Good for**: Testing, basic enhancement, minimal setups
-- **Includes**: Core behavior documentation that guides Claude
+- **内容**: コアフレームワークファイルのみ
+- **時間**: 約1分
+- **容量**: 約20MB
+- **適している人**: テスト、基本的な機能強化、最小限のセットアップ
+- **含まれるもの**: Claudeの応答をガイドするコアな振る舞いに関するドキュメント
 
-### 🚀 Quick Installation (Recommended)
+### 🚀 クイックインストール（推奨）
 ```bash
 SuperClaude install --quick
 ```
-- **What**: Core framework + 16 slash commands
-- **Time**: ~2 minutes
-- **Space**: ~50MB
-- **Good for**: Most users, general development
-- **Includes**: Everything in minimal + specialized commands like `/analyze`, `/build`, `/improve`
+- **内容**: コアフレームワーク + 17のスラッシュコマンド
+- **時間**: 約2分
+- **容量**: 約50MB
+- **適している人**: ほとんどのユーザー、一般的な開発
+- **含まれるもの**: 最小インストールのすべて + `/analyze`、`/build`、`/improve`などの専門コマンド
 
-### 🔧 Developer Installation  
+### 🔧 開発者向けインストール
 ```bash
 SuperClaude install --profile developer
 ```
-- **What**: Everything including MCP server integration
-- **Time**: ~5 minutes
-- **Space**: ~100MB
-- **Good for**: Power users, contributors, advanced workflows
-- **Includes**: Everything + Context7, Sequential, Magic, Playwright servers
+- **内容**: MCPサーバー統合を含むすべて
+- **時間**: 約5分
+- **容量**: 約100MB
+- **適している人**: パワーユーザー、貢献者、高度なワークフロー
+- **含まれるもの**: すべて + Context7、Sequential、Magic、Playwrightサーバー
 
-### 🎛️ Interactive Installation
+### 🎛️ インタラクティブインストール
 ```bash
 SuperClaude install
 ```
-- Lets you pick and choose components
-- Shows detailed descriptions of what each component does
-- Good if you want control over what gets installed
+- コンポーネントを選択できます
+- 各コンポーネントが何をするかの詳細な説明を表示します
+- 何をインストールするかを制御したい場合に適しています
 
-## Step-by-Step Installation 📋
+## ステップバイステップのインストール 📋
 
-### Prerequisites Setup 🛠️
+### 前提条件のセットアップ 🛠️
 
-**Missing Python?**
+**Pythonがありませんか？**
 ```bash
 # Linux (Ubuntu/Debian)
 sudo apt update && sudo apt install python3 python3-pip
 
-# macOS  
+# macOS
 brew install python3
 
 # Windows
-# Download from https://python.org/downloads/
-#or open command prompt or powershell
+# https://python.org/downloads/ からダウンロード
+# またはコマンドプロンプトやpowershellで
 winget install python
 ```
 
-**Missing Claude CLI?**
-- Visit https://claude.ai/code for installation instructions
-- SuperClaude enhances Claude Code, so you need it first
+**Claude CLIがありませんか？**
+- インストール手順については https://claude.ai/code をご覧ください
+- SuperClaudeはClaude Codeを強化するため、最初にそれが必要です
 
-**Missing Node.js? (Optional)**
+**Node.jsがありませんか？ (任意)**
 ```bash
 # Linux (Ubuntu/Debian)
 sudo apt update && sudo apt install nodejs npm
@@ -253,239 +222,239 @@ sudo apt update && sudo apt install nodejs npm
 # macOS
 brew install node
 
-# Windows  
-# Download from https://nodejs.org/
-#or open command prompt or powershell
+# Windows
+# https://nodejs.org/ からダウンロード
+# またはコマンドプロンプトやpowershellで
 winget install nodejs
 ```
 
-### Getting SuperClaude 📥
+### SuperClaudeの入手 📥
 
-**Option 1: From PyPI (Recommended)**
+**オプション1: PyPIから（推奨）**
 ```bash
 pip install SuperClaude
 ```
 
-**Option 2: Download the latest release**
+**オプション2: 最新リリースをダウンロード**
 ```bash
-# Download and extract the latest release
-# (Replace URL with actual release URL)
+# 最新リリースをダウンロードして展開
+# (URLを実際のリリースURLに置き換えてください)
 curl -L <release-url> -o superclaude-v3.zip
 unzip superclaude-v3.zip
 cd superclaude-v3
 pip install .
 ```
 
-**Option 3: Clone from Git**
+**オプション3: Gitからクローン**
 ```bash
 git clone <repository-url>
 cd SuperClaude
 pip install .
 ```
 
-### Running the Installer 🎬
+### インストーラーの実行 🎬
 
-The installer is pretty smart and will guide you through the process:
+インストーラーは非常にスマートで、プロセスをガイドしてくれます:
 
 ```bash
-# See all available options
+# 利用可能なすべてのオプションを表示
 SuperClaude install --help
 
-# Quick installation (recommended)
+# クイックインストール（推奨）
 SuperClaude install --quick
 
-# Want to see what would happen first?
+# 何が起こるかまず確認したい場合
 SuperClaude install --quick --dry-run
 
-# Install everything
+# すべてをインストール
 SuperClaude install --profile developer
 
-# Quiet installation (minimal output)
+# 静かなインストール（最小限の出力）
 SuperClaude install --quick --quiet
 
-# Force installation (skip confirmations)
+# 強制インストール（確認をスキップ）
 python3 SuperClaude.py install --quick --force
 ```
 
-### During Installation 📱
+### インストール中 📱
 
-Here's what happens when you install:
+インストール中に起こること:
 
-1. **System Check** - Verifies you have required dependencies
-2. **Directory Setup** - Creates `~/.claude/` directory structure
-3. **Core Files** - Copies framework documentation files
-4. **Commands** - Installs slash command definitions (if selected)
-5. **MCP Servers** - Downloads and configures MCP servers (if selected)
-6. **Configuration** - Sets up `settings.json` with your preferences
-7. **Validation** - Tests that everything works
+1. **システムチェック** - 必要な依存関係があるか検証します
+2. **ディレクトリ設定** - `~/.claude/` ディレクトリ構造を作成します
+3. **コアファイル** - フレームワークのドキュメントファイルをコピーします
+4. **コマンド** - スラッシュコマンドの定義をインストールします（選択した場合）
+5. **MCPサーバー** - MCPサーバーをダウンロードして設定します（選択した場合）
+6. **設定** - `settings.json` をあなたの好みに合わせて設定します
+7. **検証** - すべてが機能するかテストします
 
-The installer shows progress and will tell you if anything goes wrong.
+インストーラーは進捗を表示し、何か問題があれば教えてくれます。
 
-## After Installation ✅
+## インストール後 ✅
 
-### Quick Test 🧪
+### クイックテスト 🧪
 
-Let's make sure everything worked:
+すべてが機能したか確認しましょう:
 
 ```bash
-# Check if files were installed
+# ファイルがインストールされたか確認
 ls ~/.claude/
 
-# Should show: CLAUDE.md, COMMANDS.md, settings.json, etc.
+# CLAUDE.md, COMMANDS.md, settings.jsonなどが表示されるはずです
 ```
 
-**Test with Claude Code:**
-1. Open Claude Code
-2. Try typing `/help` - you should see SuperClaude commands
-3. Try `/analyze --help` - should show command options
+**Claude Codeでテスト:**
+1. Claude Codeを開きます
+2. `/help`と入力してみてください - SuperClaudeのコマンドが表示されるはずです
+3. `/analyze --help`と試してみてください - コマンドのオプションが表示されるはずです
 
-### What Got Installed 📂
+### 何がインストールされたか 📂
 
-SuperClaude installs to `~/.claude/` by default. Here's what you'll find:
+SuperClaudeはデフォルトで `~/.claude/` にインストールされます。そこには以下のものがあります:
 
 ```
 ~/.claude/
-├── CLAUDE.md              # Main framework entry point
-├── COMMANDS.md             # Available slash commands  
-├── FLAGS.md                # Command flags and options
-├── PERSONAS.md             # Smart persona system
-├── PRINCIPLES.md           # Development principles
-├── RULES.md                # Operational rules
-├── MCP.md                  # MCP server integration
-├── MODES.md                # Operational modes
-├── ORCHESTRATOR.md         # Intelligent routing
-├── settings.json           # Configuration file
-└── commands/               # Individual command definitions
+├── CLAUDE.md              # メインフレームワークのエントリーポイント
+├── COMMANDS.md             # 利用可能なスラッシュコマンド
+├── FLAGS.md                # コマンドのフラグとオプション
+├── PERSONAS.md             # スマートペルソナシステム
+├── PRINCIPLES.md           # 開発原則
+├── RULES.md                # 運用ルール
+├── MCP.md                  # MCPサーバー統合
+├── MODES.md                # 運用モード
+├── ORCHESTRATOR.md         # インテリジェントルーティング
+├── settings.json           # 設定ファイル
+└── commands/               # 個々のコマンド定義
     ├── analyze.md
     ├── build.md
     ├── improve.md
-    └── ... (13 more)
+    └── ... (14 more)
 ```
 
-**What each file does:**
-- **CLAUDE.md** - Tells Claude Code about SuperClaude and loads other files
-- **settings.json** - Configuration (MCP servers, hooks, etc.)
-- **commands/** - Detailed definitions for each slash command
+**各ファイルがすること:**
+- **CLAUDE.md** - SuperClaudeについてClaude Codeに伝え、他のファイルを読み込みます
+- **settings.json** - 設定（MCPサーバー、フックなど）
+- **commands/** - 各スラッシュコマンドの詳細な定義
 
-### First Steps 🎯
+### 最初のステップ 🎯
 
-Try these commands to get started:
+始めるには、これらのコマンドを試してみてください:
 
 ```bash
-# In Claude Code, try these:
-/sc:help                    # See available commands
-/sc:analyze README.md       # Analyze a file
-/sc:build --help           # See build options
-/sc:improve --help         # See improvement options
+# Claude Codeで、これらを試してみてください:
+/sc:help                    # 利用可能なコマンドを表示
+/sc:analyze README.md       # ファイルを分析
+/sc:build --help           # ビルドオプションを表示
+/sc:improve --help         # 改善オプションを表示
 ```
 
-**Don't worry if it seems overwhelming** - SuperClaude enhances Claude Code gradually. You can use as much or as little as you want.
+**圧倒されても心配しないでください** - SuperClaudeは徐々にClaude Codeを強化します。好きなだけ使ってください。
 
-## Managing Your Installation 🛠️
+## インストールの管理 🛠️
 
-### Updates 📅
+### アップデート 📅
 
-Keep SuperClaude up to date:
+SuperClaudeを最新の状態に保ちます:
 
 ```bash
-# Check for updates
+# アップデートを確認
 SuperClaude update
 
-# Force update (overwrite local changes)
+# 強制アップデート（ローカルの変更を上書き）
 SuperClaude update --force
 
-# Update specific components only
+# 特定のコンポーネントのみをアップデート
 SuperClaude update --components core,commands
 
-# See what would be updated
+# 何がアップデートされるか確認
 SuperClaude update --dry-run
 ```
 
-**When to update:**
-- When new SuperClaude versions are released
-- If you're having issues (updates often include fixes)
-- When new MCP servers become available
+**いつアップデートするか:**
+- 新しいSuperClaudeのバージョンがリリースされた時
+- 問題が発生している場合（アップデートにはしばしば修正が含まれます）
+- 新しいMCPサーバーが利用可能になった時
 
-### Backups 💾
+### バックアップ 💾
 
-Create backups before major changes:
+大きな変更の前にバックアップを作成します:
 
 ```bash
-# Create a backup
+# バックアップを作成
 SuperClaude backup --create
 
-# List existing backups  
+# 既存のバックアップを一覧表示
 SuperClaude backup --list
 
-# Restore from backup
+# バックアップから復元
 SuperClaude backup --restore
 
-# Create backup with custom name
+# カスタム名でバックアップを作成
 SuperClaude backup --create --name "before-update"
 ```
 
-**When to backup:**
-- Before updating SuperClaude
-- Before experimenting with settings
-- Before uninstalling
-- Periodically if you've customized heavily
+**いつバックアップするか:**
+- SuperClaudeをアップデートする前
+- 設定を試す前
+- アンインストールする前
+- 大幅にカスタマイズした場合は定期的に
 
-### Uninstallation 🗑️
+### アンインストール 🗑️
 
-If you need to remove SuperClaude:
+SuperClaudeを削除する必要がある場合:
 
 ```bash
-# Remove SuperClaude (keeps backups)
+# SuperClaudeを削除（バックアップは保持）
 SuperClaude uninstall
 
-# Complete removal (removes everything)
+# 完全削除（すべてを削除）
 SuperClaude uninstall --complete
 
-# See what would be removed
+# 何が削除されるか確認
 SuperClaude uninstall --dry-run
 ```
 
-**What gets removed:**
-- All files in `~/.claude/` 
-- MCP server configurations
-- SuperClaude settings from Claude Code
+**何が削除されるか:**
+- `~/.claude/` 内のすべてのファイル
+- MCPサーバーの設定
+- Claude CodeからのSuperClaude設定
 
-**What stays:**
-- Your backups (unless you use `--complete`)
-- Claude Code itself (SuperClaude doesn't touch it)
-- Your projects and other files
+**何が残るか:**
+- バックアップ（`--complete`を使用しない限り）
+- Claude Code自体（SuperClaudeは触れません）
+- あなたのプロジェクトや他のファイル
 
-## Troubleshooting 🔧
+## トラブルシューティング 🔧
 
-### Common Issues 🚨
+### 一般的な問題 🚨
 
 **"Python not found"**
 ```bash
-# Try python instead of python3
+# python3の代わりにpythonを試す
 python --version
 
-# Or check if it's installed but not in PATH
+# またはインストールされているがPATHにないか確認
 which python3
 ```
 
 **"Claude CLI not found"**
-- Make sure Claude Code is installed first
-- Try `claude --version` to verify
-- Visit https://claude.ai/code for installation help
+- 最初にClaude Codeがインストールされていることを確認してください
+- `claude --version`で確認してみてください
+- インストールヘルプについては https://claude.ai/code をご覧ください
 
 **"Permission denied"**
 ```bash
-# Try with explicit Python path
+# 明示的なPythonパスで試す
 /usr/bin/python3 SuperClaude.py install --quick
 
-# Or check if you need different permissions
+# または異なる権限が必要か確認
 ls -la ~/.claude/
 ```
 
 **"MCP servers won't install"**
-- Check that Node.js is installed: `node --version`
-- Check that npm is available: `npm --version`  
-- Try installing without MCP first: `--minimal` or `--quick`
+- Node.jsがインストールされているか確認: `node --version`
+- npmが利用可能か確認: `npm --version`
+- まずMCPなしでインストールしてみてください: `--minimal` または `--quick`
 
 **MCPサーバーが動作しない、または問題がある場合 (If MCP servers are not working or have issues)**
 - まずは `SuperClaude diagnose_mcp` を実行してください。このコマンドは、依存関係、設定、サーバーの応答性など、一般的な問題を自動でチェックします。
@@ -493,121 +462,120 @@ ls -la ~/.claude/
 
 **"Installation fails partway through"**
 ```bash
-# Try with verbose output to see what's happening
+# 何が起こっているか詳細な出力で試す
 SuperClaude install --quick --verbose
 
-# Or try a dry run first
+# またはまずドライランを試す
 SuperClaude install --quick --dry-run
 ```
 
-### Platform-Specific Issues 🖥️
+### プラットフォーム固有の問題 🖥️
 
 **Windows:**
-- Use `python` instead of `python3` if you get "command not found"
-- Run Command Prompt as Administrator if you get permission errors
-- Make sure Python is in your PATH
+- "command not found"と表示されたら `python3` の代わりに `python` を使用してください
+- 権限エラーが表示されたらコマンドプロンプトを管理者として実行してください
+- PythonがPATHに含まれていることを確認してください
 
-**macOS:**  
-- You might need to approve SuperClaude in Security & Privacy settings
-- Use `brew install python3` if you don't have Python 3.8+
-- Try using `python3` explicitly instead of `python`
+**macOS:**
+- セキュリティとプライバシー設定でSuperClaudeを承認する必要があるかもしれません
+- Python 3.8+がない場合は `brew install python3` を使用してください
+- `python` の代わりに `python3` を明示的に使用してみてください
 
 **Linux:**
-- Make sure you have `python3-pip` installed
-- You might need `sudo` for some package installations
-- Check that `~/.local/bin` is in your PATH
+- `python3-pip` がインストールされていることを確認してください
+- 一部のパッケージインストールには `sudo` が必要かもしれません
+- `~/.local/bin` がPATHに含まれていることを確認してください
 
-### Still Having Issues? 🤔
+### まだ問題がありますか？ 🤔
 
-**Check our troubleshooting resources:**
+**トラブルシューティングリソースを確認してください:**
 - GitHub Issues: https://github.com/SuperClaude-Org/SuperClaude_Framework/issues
-- Look for existing issues similar to yours
-- Create a new issue if you can't find a solution
+- あなたの問題に似た既存のイシューを探してください
+- 解決策が見つからない場合は新しいイシューを作成してください
 
-**When reporting bugs, please include:**
-- Your operating system and version
-- Python version (`python3 --version`)
-- Claude CLI version (`claude --version`)
-- The exact command you ran
-- The complete error message
-- What you expected to happen
+**バグを報告する際は、以下を含めてください:**
+- オペレーティングシステムとバージョン
+- Pythonのバージョン（`python3 --version`）
+- Claude CLIのバージョン（`claude --version`）
+- 実行した正確なコマンド
+- 完全なエラーメッセージ
+- 何が起こると期待したか
 
-**Getting Help:**
-- GitHub Discussions for general questions
-- Check the README.md for latest updates
-- Look at the ROADMAP.md to see if your issue is known
+**助けを得る:**
+- 一般的な質問はGitHub Discussionsへ
+- 最新情報はREADME.mdを確認してください
+- あなたの問題が既知かどうかROADMAP.mdを見てください
 
-## Advanced Options ⚙️
+## 高度なオプション ⚙️
 
-### Custom Installation Directory
+### カスタムインストールディレクトリ
 
 ```bash
-# Install to custom location
+# カスタムの場所にインストール
 SuperClaude install --quick --install-dir /custom/path
 
-# Use environment variable
+# 環境変数を使用
 export SUPERCLAUDE_DIR=/custom/path
 SuperClaude install --quick
 ```
 
-### Component Selection
+### コンポーネントの選択
 
 ```bash
-# See available components
+# 利用可能なコンポーネントを表示
 SuperClaude install --list-components
 
-# Install specific components only
+# 特定のコンポーネントのみをインストール
 SuperClaude install --components core,commands
 
-# Skip certain components
+# 特定のコンポーネントをスキップ
 SuperClaude install --quick --skip mcp
 ```
 
-### Development Setup
+### 開発セットアップ
 
-If you're planning to contribute or modify SuperClaude:
+SuperClaudeに貢献したり、変更したりする予定がある場合:
 
 ```bash
-# Developer installation with all components
+# すべてのコンポーネントを含む開発者向けインストール
 SuperClaude install --profile developer
 
-# Install in development mode (symlinks instead of copies)
+# 開発モードでインストール（コピーの代わりにシンボリックリンクを使用）
 SuperClaude install --profile developer --dev-mode
 
-# Install with git hooks for development
+# 開発用のgitフックと共にインストール
 SuperClaude install --profile developer --dev-hooks
 ```
 
-## What's Next? 🚀
+## 次は？ 🚀
 
-**Now that SuperClaude is installed (that was easy, right?):**
+**SuperClaudeがインストールされた今（簡単でしたよね？）:**
 
-1. **Just start using it** - Try `/analyze some-file.js` or `/build` and see what happens ✨
-2. **Don't stress about learning** - SuperClaude usually figures out what you need
-3. **Experiment freely** - Commands like `/improve` and `/troubleshoot` are pretty forgiving
-4. **Read guides if curious** - Check `Docs/` when you want to understand what just happened
-5. **Give feedback** - Let us know what works and what doesn't
+1. **とにかく使い始める** - `/analyze some-file.js` や `/build` を試して何が起こるか見てみましょう ✨
+2. **学ぶことにストレスを感じないで** - SuperClaudeは通常、あなたが必要なものを理解します
+3. **自由に実験する** - `/improve` や `/troubleshoot` のようなコマンドはかなり寛容です
+4. **興味があればガイドを読む** - 何が起こったか理解したい時に `Docs/` を確認してください
+5. **フィードバックを送る** - 何が機能して何が機能しないか教えてください
 
-**The real secret**: SuperClaude is designed to enhance your existing workflow without you having to learn a bunch of new stuff. Just use it like you'd use regular Claude Code, but notice how much smarter it gets! 🎯
+**本当の秘密**: SuperClaudeは、あなたがたくさんの新しいことを学ばなくても、既存のワークフローを強化するように設計されています。通常のClaude Codeのように使うだけで、どれだけ賢くなるかに気づくでしょう！ 🎯
 
-**Still feeling uncertain?** Start with just `/help` and `/analyze README.md` - you'll see how non-intimidating it actually is.
-
----
-
-## Final Notes 📝
-
-- **Installation takes 1-5 minutes** depending on what you choose
-- **Disk space needed: 20-100MB** (not much!)
-- **Works alongside existing tools** - doesn't interfere with your setup
-- **Easy to uninstall** if you change your mind
-- **Community supported** - we actually read and respond to issues
-- ### ⚠️ Important Note 
-**After installing the SuperClaude.**
-**You can use `SuperClaude commands`
-, `python3 -m SuperClaude commands` or also `python3 SuperClaude commands`**
-
-Thanks for trying SuperClaude! We hope it makes your development workflow a bit smoother. 🙂
+**まだ不安ですか？** `/help` と `/analyze README.md` だけで始めてみてください - それがどれほど威圧的でないかわかるでしょう。
 
 ---
 
-*Last updated: July 2024 - Let us know if anything in this guide is wrong or confusing!*
+## 最後の注意点 📝
+
+- **インストールには1〜5分かかります**（選択によります）
+- **必要なディスク容量: 20〜100MB**（それほど多くありません！）
+- **既存のツールと連携して動作します** - あなたのセットアップを妨げません
+- **気が変わっても簡単にアンインストールできます**
+- **コミュニティによってサポートされています** - 私たちは実際にイシューを読んで対応します
+- ### ⚠️ 重要事項
+**SuperClaudeをインストールした後。**
+**`SuperClaude <コマンド>`、`python3 -m SuperClaude <コマンド>`、または `python3 SuperClaude <コマンド>` が使用できます**
+
+SuperClaudeをお試しいただきありがとうございます！あなたの開発ワークフローが少しでもスムーズになることを願っています。 🙂
+
+---
+
+*最終更新: 2024年7月 - このガイドに間違いや紛らわしい点があればお知らせください！*
