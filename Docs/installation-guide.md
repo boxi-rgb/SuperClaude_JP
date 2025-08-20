@@ -487,6 +487,10 @@ ls -la ~/.claude/
 - Check that npm is available: `npm --version`  
 - Try installing without MCP first: `--minimal` or `--quick`
 
+**MCPサーバーが動作しない、または問題がある場合 (If MCP servers are not working or have issues)**
+- まずは `SuperClaude diagnose_mcp` を実行してください。このコマンドは、依存関係、設定、サーバーの応答性など、一般的な問題を自動でチェックします。
+- `First, run "SuperClaude diagnose_mcp". This command automatically checks for common issues, including dependencies, configuration, and server responsiveness.`
+
 **"Installation fails partway through"**
 ```bash
 # Try with verbose output to see what's happening

@@ -1,4 +1,8 @@
-# SuperClaude v3 🚀
+# SuperClaude v3 🚀 (日本語フォーク版)
+
+**これは `SuperClaude-Org/SuperClaude_Framework` の日本語化フォークです。**
+**ドキュメントやコミュニケーションは日本語で行われます。**
+
 [![Website Preview](https://img.shields.io/badge/Visit-Website-blue?logo=google-chrome)](https://superclaude-org.github.io/SuperClaude_Website/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI version](https://img.shields.io/pypi/v/SuperClaude.svg)](https://pypi.org/project/SuperClaude/)
@@ -68,6 +72,10 @@ External tools that connect when useful:
 - **Playwright** - Browser automation and testing stuff
 
 *(These work pretty well when they connect properly! 🤞)*
+
+### 管理コマンド (Management Commands) ⚙️
+- **`SuperClaude add_mcp`** - MCPサーバーを後から追加でインストールします。
+- **`SuperClaude diagnose_mcp`** - MCPサーバー関連の問題を診断するためのトラブルシューティングツールです。
 
 ## ⚠️ Upgrading from v2? Important!
 
