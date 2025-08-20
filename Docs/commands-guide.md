@@ -671,6 +671,59 @@ A practical guide to all 16 SuperClaude slash commands. We'll be honest about wh
 - More useful at project start than during development
 - Helps with onboarding but not a replacement for good docs
 
+---
+### `add_mcp` - MCPサーバーの追加インストール
+**何をするか**: SuperClaudeのインストール後に、追加でMCP（Multi-Claude Proxy）サーバーをインストールします。
+
+**いつ使うか**:
+- 特定のMCPサーバーだけを後から追加したい場合
+- 最小構成でインストールした後、必要な機能を追加する際
+
+**基本的な構文**:
+```bash
+# 利用可能なMCPサーバーの一覧を表示
+SuperClaude add_mcp
+
+# 特定のMCPサーバーをインストール
+SuperClaude add_mcp magic
+
+# 複数のMCPサーバーを一度にインストール
+SuperClaude add_mcp magic playwright
+```
+
+**引数**:
+- `mcp_names` - インストールしたいMCPサーバーの名前（複数指定可）。
+
+**補足**:
+- このコマンドは `claude mcp add` コマンドのラッパーとして機能します。
+- サーバー名は `config/mcp_registry.json` に登録されている必要があります。
+
+---
+
+### `diagnose_mcp` - MCPサーバーの診断
+**何をするか**: MCPサーバーに関する一般的な問題を診断するための一連のチェックを実行します。
+
+**いつ使うか**:
+- MCPサーバーが期待通りに動作しない場合
+- コマンドがエラーを返す原因を特定したい時
+- 環境設定（APIキーなど）が正しいか確認したい場合
+
+**基本的な構文**:
+```bash
+# 診断プロセスを開始
+SuperClaude diagnose_mcp
+```
+
+**診断内容**:
+- **レベル1: 前提条件のチェック** - `node`, `npm`, `claude` CLIがインストールされているか、バージョンはいくつかを確認します。
+- **レベル2: 設定ファイルの診断** - グローバルおよびローカルの設定ファイルを確認し、インストール済みのMCPが公式レジストリと一致しているか検証します。
+- **レベル3: サーバー生存確認** - インストール済みの各サーバーにテスト通信を送り、正常に応答するか確認します。
+- **レベル4: APIキーの確認** - APIキーを必要とするサーバー（例: `magic`）について、対応する環境変数が設定されているかチェックします。
+
+**補足**:
+- トラブルシューティングの第一歩として非常に役立ちます。
+- 問題が解決しない場合、この診断結果を添えてイシューを報告するとスムーズです。
+
 ## Command Tips & Patterns 💡
 
 ### Effective Flag Combinations

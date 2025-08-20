@@ -18,11 +18,11 @@ SuperClaude is a community-driven project that enhances Claude Code through modu
 git clone https://github.com/your-username/SuperClaude.git
 cd SuperClaude
 
-# Install SuperClaude
-./install.sh --standard
+# Install in editable mode with test dependencies
+pip install -e .[test]
 
-# Run tests
-python Tests/comprehensive_test.py
+# Run tests to ensure everything is set up correctly
+python -m pytest tests/
 ```
 
 ## 🎯 Ways to Contribute
@@ -57,12 +57,13 @@ python Tests/comprehensive_test.py
 ```
 SuperClaude/
 ├── SuperClaude/
-│   ├── Hooks/          # 15 Python hooks (main extension points)
-│   ├── Commands/       # 14 slash commands
-│   ├── Core/          # Framework documentation
-│   └── Settings/      # Configuration files
-├── Scripts/           # Installation and utility scripts
-└── Tests/            # Test suite
+│   ├── Commands/
+│   ├── Core/
+│   └── ...
+├── config/
+├── profiles/
+├── setup/
+└── tests/            # Test suite
 ```
 
 ### Hook System
@@ -76,16 +77,17 @@ Hooks are the primary extension mechanism:
 ## 🧪 Testing
 
 ### Running Tests
+The project uses `pytest` for testing. After setting up the development environment with `pip install -e .[test]`, you can run the full test suite.
+
 ```bash
-# Full test suite
-python Tests/comprehensive_test.py
+# Run the full test suite
+python -m pytest tests/
 
-# Specific components
-python Tests/task_management_test.py
-python Tests/performance_test_suite.py
+# Run a specific test file
+python -m pytest tests/test_mcp_manager.py
 
-# Hook integration tests
-python SuperClaude/Hooks/test_orchestration_integration.py
+# Run tests with verbose output
+python -m pytest -v tests/
 ```
 
 ### Writing Tests
