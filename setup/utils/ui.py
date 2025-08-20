@@ -88,8 +88,8 @@ class ProgressBar:
         
         # Calculate filled and empty portions
         filled_width = int(self.width * current / self.total) if self.total > 0 else self.width
-        filled = '█' * filled_width
-        empty = '░' * (self.width - filled_width)
+        filled = '#' * filled_width
+        empty = '-' * (self.width - filled_width)
         
         # Calculate elapsed time and ETA
         elapsed = time.time() - self.start_time

@@ -76,12 +76,12 @@ class Logger:
                     'CRITICAL': Colors.RED + Colors.BRIGHT
                 }
                 
-                # Prefix mapping
+                # Prefix mapping - using ASCII-safe characters
                 prefixes = {
                     'DEBUG': '[DEBUG]',
                     'INFO': '[INFO]',
                     'WARNING': '[!]',
-                    'ERROR': '[✗]',
+                    'ERROR': '[ERROR]',
                     'CRITICAL': '[CRITICAL]'
                 }
                 
@@ -177,7 +177,7 @@ class Logger:
                 original_format = console_handler.formatter.format
                 
                 def success_format(record):
-                    return f"{Colors.GREEN}[✓] {record.getMessage()}{Colors.RESET}"
+                    return f"{Colors.GREEN}[OK] {record.getMessage()}{Colors.RESET}"
                 
                 console_handler.formatter.format = success_format
                 self.logger.info(message, **kwargs)
