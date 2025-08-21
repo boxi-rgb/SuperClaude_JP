@@ -8,6 +8,8 @@ from typing import Dict, List, Set, Optional, Type
 from pathlib import Path
 from ..base.component import Component
 from ..utils.localization import get_string
+from ..utils.logger import get_logger
+from ..utils.ui import display_error
 
 
 class ComponentRegistry:
@@ -25,6 +27,7 @@ class ComponentRegistry:
         self.component_instances: Dict[str, Component] = {}
         self.dependency_graph: Dict[str, Set[str]] = {}
         self._discovered = False
+        self.logger = get_logger("superclaude.registry")
     
     def discover_components(self, force_reload: bool = False) -> None:
         """
@@ -83,10 +86,12 @@ class ComponentRegistry:
                         self.component_instances[component_name] = instance
                         
                     except Exception as e:
-                        print(get_string("registry.error.instantiate", name, e))
+                        self.logger.exception(f"Failed to instantiate component {name}: {e}")
+                        display_error(get_string("registry.error.instantiate", name, e))
         
         except Exception as e:
-            print(get_string("registry.error.load_module", module_name, e))
+            self.logger.exception(f"Failed to load module {module_name}: {e}")
+            display_error(get_string("registry.error.load_module", module_name, e))
     
     def _build_dependency_graph(self) -> None:
         """Build dependency graph for all discovered components"""
@@ -95,7 +100,8 @@ class ComponentRegistry:
                 dependencies = instance.get_dependencies()
                 self.dependency_graph[name] = set(dependencies)
             except Exception as e:
-                print(get_string("registry.error.get_deps", name, e))
+                self.logger.exception(f"Failed to get dependencies for {name}: {e}")
+                display_error(get_string("registry.error.get_deps", name, e))
                 self.dependency_graph[name] = set()
     
     def get_component_class(self, component_name: str) -> Optional[Type[Component]]:
@@ -131,7 +137,8 @@ class ComponentRegistry:
                 try:
                     return component_class(install_dir)
                 except Exception as e:
-                    print(get_string("registry.error.create_instance", component_name, e))
+                    self.logger.exception(f"Failed to create instance of {component_name}: {e}")
+                    display_error(get_string("registry.error.create_instance", component_name, e))
                     return None
         
         return self.component_instances.get(component_name)
@@ -347,7 +354,7 @@ class ComponentRegistry:
             if instance:
                 instances[name] = instance
             else:
-                print(get_string("registry.error.create_instance_warning", name))
+                display_error(get_string("registry.error.create_instance_warning", name))
         
         return instances
     

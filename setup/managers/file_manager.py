@@ -9,6 +9,8 @@ from pathlib import Path
 import fnmatch
 import hashlib
 from ..utils.localization import get_string
+from ..utils.logger import get_logger
+from ..utils.ui import display_info, display_error, display_warning
 
 
 class FileManager:
@@ -24,6 +26,7 @@ class FileManager:
         self.dry_run = dry_run
         self.copied_files: List[Path] = []
         self.created_dirs: List[Path] = []
+        self.logger = get_logger("superclaude.filemanager")
         
     def copy_file(self, source: Path, target: Path, preserve_permissions: bool = True) -> bool:
         """
@@ -44,7 +47,7 @@ class FileManager:
             raise ValueError(get_string("file.error.source_not_a_file", source))
         
         if self.dry_run:
-            print(get_string("file.dry_run.copy_file", source, target))
+            display_info(get_string("file.dry_run.copy_file", source, target))
             return True
         
         try:
@@ -61,7 +64,8 @@ class FileManager:
             return True
             
         except Exception as e:
-            print(get_string("file.error.copy_file_error", source, target, e))
+            self.logger.exception(f"Failed to copy file {source} -> {target}: {e}")
+            display_error(get_string("file.error.copy_file_error", source, target, e))
             return False
     
     def copy_directory(self, source: Path, target: Path, ignore_patterns: Optional[List[str]] = None) -> bool:
@@ -87,7 +91,7 @@ class FileManager:
         all_ignores = ignore_patterns + default_ignores
         
         if self.dry_run:
-            print(get_string("file.dry_run.copy_dir", source, target))
+            display_info(get_string("file.dry_run.copy_dir", source, target))
             return True
         
         try:
@@ -119,7 +123,8 @@ class FileManager:
             return True
             
         except Exception as e:
-            print(get_string("file.error.copy_dir_error", source, target, e))
+            self.logger.exception(f"Failed to copy directory {source} -> {target}: {e}")
+            display_error(get_string("file.error.copy_dir_error", source, target, e))
             return False
     
     def ensure_directory(self, directory: Path, mode: int = 0o755) -> bool:
@@ -134,7 +139,7 @@ class FileManager:
             True if successful, False otherwise
         """
         if self.dry_run:
-            print(get_string("file.dry_run.create_dir", directory))
+            display_info(get_string("file.dry_run.create_dir", directory))
             return True
         
         try:
@@ -146,7 +151,8 @@ class FileManager:
             return True
             
         except Exception as e:
-            print(get_string("file.error.create_dir_error", directory, e))
+            self.logger.exception(f"Failed to create directory {directory}: {e}")
+            display_error(get_string("file.error.create_dir_error", directory, e))
             return False
     
     def remove_file(self, file_path: Path) -> bool:
@@ -163,14 +169,14 @@ class FileManager:
             return True  # Already gone
         
         if self.dry_run:
-            print(get_string("file.dry_run.remove_file", file_path))
+            display_info(get_string("file.dry_run.remove_file", file_path))
             return True
         
         try:
             if file_path.is_file():
                 file_path.unlink()
             else:
-                print(get_string("file.warning.not_a_file", file_path))
+                display_warning(get_string("file.warning.not_a_file", file_path))
                 return False
             
             # Remove from tracking
@@ -180,7 +186,8 @@ class FileManager:
             return True
             
         except Exception as e:
-            print(get_string("file.error.remove_file_error", file_path, e))
+            self.logger.exception(f"Failed to remove file {file_path}: {e}")
+            display_error(get_string("file.error.remove_file_error", file_path, e))
             return False
     
     def remove_directory(self, directory: Path, recursive: bool = False) -> bool:
@@ -199,7 +206,7 @@ class FileManager:
         
         if self.dry_run:
             action = "recursively remove" if recursive else "remove"
-            print(get_string("file.dry_run.remove_dir", action, directory))
+            display_info(get_string("file.dry_run.remove_dir", action, directory))
             return True
         
         try:
@@ -215,7 +222,8 @@ class FileManager:
             return True
             
         except Exception as e:
-            print(get_string("file.error.remove_dir_error", directory, e))
+            self.logger.exception(f"Failed to remove directory {directory}: {e}")
+            display_error(get_string("file.error.remove_dir_error", directory, e))
             return False
     
     def resolve_home_path(self, path: str) -> Path:
@@ -244,7 +252,7 @@ class FileManager:
             return False
         
         if self.dry_run:
-            print(get_string("file.dry_run.make_executable", file_path))
+            display_info(get_string("file.dry_run.make_executable", file_path))
             return True
         
         try:
@@ -258,7 +266,8 @@ class FileManager:
             return True
             
         except Exception as e:
-            print(get_string("file.error.make_executable_error", file_path, e))
+            self.logger.exception(f"Failed to make executable {file_path}: {e}")
+            display_error(get_string("file.error.make_executable_error", file_path, e))
             return False
     
     def get_file_hash(self, file_path: Path, algorithm: str = 'sha256') -> Optional[str]:
@@ -391,7 +400,7 @@ class FileManager:
     def cleanup_tracked_files(self) -> None:
         """Remove all files and directories created during this session"""
         if self.dry_run:
-            print(get_string("file.dry_run.cleanup"))
+            display_info(get_string("file.dry_run.cleanup"))
             return
         
         # Remove files first

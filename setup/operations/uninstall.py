@@ -132,28 +132,28 @@ def get_installation_info(install_dir: Path) -> Dict[str, Any]:
 
 def display_uninstall_info(info: Dict[str, Any]) -> None:
     """Display installation information before uninstall"""
-    print(f"\n{Colors.CYAN}{Colors.BRIGHT}{get_string('uninstall.info.header')}{Colors.RESET}")
-    print("=" * 50)
-    
+    display_info(f"\n{Colors.CYAN}{Colors.BRIGHT}{get_string('uninstall.info.header')}{Colors.RESET}")
+    display_info("=" * 50)
+
     if not info["exists"]:
-        print(f"{Colors.YELLOW}{get_string('uninstall.info.no_installation')}{Colors.RESET}")
+        display_warning(f"{Colors.YELLOW}{get_string('uninstall.info.no_installation')}{Colors.RESET}")
         return
-    
-    print(f"{Colors.BLUE}{get_string('uninstall.info.directory')}{Colors.RESET} {info['install_dir']}")
-    
+
+    display_info(f"{Colors.BLUE}{get_string('uninstall.info.directory')}{Colors.RESET} {info['install_dir']}")
+
     if info["components"]:
-        print(f"{Colors.BLUE}{get_string('uninstall.info.components')}{Colors.RESET}")
+        display_info(f"{Colors.BLUE}{get_string('uninstall.info.components')}{Colors.RESET}")
         for component, version in info["components"].items():
-            print(f"  {component}: v{version}")
-    
-    print(f"{Colors.BLUE}{get_string('uninstall.info.files')}{Colors.RESET} {len(info['files'])}")
-    print(f"{Colors.BLUE}{get_string('uninstall.info.directories')}{Colors.RESET} {len(info['directories'])}")
-    
+            display_info(f"  {component}: v{version}")
+
+    display_info(f"{Colors.BLUE}{get_string('uninstall.info.files')}{Colors.RESET} {len(info['files'])}")
+    display_info(f"{Colors.BLUE}{get_string('uninstall.info.directories')}{Colors.RESET} {len(info['directories'])}")
+
     if info["total_size"] > 0:
         from ..utils.ui import format_size
-        print(f"{Colors.BLUE}{get_string('uninstall.info.total_size')}{Colors.RESET} {format_size(info['total_size'])}")
-    
-    print()
+        display_info(f"{Colors.BLUE}{get_string('uninstall.info.total_size')}{Colors.RESET} {format_size(info['total_size'])}")
+
+    display_info("")
 
 
 def get_components_to_uninstall(args: argparse.Namespace, installed_components: Dict[str, str]) -> Optional[List[str]]:
@@ -182,7 +182,7 @@ def interactive_uninstall_selection(installed_components: Dict[str, str]) -> Opt
     if not installed_components:
         return []
     
-    print(f"\n{Colors.CYAN}{get_string('uninstall.selection.header')}{Colors.RESET}")
+    display_info(f"\n{Colors.CYAN}{get_string('uninstall.selection.header')}{Colors.RESET}")
     
     # Create menu options
     preset_options = [
@@ -219,16 +219,16 @@ def interactive_uninstall_selection(installed_components: Dict[str, str]) -> Opt
 
 def display_uninstall_plan(components: List[str], args: argparse.Namespace, info: Dict[str, Any]) -> None:
     """Display uninstall plan"""
-    print(f"\n{Colors.CYAN}{Colors.BRIGHT}{get_string('uninstall.plan.header')}{Colors.RESET}")
-    print("=" * 50)
+    display_info(f"\n{Colors.CYAN}{Colors.BRIGHT}{get_string('uninstall.plan.header')}{Colors.RESET}")
+    display_info("=" * 50)
     
-    print(f"{Colors.BLUE}{get_string('uninstall.info.directory')}{Colors.RESET} {info['install_dir']}")
+    display_info(f"{Colors.BLUE}{get_string('uninstall.info.directory')}{Colors.RESET} {info['install_dir']}")
     
     if components:
-        print(f"{Colors.BLUE}{get_string('uninstall.plan.components_to_remove')}{Colors.RESET}")
+        display_info(f"{Colors.BLUE}{get_string('uninstall.plan.components_to_remove')}{Colors.RESET}")
         for i, component_name in enumerate(components, 1):
             version = info["components"].get(component_name, "unknown")
-            print(f"  {i}. {component_name} (v{version})")
+            display_info(f"  {i}. {component_name} (v{version})")
     
     # Show what will be preserved
     preserved = []
@@ -240,12 +240,12 @@ def display_uninstall_plan(components: List[str], args: argparse.Namespace, info
         preserved.append(get_string("uninstall.plan.user_settings"))
     
     if preserved:
-        print(f"{Colors.GREEN}{get_string('uninstall.plan.preserving')}{Colors.RESET} {', '.join(preserved)}")
-    
+        display_info(f"{Colors.GREEN}{get_string('uninstall.plan.preserving')}{Colors.RESET} {', '.join(preserved)}")
+
     if args.complete:
-        print(f"{Colors.RED}{get_string('uninstall.plan.warning_complete')}{Colors.RESET}")
-    
-    print()
+        display_warning(f"{Colors.RED}{get_string('uninstall.plan.warning_complete')}{Colors.RESET}")
+
+    display_info("")
 
 
 def create_uninstall_backup(install_dir: Path, components: List[str]) -> Optional[Path]:
@@ -472,20 +472,20 @@ def run(args: argparse.Namespace) -> int:
         if success:
             if not args.quiet:
                 display_success(get_string("uninstall.run.success"))
-                
+
                 if not args.dry_run:
-                    print(f"\n{Colors.CYAN}{get_string('uninstall.run.complete_header')}{Colors.RESET}")
-                    print(get_string("uninstall.run.removed_from", args.install_dir))
+                    display_info(f"\n{Colors.CYAN}{get_string('uninstall.run.complete_header')}{Colors.RESET}")
+                    display_info(get_string("uninstall.run.removed_from", args.install_dir))
                     if not args.complete:
-                        print(get_string("uninstall.run.reinstall_prompt"))
-                    
+                        display_info(get_string("uninstall.run.reinstall_prompt"))
+
             return 0
         else:
             display_error(get_string("uninstall.run.failures"))
             return 1
             
     except KeyboardInterrupt:
-        print(f"\n{Colors.YELLOW}{get_string('uninstall.run.cancelled')}{Colors.RESET}")
+        display_warning(f"\n{Colors.YELLOW}{get_string('uninstall.run.cancelled')}{Colors.RESET}")
         return 130
     except Exception as e:
         return operation.handle_operation_error("uninstall", e)

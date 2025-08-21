@@ -99,7 +99,7 @@ Examples:
     return parser, subparsers, global_parser
 
 
-def setup_global_environment(args: argparse.Namespace):
+def setup_global_environment(args: argparse.Namespace) -> None:
     """Set up logging and shared runtime environment based on args"""
     # Determine log level
     if args.quiet:
@@ -249,15 +249,18 @@ def main() -> int:
         try:
             set_language('ja')
         except NameError:
-            # In case of fallback, this will not be defined
             pass
 
         parser, subparsers, global_parser = create_parser()
         operations = register_operation_parsers(subparsers, global_parser)
         args = parser.parse_args()
 
+        # Setup global context (logging, install path, etc.)
+        setup_global_environment(args)
+        logger = get_logger()
+
         # No operation provided? Show help manually unless in quiet mode
-        if not args.operation:
+        if not getattr(args, 'operation', None):
             if not args.quiet:
                 display_header(get_string("main.title"), get_string("main.subtitle"))
                 print(f"{Colors.CYAN}{get_string('main.available_operations')}{Colors.RESET}")
@@ -269,17 +272,17 @@ def main() -> int:
         if args.operation not in operations:
             close = difflib.get_close_matches(args.operation, operations.keys(), n=1)
             suggestion = f"Did you mean: {close[0]}?" if close else ""
+            if logger:
+                logger.error(f"Unknown operation: '{args.operation}'. {suggestion}")
             display_error(f"Unknown operation: '{args.operation}'. {suggestion}")
             return 1
-
-        # Setup global context (logging, install path, etc.)
-        setup_global_environment(args)
-        logger = get_logger()
 
         # Execute operation
         run_func = operations.get(args.operation)
 
         if not run_func:
+            if logger:
+                logger.error(f"No run function found for operation '{args.operation}'.")
             display_error(f"No run function found for operation '{args.operation}'.")
             return 1
 
@@ -289,14 +292,14 @@ def main() -> int:
 
     except KeyboardInterrupt:
         print(f"\n{Colors.YELLOW}Operation cancelled by user{Colors.RESET}")
+        if logger:
+            logger.warning("Operation cancelled by user.")
         return 130
     except Exception as e:
-        try:
-            logger = get_logger()
-            if logger:
-                logger.exception(f"Unhandled error: {e}")
-        except:
-            print(f"{Colors.RED}[ERROR] {e}{Colors.RESET}")
+        logger = get_logger()
+        if logger:
+            logger.exception(f"Unhandled error: {e}")
+        print(f"{Colors.RED}[ERROR] {e}{Colors.RESET}")
         return 1
 
 

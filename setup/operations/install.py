@@ -15,7 +15,7 @@ from . import OperationBase
 from ..core.registry import ComponentRegistry
 from ..managers.config_manager import ConfigManager
 from ..core.validator import Validator
-from ..utils.ui import display_header, display_success, display_error, confirm, Colors
+from ..utils.ui import display_header, display_success, display_error, display_info, display_warning, confirm, Colors
 from ..utils.logger import get_logger
 from ..utils.localization import get_string
 
@@ -80,9 +80,9 @@ def run(args: argparse.Namespace) -> int:
     expected_home = Path.home().resolve()
     actual_dir = args.install_dir.resolve()
     if not str(actual_dir).startswith(str(expected_home)):
-        print(f"\n[✗] {get_string('install.run.invalid_path_header')}")
-        print(f"    {get_string('install.run.invalid_path_expected', expected_home)}")
-        print(f"    {get_string('install.run.invalid_path_provided', actual_dir)}")
+        display_error(f"\n[✗] {get_string('install.run.invalid_path_header')}")
+        display_error(f"    {get_string('install.run.invalid_path_expected', expected_home)}")
+        display_error(f"    {get_string('install.run.invalid_path_provided', actual_dir)}")
         sys.exit(1)
     
     try:
@@ -107,17 +107,17 @@ def run(args: argparse.Namespace) -> int:
             registry.discover_components()
             components = registry.list_components()
             if components:
-                print(f"\n{Colors.CYAN}{get_string('install.components.available_header')}{Colors.RESET}")
+                display_info(f"\n{Colors.CYAN}{get_string('install.components.available_header')}{Colors.RESET}")
                 for component_name in components:
                     metadata = registry.get_component_metadata(component_name)
                     if metadata:
                         desc = metadata.get("description", get_string("install.components.no_description"))
                         category = metadata.get("category", get_string("install.components.unknown_category"))
-                        print(f"  {component_name} ({category}) - {desc}")
+                        display_info(f"  {component_name} ({category}) - {desc}")
                     else:
-                        print(f"  {component_name} - {get_string('install.plan.unknown_component')}")
+                        display_info(f"  {component_name} - {get_string('install.plan.unknown_component')}")
             else:
-                print(get_string("install.run.no_components_found"))
+                display_info(get_string("install.run.no_components_found"))
             return 0
         
         if args.diagnose:
@@ -167,17 +167,17 @@ def run(args: argparse.Namespace) -> int:
             if not args.quiet:
                 display_success(get_string("install.run.success"))
                 if not args.dry_run:
-                    print(f"\n{Colors.CYAN}{get_string('install.run.next_steps_header')}{Colors.RESET}")
-                    print(get_string("install.run.next_steps_1"))
-                    print(get_string("install.run.next_steps_2", args.install_dir))
-                    print(get_string("install.run.next_steps_3"))
+                    display_info(f"\n{Colors.CYAN}{get_string('install.run.next_steps_header')}{Colors.RESET}")
+                    display_info(get_string("install.run.next_steps_1"))
+                    display_info(get_string("install.run.next_steps_2", args.install_dir))
+                    display_info(get_string("install.run.next_steps_3"))
             return 0
         else:
             display_error(get_string("install.run.failed"))
             return 1
             
     except KeyboardInterrupt:
-        print(f"\n{Colors.YELLOW}{get_string('install.run.cancelled')}{Colors.RESET}")
+        display_warning(f"\n{Colors.YELLOW}{get_string('install.run.cancelled')}{Colors.RESET}")
         return 130
     except Exception as e:
         return operation.handle_operation_error("install", e)

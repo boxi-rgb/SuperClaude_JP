@@ -42,10 +42,22 @@ def get_string(key: str, *args) -> str:
     Returns:
         The translated and formatted string, or the key itself if not found.
     """
-    message = _translations.get(key, key)
-    if args:
-        return message.format(*args)
-    return message
+    message = _translations.get(key)
+    if message is None:
+        # Return a user-friendly fallback: try to join args into a readable form
+        if args:
+            return f"{key}: " + ", ".join(str(a) for a in args)
+        return key
+
+    try:
+        if args:
+            return message.format(*args)
+        return message
+    except Exception:
+        # If formatting fails, return message with args appended
+        if args:
+            return message + " " + ", ".join(str(a) for a in args)
+        return message
 
 # Initialize with default language
 set_language()

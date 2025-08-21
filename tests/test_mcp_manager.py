@@ -64,7 +64,7 @@ def test_install_mcp_not_in_registry(manager):
     """Test installing an MCP server that does not exist in the registry."""
     success, message = manager.install_mcp("non-existent-mcp")
     assert success is False
-    assert "Error: MCP server 'non-existent-mcp' not found in registry" in message
+    assert message == "Error: MCP server 'non-existent-mcp' not found in registry."
 
 @patch('subprocess.run')
 def test_install_mcp_claude_cli_not_found(mock_run, manager):
@@ -74,7 +74,7 @@ def test_install_mcp_claude_cli_not_found(mock_run, manager):
     success, message = manager.install_mcp("test-mcp")
 
     assert success is False
-    assert "Error: 'claude' CLI not found" in message
+    assert message == "Error: 'claude' CLI not found. Please ensure it is installed and in your PATH."
 
 @patch('subprocess.run')
 def test_install_mcp_install_fails(mock_run, manager):
@@ -87,5 +87,28 @@ def test_install_mcp_install_fails(mock_run, manager):
     success, message = manager.install_mcp("test-mcp")
 
     assert success is False
-    assert "Failed to install MCP server 'test-mcp'" in message
-    assert "Error: Installation failed" in message
+    assert message.startswith("Failed to install MCP server 'test-mcp'. Error: Installation failed.")
+
+# タイムアウト例外のテスト追加
+@patch('subprocess.run')
+def test_install_mcp_timeout(mock_run, manager):
+    """Test when installation times out."""
+    mock_run.side_effect = [
+        MagicMock(stdout="", returncode=0), # Not installed
+        subprocess.TimeoutExpired(cmd="claude", timeout=180) # Timeout
+    ]
+    success, message = manager.install_mcp("test-mcp")
+    assert success is False
+    assert message == "Installation of MCP server 'test-mcp' timed out."
+
+# 予期せぬ例外のテスト追加
+@patch('subprocess.run')
+def test_install_mcp_unexpected_exception(mock_run, manager):
+    """Test when an unexpected exception occurs during installation."""
+    mock_run.side_effect = [
+        MagicMock(stdout="", returncode=0), # Not installed
+        Exception("Unexpected error!") # Unexpected exception
+    ]
+    success, message = manager.install_mcp("test-mcp")
+    assert success is False
+    assert message.startswith("An unexpected error occurred during installation: Unexpected error!")
